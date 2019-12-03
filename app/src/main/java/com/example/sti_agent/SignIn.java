@@ -154,6 +154,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener{
     }
 
     private  void sentNetworkRequest(UserPostObj userPostObj){
+
         try {
             //To create retrofit instance
             HashMap hashMap = new HashMap();

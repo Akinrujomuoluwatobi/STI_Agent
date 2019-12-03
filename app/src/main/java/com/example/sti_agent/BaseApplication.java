@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //import co.paystack.android.PaystackSdk;
+import co.paystack.android.PaystackSdk;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -27,6 +28,7 @@ public class BaseApplication extends Application {
                 .build();
         Realm.setDefaultConfiguration(config);
 
+        PaystackSdk.initialize(getApplicationContext());
         Map configCloudinary = new HashMap();
         configCloudinary.put("cloud_name", "aaua");
         configCloudinary.put("api_key", "942621547178879");

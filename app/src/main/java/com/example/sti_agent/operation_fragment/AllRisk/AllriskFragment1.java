@@ -70,6 +70,8 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
     StepView mStepView;
     @BindView(R.id.type_spinner_a1)
     Spinner mTypeSpinnerA1;
+    @BindView(R.id.state_spinner)
+    Spinner state_spinner;
     @BindView(R.id.prefix_spinner_a1)
     Spinner mPrefixSpinnerA1;
     @BindView(R.id.inputLayoutCompanyName_a1)
@@ -126,7 +128,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
     AVLoadingIndicatorView mProgressbar1A1;
 
 
-    String typeString,genderString,prifixString;
+    String typeString,genderString,prifixString,stateString;
     private int currentStep = 0;
     int PICK_IMAGE_PASSPORT = 1;
     int CAM_IMAGE_PASSPORT = 2;
@@ -135,6 +137,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
 
     Uri personal_info_img_uri;
     String personal_img_url;
+    private UserPreferences userPreferences;
 
     public AllriskFragment1() {
         // Required empty public constructor
@@ -182,6 +185,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
 
         mTypeSpinnerA1();
         mPrefixSpinnerA1();
+        stateSpinner();
         mGenderSpinnerA1();
         setViewActions();
 
@@ -189,7 +193,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
     }
 
     private  void init(){
-        UserPreferences userPreferences = new UserPreferences(getContext());
+        userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
 
@@ -348,6 +352,37 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
                 mInputLayoutEmailA1.setVisibility(View.VISIBLE);
                 mInputLayoutMailingAddrA1.setVisibility(View.VISIBLE);
 
+
+            }
+        });
+
+    }
+
+    private void stateSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(getContext(), R.array.state_array,
+                        android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        state_spinner.setAdapter(staticAdapter);
+
+        state_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String stateText = (String) parent.getItemAtPosition(position);
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+                state_spinner.getItemAtPosition(0);
 
             }
         });
@@ -798,7 +833,6 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
         mProgressbar1A1.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
 
             //Temporal save and go to next Operation
 
@@ -812,6 +846,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
             userPreferences.setAllRiskIFirstName(mFirstnameEditxtA1.getText().toString());
             userPreferences.setAllRiskILastName(mLastnameEditxtA1.getText().toString());
             userPreferences.setAllRiskIGender(genderString);
+            userPreferences.setAllRiskIState(stateString);
             userPreferences.setAllRiskIResAdrr(mResidentsAddrEditxtA1.getText().toString());
             userPreferences.setAllRiskIPhoneNum(mPhoneNoEditxtA1.getText().toString());
             userPreferences.setAllRiskIEmail(mEmailEditxtA1.getText().toString());

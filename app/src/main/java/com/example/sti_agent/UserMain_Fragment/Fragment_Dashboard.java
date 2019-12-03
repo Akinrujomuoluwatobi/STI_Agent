@@ -1,8 +1,14 @@
 package com.example.sti_agent.UserMain_Fragment;
 
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -13,20 +19,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.example.sti_agent.GridSpacingItemDecoration;
 import com.example.sti_agent.Model.Card;
 import com.example.sti_agent.Model.Errors.APIError;
 import com.example.sti_agent.Model.Errors.ErrorUtils;
-import com.example.sti_agent.Model.Etic.Travel_Info;
 import com.example.sti_agent.Model.ServiceGenerator;
 import com.example.sti_agent.Model.WalletModel.WalletObj;
 import com.example.sti_agent.Model.WalletModel.Wallet_History;
@@ -35,7 +31,6 @@ import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
 import com.example.sti_agent.adapter.CardAdapter;
 import com.example.sti_agent.adapter.WalletHistoryAdapter;
-import com.example.sti_agent.adapter.travel_infoListAdapter;
 import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
@@ -44,17 +39,17 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class Fragment_Dashboard extends Fragment implements View.OnClickListener{
+public class Fragment_Dashboard extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -88,11 +83,11 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
     WalletHistoryAdapter walletHistoryAdapter;
 
 
-
     public Fragment_Dashboard() {
         // Required empty public constructor
     }
-    NetworkConnection networkConnection=new NetworkConnection();
+
+    NetworkConnection networkConnection = new NetworkConnection();
     ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
     /**
@@ -126,9 +121,9 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_fragment__dashboard, container, false);
-        ButterKnife.bind(this,view);
-        userPreferences=new UserPreferences(getActivity());
+        View view = inflater.inflate(R.layout.fragment_fragment__dashboard, container, false);
+        ButterKnife.bind(this, view);
+        userPreferences = new UserPreferences(getActivity());
 
         setWallet_balance();
         getWalletHistroy();
@@ -146,19 +141,19 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
         setAction();
 
 
-        return  view;
+        return view;
     }
 
-    private void setAction(){
-       // wallet_blance_card.setOnClickListener(this);
+    private void setAction() {
+        // wallet_blance_card.setOnClickListener(this);
         fund_wallet_card.setOnClickListener(this);
     }
-    private  void setWallet_balance(){
-        String balance=userPreferences.getWalletBalance();
-        int dotIndex=balance.indexOf(".");
-        int len_balance=balance.length()-1;
-        String kobo=balance.substring(dotIndex,len_balance);
-        String naira=balance.substring(0,dotIndex);
+
+    private void setWallet_balance() {
+        String balance = userPreferences.getWalletBalance();
+        String[] parts = balance.split(Pattern.quote("."));
+        String kobo = parts[1];
+        String naira = parts[0];
 
         wallet_balance.setText(naira);
         wallet_kobo.setText(kobo);
@@ -180,13 +175,16 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
         m = new Card("Make a Claim", icons[1]);
         cardList.add(m);
 
-        m = new Card("Customer Management", icons[2]);
-        cardList.add(m);
+        /*m = new Card("Customer Management", icons[2]);
+        cardList.add(m);*/
 
         m = new Card("Renewal of Insurance Policy", icons[3]);
         cardList.add(m);
 
-        m = new Card("Register New Customer", icons[4]);
+        /*m = new Card("Register New Customer", icons[4]);
+        cardList.add(m);*/
+
+        m = new Card("Manage Policy", icons[2]);
         cardList.add(m);
 
     }
@@ -200,8 +198,8 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
     }
 
 
-    private void getWalletHistroy(){
-        if(networkConnection.isNetworkConnected(getContext())) {
+    private void getWalletHistroy() {
+        if (networkConnection.isNetworkConnected(getContext())) {
 
             progressbar.setVisibility(View.VISIBLE);
             Call<WalletObj> call = client.wallet_history("Token " + userPreferences.getUserToken());
@@ -228,7 +226,7 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
 
                     }
 
-                    wallet_histories=response.body().getWallet_History();
+                    wallet_histories = response.body().getWallet_History();
                     progressbar.setVisibility(View.GONE);
                 }
 
@@ -240,7 +238,7 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
                     progressbar.setVisibility(View.GONE);
                 }
             });
-        }else{
+        } else {
             showMessage("No Internet Connection");
         }
 
@@ -249,10 +247,10 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fund_wallet_card:
 
-                fragment =new Fragment_FundWallet();
+                fragment = new Fragment_FundWallet();
                 showFragment(fragment);
 
                 break;
@@ -260,7 +258,6 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
                 break;*/
         }
     }
-
 
 
     private void showMessage(String s) {
@@ -292,7 +289,7 @@ public class Fragment_Dashboard extends Fragment implements View.OnClickListener
 
             dialog.setContentView(view);
             dialog.show();
-        }catch (Exception e){
+        } catch (Exception e) {
             showMessage("Something went wrong");
         }
     }

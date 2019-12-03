@@ -23,12 +23,11 @@ public class AdditionInsured extends RealmObject {
     String disability;
     String benefit_category;
     String picture;
+    String price;
 
     public  AdditionInsured(){
 
     }
-
-
 
 
 
@@ -153,11 +152,11 @@ public class AdditionInsured extends RealmObject {
         this.picture = picture;
     }
 
+    public String getPrice() {
+        return price;
+    }
 
-
-
-
-
-
-
+    public void setPrice(String price) {
+        this.price = price;
+    }
 }

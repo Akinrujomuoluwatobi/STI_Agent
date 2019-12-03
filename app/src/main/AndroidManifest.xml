@@ -4,40 +4,41 @@
     package="com.example.sti_agent">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-    android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission
-        android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-feature android:name="android.hardware.camera"
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
         android:icon="@drawable/sti_logo_dark"
-        android:roundIcon="@drawable/sti_logo_dark"
-        android:supportsRtl="true"
         android:label="STI Agent"
-        android:theme="@style/AppThemeSuper"
+        android:roundIcon="@drawable/sti_logo_dark"
         android:screenOrientation="portrait"
+        android:supportsRtl="true"
+        android:theme="@style/AppThemeSuper"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning"
-        >
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="co.paystack.android.PublicKey"
+            android:value="pk_test_d0ca9d91eeee10ecba75c648e988170b29d0978e" />
+
         <activity
             android:name=".Splash"
-            android:theme="@style/AppThemeSuper"
-            >
+            android:theme="@style/AppThemeSuper">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUp"
-            />
+        <activity android:name=".SignUp" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -48,24 +49,29 @@
             </intent-filter>
         </activity>
 
-      <!--  <meta-data
-            android:name="co.paystack.android.PublicKey"
-            android:value="pk_test_d0ca9d91eeee10ecba75c648e988170b29d0978e"/>
--->
+        <!--  <meta-data
+              android:name="co.paystack.android.PublicKey"
+              android:value="pk_test_d0ca9d91eeee10ecba75c648e988170b29d0978e"/>
+  -->
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MainActivity"
-            />
-        <activity android:name=".operation_activity.CustomerManageActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".operation_activity.MakeClaimActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".operation_activity.PolicyRenewalActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".operation_activity.QuoteBuyActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".operation_activity.RegisterCustomerActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:value=".MainActivity" />
+
+        <activity
+            android:name=".operation_activity.CustomerManageActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".operation_activity.MakeClaimActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".operation_activity.PolicyRenewalActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".operation_activity.QuoteBuyActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".operation_activity.RegisterCustomerActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".SignIn" />
         <activity android:name=".Forms.MotorInsuredForm" />
         <activity android:name=".Forms.EticForm" />
@@ -77,6 +83,13 @@
         <activity android:name=".Forms.Claim" />
         <activity android:name=".Import.ImportingForm" />
 
+        <activity
+            android:name=".operation_activity.PolicyPaymentActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".operation_activity.WalletPaymentActivity"
+            android:parentActivityName=".MainActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

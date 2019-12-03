@@ -1,5 +1,26 @@
 package com.example.sti_agent;
 
+import android.Manifest;
+import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,39 +28,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import android.Manifest;
-import android.app.DatePickerDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Paint;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
-import com.example.sti_agent.Forms.MotorInsuredForm;
-import com.example.sti_agent.Import.ImportingForm;
-import com.example.sti_agent.Model.Auth.Agent;
 import com.example.sti_agent.Model.Auth.AgentDataHead;
 import com.example.sti_agent.Model.Auth.RegisterObj;
 import com.example.sti_agent.Model.Auth.User;
@@ -49,12 +41,9 @@ import com.example.sti_agent.Model.ServiceGenerator;
 import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.JsonObject;
 import com.wang.avi.AVLoadingIndicatorView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -66,17 +55,13 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.sti_agent.operation_fragment.MotorInsurance.MotorInsureFragment1.isValidEmailAddress;
 
-public class SignUp extends AppCompatActivity implements View.OnClickListener{
+public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     @BindView(R.id.user_type_spinner)
     Spinner mUserTypeSpinner;
@@ -183,22 +168,22 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
     @BindView(R.id.progressbar)
     AVLoadingIndicatorView progressbar;
-    DatePickerDialog datePickerDialog1,datePickerDialog2;
+    DatePickerDialog datePickerDialog1, datePickerDialog2;
 
     int PICK_IMAGE_PASSPORT = 1;
-    int CAM_IMAGE_PASSPORT=11;
+    int CAM_IMAGE_PASSPORT = 11;
     int PICK_IMAGE_FRONT = 2;
-    int CAM_IMAGE_FRONT =22;
+    int CAM_IMAGE_FRONT = 22;
     int PICK_IMAGE_BACK = 3;
-    int CAM_IMAGE_BACK=33;
+    int CAM_IMAGE_BACK = 33;
     int PICK_IMAGE_FILE = 4;
-    int CAM_IMAGE_FILE=44;
+    int CAM_IMAGE_FILE = 44;
     private String cameraFilePath;
-    private Uri passportUri,uploadBack_uri,uploadFront_uri,uploadFile_uri;
-    String userTypeString,genderString,birthdayString,licenseDateString,countryString,stateString,bvnString;
-    NetworkConnection networkConnection=new NetworkConnection();
+    private Uri passportUri, uploadBack_uri, uploadFront_uri, uploadFile_uri;
+    String userTypeString, genderString, birthdayString, licenseDateString, countryString, stateString, bvnString;
+    NetworkConnection networkConnection = new NetworkConnection();
 
-    public String profile_photo_url,id_front_url,id_back_url,license_photo_url;
+    public String profile_photo_url, id_front_url, id_back_url, license_photo_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,7 +233,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String userString = (String) parent.getItemAtPosition(position);
-                if(userString.equals("Agent")){
+                if (userString.equals("Agent")) {
 
                     mUserTypeSpinner.setVisibility(View.VISIBLE);
                     mUserTypeSpinner.setClickable(true);
@@ -321,7 +306,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                     upload_id_front.setClickable(true);
 
 
-                }else if(userString.equals("Broker")){
+                } else if (userString.equals("Broker")) {
 
                     mUserTypeSpinner.setVisibility(View.VISIBLE);
                     mUserTypeSpinner.setClickable(true);
@@ -357,8 +342,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                     choose_other_country.setClickable(false);
                     mInputLayoutCountry.setClickable(false);
                     mInputLayoutCity.setClickable(false);
-
-
 
 
                     //Visualizing the brokers form
@@ -509,7 +492,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                     state_spinner.setClickable(false);
                     choose_other_country.setVisibility(View.VISIBLE);
                     choose_other_country.setClickable(true);
-                }else if(position==1){
+                } else if (position == 1) {
                     choose_country_spinner.setVisibility(View.VISIBLE);
                     choose_country_spinner.setClickable(true);
                     country_spinner.setClickable(true);
@@ -611,7 +594,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                             break;
 
                         case 1: // export
-                            
+
                             chooseIdBack();
                             dialog2.dismiss();
 
@@ -683,7 +666,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                 AlertDialog dialog4 = builder4.create();
                 dialog4.show();
                 mUploadFile.setBackgroundColor(getResources().getColor(R.color.colorLightGrey));
-                
+
                 break;
 
             case R.id.birth_day_editxt:
@@ -695,7 +678,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
 
             case R.id.login:
-                startActivity(new Intent(getApplicationContext(),SignIn.class));
+                startActivity(new Intent(getApplicationContext(), SignIn.class));
                 finish();
                 break;
 
@@ -708,155 +691,155 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
         if (networkConnection.isNetworkConnected(this)) {
             boolean isValid = true;
-            if (mFirstNameEditxt.getText().toString().isEmpty()&&mInputLayoutFirstName.isClickable()) {
+            if (mFirstNameEditxt.getText().toString().isEmpty() && mInputLayoutFirstName.isClickable()) {
                 mInputLayoutFirstName.setError("First Name is required");
                 isValid = false;
             } else {
                 mInputLayoutFirstName.setErrorEnabled(false);
             }
-            if (mLastNameEditxt.getText().toString().isEmpty()&&mInputLayoutLastName.isClickable()) {
+            if (mLastNameEditxt.getText().toString().isEmpty() && mInputLayoutLastName.isClickable()) {
                 mInputLayoutLastName.setError("Last Name is required");
                 isValid = false;
             } else {
                 mInputLayoutLastName.setErrorEnabled(false);
             }
-            if (mCompanynameEditxt.getText().toString().isEmpty()&&mInputLayoutCompanyName.isClickable()) {
+            if (mCompanynameEditxt.getText().toString().isEmpty() && mInputLayoutCompanyName.isClickable()) {
                 mInputLayoutCompanyName.setError("Company Name is required");
                 isValid = false;
             } else {
                 mInputLayoutCompanyName.setErrorEnabled(false);
             }
 
-            if (mCompanyRegNumEditxt.getText().toString().isEmpty()&&mInputLayoutCompanyRegNum.isClickable()) {
+            if (mCompanyRegNumEditxt.getText().toString().isEmpty() && mInputLayoutCompanyRegNum.isClickable()) {
                 mInputLayoutCompanyRegNum.setError("Registration Number is required");
                 isValid = false;
             } else {
                 mInputLayoutCompanyRegNum.setErrorEnabled(false);
             }
 
-            if (mExpDateLicenseEditxt.getText().toString().isEmpty()&&mInputLayoutExpdateOfLicences.isClickable()) {
+            if (mExpDateLicenseEditxt.getText().toString().isEmpty() && mInputLayoutExpdateOfLicences.isClickable()) {
                 mInputLayoutExpdateOfLicences.setError("License Expiry date is required");
                 isValid = false;
             } else {
                 mInputLayoutExpdateOfLicences.setErrorEnabled(false);
             }
-            if (mContactPersonEditxt.getText().toString().isEmpty()&&mInputLayoutContactPerson.isClickable()) {
+            if (mContactPersonEditxt.getText().toString().isEmpty() && mInputLayoutContactPerson.isClickable()) {
                 mInputLayoutContactPerson.setError("Contact Person is required");
                 isValid = false;
             } else {
                 mInputLayoutContactPerson.setErrorEnabled(false);
             }
 
-            if (mCountryEditxt.getText().toString().isEmpty()&&mInputLayoutCountry.isClickable()) {
+            if (mCountryEditxt.getText().toString().isEmpty() && mInputLayoutCountry.isClickable()) {
                 mInputLayoutCountry.setError("Country is required");
                 isValid = false;
             } else {
                 mInputLayoutContactPerson.setErrorEnabled(false);
             }
 
-            if (mOfficeAddrEditxt.getText().toString().isEmpty()&&mInputLayoutOfAddr.isClickable()) {
+            if (mOfficeAddrEditxt.getText().toString().isEmpty() && mInputLayoutOfAddr.isClickable()) {
                 mInputLayoutOfAddr.setError("Office Address is required");
                 isValid = false;
             } else {
                 mInputLayoutOfAddr.setErrorEnabled(false);
             }
 
-            if (mEmailEditxt.getText().toString().isEmpty()&&mInputLayoutEmail.isClickable()) {
+            if (mEmailEditxt.getText().toString().isEmpty() && mInputLayoutEmail.isClickable()) {
                 mInputLayoutEmail.setError("Email is required!");
                 isValid = false;
-            } else if (!isValidEmailAddress(mEmailEditxt.getText().toString())&&mInputLayoutEmail.isClickable()) {
+            } else if (!isValidEmailAddress(mEmailEditxt.getText().toString()) && mInputLayoutEmail.isClickable()) {
                 mInputLayoutEmail.setError("Valid Email is required!");
                 isValid = false;
             } else {
                 mInputLayoutEmail.setErrorEnabled(false);
             }
-            if (mPasswordEditxt.getText().toString().isEmpty()&&mInputLayoutPassword.isClickable()) {
+            if (mPasswordEditxt.getText().toString().isEmpty() && mInputLayoutPassword.isClickable()) {
                 mInputLayoutPassword.setError("Password is required!");
                 isValid = false;
-            } else if (mPasswordEditxt.getText().toString().trim().length()<6 && mInputLayoutPassword.isClickable()) {
+            } else if (mPasswordEditxt.getText().toString().trim().length() < 6 && mInputLayoutPassword.isClickable()) {
                 mInputLayoutPassword.setError("Your Password must not less than 6 character");
                 isValid = false;
             } else {
                 mInputLayoutPassword.setErrorEnabled(false);
             }
-            if (mPhoneNumEditxt.getText().toString().isEmpty()&&mInputLayoutPhoneNum.isClickable()) {
+            if (mPhoneNumEditxt.getText().toString().isEmpty() && mInputLayoutPhoneNum.isClickable()) {
                 mInputLayoutPhoneNum.setError("Phone number is required");
                 isValid = false;
-            } else if (mPhoneNumEditxt.getText().toString().trim().length() < 11&&mInputLayoutPhoneNum.isClickable()) {
+            } else if (mPhoneNumEditxt.getText().toString().trim().length() < 11 && mInputLayoutPhoneNum.isClickable()) {
                 mInputLayoutPhoneNum.setError("Your Phone number must be 11 in length");
                 isValid = false;
             } else {
                 mInputLayoutPhoneNum.setErrorEnabled(false);
             }
-            if (mBirthDayEditxt.getText().toString().isEmpty()&&mInputLayoutDateofBirth.isClickable()) {
+            if (mBirthDayEditxt.getText().toString().isEmpty() && mInputLayoutDateofBirth.isClickable()) {
                 mInputLayoutDateofBirth.setError("Date of birth is required");
                 isValid = false;
             } else {
                 mInputLayoutDateofBirth.setErrorEnabled(false);
             }
-            if (mAddressEditxt.getText().toString().isEmpty()&&mInputLayoutAddress.isClickable()) {
+            if (mAddressEditxt.getText().toString().isEmpty() && mInputLayoutAddress.isClickable()) {
                 mInputLayoutAddress.setError("Address is required");
                 isValid = false;
             } else {
                 mInputLayoutAddress.setErrorEnabled(false);
             }
 
-            if (mCityEditxt.getText().toString().isEmpty()&&mInputLayoutCity.isClickable()) {
+            if (mCityEditxt.getText().toString().isEmpty() && mInputLayoutCity.isClickable()) {
                 mInputLayoutCity.setError("City is required");
                 isValid = false;
             } else {
                 mInputLayoutCity.setErrorEnabled(false);
             }
 
-            if (mBvnEditxt.getText().toString().isEmpty()&&mInputLayoutBVN.isClickable()) {
-                bvnString="null";
+            if (mBvnEditxt.getText().toString().isEmpty() && mInputLayoutBVN.isClickable()) {
+                bvnString = "null";
             }
 
             userTypeString = mUserTypeSpinner.getSelectedItem().toString();
-            if (userTypeString.equals("Select User Type")&&mUserTypeSpinner.isClickable()) {
+            if (userTypeString.equals("Select User Type") && mUserTypeSpinner.isClickable()) {
                 showMessage("Select User Type");
                 isValid = false;
             }
 
             genderString = mGenderSpinner.getSelectedItem().toString();
-            if (genderString.equals("Gender")&&mGenderSpinner.isClickable()) {
+            if (genderString.equals("Gender") && mGenderSpinner.isClickable()) {
                 showMessage("Select Gender");
                 isValid = false;
             }
 
             genderString = mGenderSpinner.getSelectedItem().toString();
-            if (genderString.equals("Gender")&&mGenderSpinner.isClickable()) {
+            if (genderString.equals("Gender") && mGenderSpinner.isClickable()) {
                 showMessage("Select Gender");
                 isValid = false;
             }
 
             countryString = country_spinner.getSelectedItem().toString();
-            if (countryString.equals("Country")&&country_spinner.isClickable()) {
+            if (countryString.equals("Country") && country_spinner.isClickable()) {
                 showMessage("Select Country");
                 isValid = false;
             }
 
             stateString = state_spinner.getSelectedItem().toString();
-            if (stateString.equals("State")&&state_spinner.isClickable()) {
+            if (stateString.equals("State") && state_spinner.isClickable()) {
                 showMessage("Select State");
                 isValid = false;
             }
 
-            if (passportUri==null&&layout_upload_pass.isClickable()) {
+            if (passportUri == null && layout_upload_pass.isClickable()) {
                 showMessage("Select Passport");
                 isValid = false;
             }
 
-            if (uploadBack_uri==null&&upload_id_back.isClickable()) {
+            if (uploadBack_uri == null && upload_id_back.isClickable()) {
                 showMessage("Select ID Back View");
                 isValid = false;
             }
-            if (uploadFront_uri==null&&upload_id_front.isClickable()) {
+            if (uploadFront_uri == null && upload_id_front.isClickable()) {
                 showMessage("Select ID Front View");
                 isValid = false;
             }
 
-            if (uploadFile_uri==null&&mUploadFile.isClickable()) {
+            if (uploadFile_uri == null && mUploadFile.isClickable()) {
                 showMessage("Select License to upload");
                 isValid = false;
             }
@@ -864,7 +847,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
             if (isValid) {
 
                 //Post Request to Api
-
                 sendData();
 
 
@@ -876,7 +858,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
         showMessage("No Internet connection discovered!");
     }
 
-//choose passport through gallery
+    //choose passport through gallery
     private void choosePassport() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -915,7 +897,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
             if (ActivityCompat.shouldShowRequestPermissionRationale(SignUp.this, permission)) {
 
             } else {
-                ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_RUNTIME_PERMISSION);
+                ActivityCompat.requestPermissions(SignUp.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_RUNTIME_PERMISSION);
             }
         } else {
             // you have permission go ahead
@@ -933,7 +915,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                 if (isGranted) {
                     // you have permission go ahead
                     choosePassport_camera();
-                }else{
+                } else {
                     // you dont have permission show toast
                     showMessage("Re-Click to Upload");
                 }
@@ -943,21 +925,21 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-//choose passport through camera mode
-private void choosePassport_camera() {
+    //choose passport through camera mode
+    private void choosePassport_camera() {
 
-    try {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", createImageFile()));
-        startActivityForResult(intent, CAM_IMAGE_PASSPORT);
-    } catch (IOException ex) {
-        ex.printStackTrace();
-        showMessage("Invalid Entry");
-        Log.i("Invalid_Cam_Entry",ex.getMessage());
+        try {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", createImageFile()));
+            startActivityForResult(intent, CAM_IMAGE_PASSPORT);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showMessage("Invalid Entry");
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
+        }
+
+
     }
-
-
-}
 
 
     private void chooseIdBack() {
@@ -976,13 +958,13 @@ private void choosePassport_camera() {
         } catch (IOException ex) {
             ex.printStackTrace();
             showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
 
 
     }
 
-    
+
     private void chooseIdFront() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1000,7 +982,7 @@ private void choosePassport_camera() {
         } catch (IOException ex) {
             ex.printStackTrace();
             showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
 
 
@@ -1015,12 +997,12 @@ private void choosePassport_camera() {
         } catch (IOException ex) {
             ex.printStackTrace();
             showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
 
 
     }
-    
+
     private void chooseLicenseFile() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1029,11 +1011,10 @@ private void choosePassport_camera() {
     }
 
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 0 ) {
+        if (resultCode == 0) {
 
             showMessage("No image is selected, try again");
             return;
@@ -1042,543 +1023,553 @@ private void choosePassport_camera() {
 
         //showMessage(String.valueOf(requestCode));
         if (networkConnection.isNetworkConnected(this)) {
-            Random random=new Random();
-            String rand= String.valueOf(random.nextInt());
+            Random random = new Random();
+            String rand = String.valueOf(random.nextInt());
 
-        if(requestCode==1) {
+            if (requestCode == 1) {
 
-            passportUri = data.getData();
-            Log.i("PassportUri1",passportUri.toString());
-            try {
-                if(passportUri!=null){
-                    String name = mFirstNameEditxt.getText().toString()+rand;
+                passportUri = data.getData();
+                Log.i("PassportUri1", passportUri.toString());
+                try {
+                    if (passportUri != null) {
+                        String name = mFirstNameEditxt.getText().toString() + rand;
+                        if (name.equals("")) {
+                            showMessage("Enter your first name first");
+
+                        } else {
+
+                            user_img.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), passportUri));
+
+                            String requestId = MediaManager.get().upload(Uri.parse(passportUri.toString()))
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            registrationBtn.setVisibility(View.GONE);
+                                            progressbar.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            progressbar.setVisibility(View.VISIBLE);
+                                            if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                                progressbar.setVisibility(View.GONE);
+                                                registrationBtn.setVisibility(View.VISIBLE);
+                                                showMessage("Internet Connection Failed");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Passport Uploaded Successfully");
+                                            Log.i("PassportRequestId ", requestId);
+                                            Log.i("PassportUrl ", String.valueOf(resultData.get("url")));
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            profile_photo_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            progressbar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showMessage("Please Check your Image");
+
+                }
+            } else if (requestCode == 11) {
+                passportUri = Uri.parse(cameraFilePath);
+                Log.i("PasssUri1", cameraFilePath);
+                Log.i("PasssUri2", passportUri.toString());
+                if (passportUri != null) {
+
+                    String name = mFirstNameEditxt.getText().toString() + rand;
                     if (name.equals("")) {
                         showMessage("Enter your first name first");
+                        return;
+                    } else {
+                        Glide.with(this).load(cameraFilePath).into(user_img);
+                        // user_img.setImageURI(passportUri);
 
+                        String requestId = MediaManager.get().upload(Uri.parse(cameraFilePath))
+                                .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
+
+                                    }
+
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Passport Uploaded Successfully");
+                                        Log.i("PassportRequestId ", requestId);
+                                        Log.i("PassportUrl ", String.valueOf(resultData.get("url")));
+                                        progressbar.setVisibility(View.GONE);
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        profile_photo_url = String.valueOf(resultData.get("url"));
+
+
+                                    }
+
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
+                                        Log.i("Error: ", error.toString());
+
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
+
+                    }
+                }
+
+            } else if (requestCode == 2) {
+                uploadFront_uri = data.getData();
+
+
+                if (uploadFront_uri != null) {
+                    String name = mFirstNameEditxt.getText().toString() + rand;
+                    if (name.equals("")) {
+                        showMessage("Enter your firstname first");
                     } else {
 
-                        user_img.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), passportUri));
+                        String frontId = MediaManager.get().upload(Uri.parse(uploadFront_uri.toString()))
+                                .option("public_id", "user_registration/other_files/user_id_front" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                    String requestId = MediaManager.get().upload(Uri.parse(passportUri.toString()))
-                            .option("public_id", "user_registration/profile_photos/user_passport"+name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                                    }
 
-                                }
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes/totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Id's Front View has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+
+                                        id_front_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
 
-                                    showMessage("Passport Uploaded Successfully");
-                                    Log.i("PassportRequestId ",requestId);
-                                    Log.i("PassportUrl ", String.valueOf(resultData.get("url")));
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    profile_photo_url=String.valueOf(resultData.get("url"));
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
+                                        Log.i("Error: ", error.toString());
 
-                                }
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: "+error.toString());
-                                    Log.i("Error: ",error.toString());
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
 
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }})
-                            .dispatch();
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
-                }
+                    }
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                showMessage("Please Check your Image");
+            } else if (requestCode == 22) {
+                uploadFront_uri = Uri.parse(cameraFilePath);
+                if (uploadFront_uri != null) {
+                    String name = mFirstNameEditxt.getText().toString() + rand;
+                    if (name.equals("")) {
+                        showMessage("Enter your firstname first");
+                    } else {
 
-            }
-        }else if(requestCode==11) {
-            passportUri=Uri.parse(cameraFilePath);
-            Log.i("PasssUri1",cameraFilePath);
-            Log.i("PasssUri2",passportUri.toString());
-            if(passportUri!=null){
+                        String frontId = MediaManager.get().upload(uploadFront_uri)
+                                .option("public_id", "user_registration/other_files/user_id_front" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                String name = mFirstNameEditxt.getText().toString()+rand;
-                if (name.equals("")) {
-                    showMessage("Enter your first name first");
-                    return;
-                } else {
-                    Glide.with(this).load(cameraFilePath).into(user_img);
-                   // user_img.setImageURI(passportUri);
+                                    }
 
-                    String requestId = MediaManager.get().upload(Uri.parse(cameraFilePath))
-                            .option("public_id", "user_registration/profile_photos/user_passport"+name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
 
-                                }
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes/totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Id's Front View has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+
+                                        id_front_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
 
-                                    showMessage("Passport Uploaded Successfully");
-                                    Log.i("PassportRequestId ",requestId);
-                                    Log.i("PassportUrl ", String.valueOf(resultData.get("url")));
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    profile_photo_url=String.valueOf(resultData.get("url"));
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
+                                        Log.i("Error: ", error.toString());
 
-                                }
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: "+error.toString());
-                                    Log.i("Error: ",error.toString());
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
 
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }})
-                            .dispatch();
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
+                    }
                 }
-            }
 
-        }else if(requestCode==2){
-            uploadFront_uri = data.getData();
-
-
-            if(uploadFront_uri!=null) {
-                String name = mFirstNameEditxt.getText().toString()+rand;
+            } else if (requestCode == 3) {
+                uploadBack_uri = data.getData();
+                String name = mFirstNameEditxt.getText().toString() + rand;
                 if (name.equals("")) {
                     showMessage("Enter your firstname first");
                 } else {
 
-                    String frontId = MediaManager.get().upload(Uri.parse(uploadFront_uri.toString()))
-                            .option("public_id", "user_registration/other_files/user_id_front" +name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                    if (uploadBack_uri != null) {
 
-                                }
+                        String frontId = MediaManager.get().upload(Uri.parse(uploadBack_uri.toString()))
+                                .option("public_id", "user_registration/other_files/user_id_back" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                    }
+
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Id's Back View has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+                                        id_back_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
 
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
-                                    showMessage("Id's Front View has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
+                                        Log.i("Error: ", error.toString());
 
-                                    id_front_url=String.valueOf(resultData.get("url"));
-                                }
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
 
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
-                                    Log.i("Error: ", error.toString());
-
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
+                    }
                 }
-            }
-
-        }else if(requestCode==22){
-            uploadFront_uri=Uri.parse(cameraFilePath);
-            if(uploadFront_uri!=null) {
-                String name = mFirstNameEditxt.getText().toString()+rand;
+            } else if (requestCode == 33) {
+                uploadBack_uri = Uri.parse(cameraFilePath);
+                String name = mFirstNameEditxt.getText().toString() + rand;
                 if (name.equals("")) {
                     showMessage("Enter your firstname first");
                 } else {
 
-                    String frontId = MediaManager.get().upload(uploadFront_uri)
-                            .option("public_id", "user_registration/other_files/user_id_front" +name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                    if (uploadBack_uri != null) {
 
-                                }
+                        String frontId = MediaManager.get().upload(uploadBack_uri)
+                                .option("public_id", "user_registration/other_files/user_id_back" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                    }
+
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Id's Back View has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+                                        id_back_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
 
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
-                                    showMessage("Id's Front View has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
+                                        Log.i("Error: ", error.toString());
 
-                                    id_front_url=String.valueOf(resultData.get("url"));
-                                }
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
 
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
-                                    Log.i("Error: ", error.toString());
-
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
+                    }
                 }
-            }
+            } else if (requestCode == 4) {
+                uploadFile_uri = data.getData();
+                String name = mFirstNameEditxt.getText().toString() + rand;
+                if (name.equals("")) {
+                    showMessage("Enter your firstname first");
+                } else {
+                    if (uploadFile_uri != null) {
 
-        }else if(requestCode==3){
-            uploadBack_uri = data.getData();
-            String name = mFirstNameEditxt.getText().toString()+rand;
-            if (name.equals("")) {
-                showMessage("Enter your firstname first");
-            } else {
+                        String licenseFile = MediaManager.get().upload(Uri.parse(uploadFile_uri.toString()))
+                                .option("public_id", "user_registration/other_files/licensefile" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                if (uploadBack_uri != null) {
+                                    }
 
-                    String frontId = MediaManager.get().upload(Uri.parse(uploadBack_uri.toString()))
-                            .option("public_id", "user_registration/other_files/user_id_back" + name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
 
-                                }
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
 
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                        showMessage("Your Licenses File has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+                                        license_photo_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
 
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
-                                    showMessage("Id's Back View has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    id_back_url=String.valueOf(resultData.get("url"));
-                                }
+                                        Log.i("Error: ", error.toString());
 
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
+                                        registrationBtn.setVisibility(View.VISIBLE);
+                                        progressbar.setVisibility(View.GONE);
+                                    }
 
-                                    Log.i("Error: ", error.toString());
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
+                    }
                 }
-            }
-        }else if(requestCode==33){
-            uploadBack_uri = Uri.parse(cameraFilePath);
-            String name = mFirstNameEditxt.getText().toString()+rand;
-            if (name.equals("")) {
-                showMessage("Enter your firstname first");
-            } else {
+            } else if (requestCode == 44) {
+                uploadFile_uri = Uri.parse(cameraFilePath);
+                String name = mFirstNameEditxt.getText().toString() + rand;
+                if (name.equals("")) {
+                    showMessage("Enter your firstname first");
+                } else {
+                    if (uploadFile_uri != null) {
 
-                if (uploadBack_uri != null) {
+                        String licenseFile = MediaManager.get().upload(uploadFile_uri)
+                                .option("public_id", "user_registration/other_files/licensefile" + name)
+                                .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                    @Override
+                                    public void onStart(String requestId) {
+                                        // your code here
+                                        registrationBtn.setVisibility(View.GONE);
+                                        progressbar.setVisibility(View.VISIBLE);
 
-                    String frontId = MediaManager.get().upload(uploadBack_uri)
-                            .option("public_id", "user_registration/other_files/user_id_back" + name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
+                                    }
 
-                                }
+                                    @Override
+                                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                                        // example code starts here
+                                        Double progress = (double) bytes / totalBytes;
+                                        // post progress to app UI (e.g. progress bar, notification)
+                                        // example code ends here
+                                        progressbar.setVisibility(View.VISIBLE);
+                                        if (!networkConnection.isNetworkConnected(getApplicationContext())) {
+                                            progressbar.setVisibility(View.GONE);
+                                            registrationBtn.setVisibility(View.VISIBLE);
+                                            showMessage("Internet Connection Failed");
+                                        }
+                                    }
 
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
+                                    @Override
+                                    public void onSuccess(String requestId, Map resultData) {
+                                        // your code here
+
+                                        showMessage("Your Licenses File has been Uploaded Successfully");
+                                        Log.i("PassportUrl ", requestId);
                                         progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
+                                        license_photo_url = String.valueOf(resultData.get("url"));
                                     }
-                                }
 
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
+                                    @Override
+                                    public void onError(String requestId, ErrorInfo error) {
+                                        // your code here
+                                        showMessage("Error: " + error.toString());
 
-                                    showMessage("Id's Back View has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    id_back_url=String.valueOf(resultData.get("url"));
-                                }
+                                        Log.i("Error: ", error.toString());
 
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
-
-                                    Log.i("Error: ", error.toString());
-
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
-                }
-            }
-        }else if(requestCode==4){
-            uploadFile_uri = data.getData();
-            String name = mFirstNameEditxt.getText().toString()+rand;
-            if (name.equals("")) {
-                showMessage("Enter your firstname first");
-            } else {
-                if (uploadFile_uri != null) {
-
-                    String licenseFile = MediaManager.get().upload(Uri.parse(uploadFile_uri.toString()))
-                            .option("public_id", "user_registration/other_files/licensefile" + name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
-
-                                }
-
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
-                                        progressbar.setVisibility(View.GONE);
                                         registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
-                                    }
-                                }
-
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
-
-                                    showMessage("Your Licenses File has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    license_photo_url=String.valueOf(resultData.get("url"));
-                                }
-
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
-
-                                    Log.i("Error: ", error.toString());
-
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
-                }
-            }
-        }else if(requestCode==44){
-            uploadFile_uri = Uri.parse(cameraFilePath);
-            String name = mFirstNameEditxt.getText().toString()+rand;
-            if (name.equals("")) {
-                showMessage("Enter your firstname first");
-            } else {
-                if (uploadFile_uri != null) {
-
-                    String licenseFile = MediaManager.get().upload(uploadFile_uri)
-                            .option("public_id", "user_registration/other_files/licensefile" + name)
-                            .unsigned("xbiscrhh").callback(new UploadCallback() {
-                                @Override
-                                public void onStart(String requestId) {
-                                    // your code here
-                                    registrationBtn.setVisibility(View.GONE);
-                                    progressbar.setVisibility(View.VISIBLE);
-
-                                }
-
-                                @Override
-                                public void onProgress(String requestId, long bytes, long totalBytes) {
-                                    // example code starts here
-                                    Double progress = (double) bytes / totalBytes;
-                                    // post progress to app UI (e.g. progress bar, notification)
-                                    // example code ends here
-                                    progressbar.setVisibility(View.VISIBLE);
-                                    if(!networkConnection.isNetworkConnected(getApplicationContext())){
                                         progressbar.setVisibility(View.GONE);
-                                        registrationBtn.setVisibility(View.VISIBLE);
-                                        showMessage("Internet Connection Failed");
                                     }
-                                }
 
-                                @Override
-                                public void onSuccess(String requestId, Map resultData) {
-                                    // your code here
+                                    @Override
+                                    public void onReschedule(String requestId, ErrorInfo error) {
+                                        // your code here
+                                    }
+                                })
+                                .dispatch();
 
-                                    showMessage("Your Licenses File has been Uploaded Successfully");
-                                    Log.i("PassportUrl ", requestId);
-                                    progressbar.setVisibility(View.GONE);
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    license_photo_url=String.valueOf(resultData.get("url"));
-                                }
-
-                                @Override
-                                public void onError(String requestId, ErrorInfo error) {
-                                    // your code here
-                                    showMessage("Error: " + error.toString());
-
-                                    Log.i("Error: ", error.toString());
-
-                                    registrationBtn.setVisibility(View.VISIBLE);
-                                    progressbar.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onReschedule(String requestId, ErrorInfo error) {
-                                    // your code here
-                                }
-                            })
-                            .dispatch();
-
+                    }
                 }
             }
-        }
             return;
         }
         showMessage("No Internet connection discovered!");
@@ -1586,32 +1577,32 @@ private void choosePassport_camera() {
     }
 
 
-    private void sendData(){
+    private void sendData() {
         registrationBtn.setVisibility(View.GONE);
         progressbar.setVisibility(View.VISIBLE);
 
-        User dataPart=new User(mFirstNameEditxt.getText().toString(),mLastNameEditxt.getText().toString(),
-                mEmailEditxt.getText().toString(),mPasswordEditxt.getText().toString(),mPhoneNumEditxt.getText().toString(),
-                genderString,mAddressEditxt.getText().toString(),mBirthDayEditxt.getText().toString(),bvnString,
-                id_front_url,id_front_url
+        User dataPart = new User(mFirstNameEditxt.getText().toString(), mLastNameEditxt.getText().toString(),
+                mEmailEditxt.getText().toString(), mPasswordEditxt.getText().toString(), mPhoneNumEditxt.getText().toString(),
+                genderString, mAddressEditxt.getText().toString(), mBirthDayEditxt.getText().toString(), bvnString,
+                id_front_url, id_front_url
 
         );
-        RegisterObj regPostData=new RegisterObj(dataPart);
+        RegisterObj regPostData = new RegisterObj(dataPart);
 
         sentNetworkRequest(regPostData);
 
     }
 
-    private  void sentNetworkRequest(RegisterObj regPostData){
+    private void sentNetworkRequest(RegisterObj regPostData) {
         //To create retrofit instance
 
-        HashMap hashMap= new HashMap();
-        hashMap.put("Content-Type","application/json;charset=UTF-8");
+        HashMap hashMap = new HashMap();
+        hashMap.put("Content-Type", "application/json;charset=UTF-8");
 
         //get client and call object for request
         ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
-        Call<AgentDataHead> call=client.register(regPostData,hashMap);
+        Call<AgentDataHead> call = client.register(regPostData, hashMap);
 
         call.enqueue(new Callback<AgentDataHead>() {
             @Override
@@ -1619,16 +1610,16 @@ private void choosePassport_camera() {
                 try {
                     if (!response.isSuccessful()) {
 
-                        try{
-                            APIError apiError= ErrorUtils.parseError(response);
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
 
-                            showMessage("Invalid Entry: "+apiError.getErrors());
-                            Log.i("Invalid EntryK",apiError.getErrors().toString());
-                            Log.i("Invalid Entry",response.errorBody().toString());
+                            showMessage("Invalid Entry: " + apiError.getErrors());
+                            Log.i("Invalid EntryK", apiError.getErrors().toString());
+                            Log.i("Invalid Entry", response.errorBody().toString());
 
-                        }catch (Exception e){
-                            Log.i("InvalidEntry",e.getMessage());
-                            showMessage("Failed to Register"+e.getMessage());
+                        } catch (Exception e) {
+                            Log.i("InvalidEntry", e.getMessage());
+                            showMessage("Failed to Register" + e.getMessage());
                             registrationBtn.setVisibility(View.VISIBLE);
                             progressbar.setVisibility(View.GONE);
 
@@ -1654,7 +1645,7 @@ private void choosePassport_camera() {
                     } else {
                         showMessage("Error: " + response.body());
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     showMessage("Registration Error: " + e.getMessage());
                 }
 
@@ -1662,11 +1653,10 @@ private void choosePassport_camera() {
 
             @Override
             public void onFailure(Call<AgentDataHead> call, Throwable t) {
-                showMessage("Registration Failed "+t.getMessage());
-                Log.i("GEtError",t.getMessage());
+                showMessage("Registration Failed " + t.getMessage());
+                Log.i("GEtError", t.getMessage());
             }
         });
-
 
 
     }
@@ -1681,13 +1671,13 @@ private void choosePassport_camera() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
                 //Change birthdayEdittext's text and dismiss dialog.
-                if(year>calendar.get(Calendar.YEAR)){
+                if (year > calendar.get(Calendar.YEAR)) {
 
                     showMessage("Invalid Born Date");
-                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    Log.i("Calendar", year + " " + calendar.get(Calendar.YEAR));
                     return;
                 }
-                int monthofYear=monthOfYear+1;
+                int monthofYear = monthOfYear + 1;
                 birthdayString = dayOfMonth + "-" + monthofYear + "-" + year;
                 mBirthDayEditxt.setText(birthdayString);
                 datePickerDialog1.dismiss();
@@ -1704,16 +1694,16 @@ private void choosePassport_camera() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
-               if(year<calendar.get(Calendar.YEAR)){
-                   showMessage("Invalid Expire Date");
-                   return;
-               }else if(year==calendar.get(Calendar.YEAR)){
-                   if(calendar.get(Calendar.MONTH)>monthOfYear+1){
-                       showMessage("Invalid Expire Date");
-                       return;
-                   }
-               }
-                int monthofYear=monthOfYear+1;
+                if (year < calendar.get(Calendar.YEAR)) {
+                    showMessage("Invalid Expire Date");
+                    return;
+                } else if (year == calendar.get(Calendar.YEAR)) {
+                    if (calendar.get(Calendar.MONTH) > monthOfYear + 1) {
+                        showMessage("Invalid Expire Date");
+                        return;
+                    }
+                }
+                int monthofYear = monthOfYear + 1;
                 licenseDateString = dayOfMonth + "-" + monthofYear + "-" + year;
                 mExpDateLicenseEditxt.setText(licenseDateString);
                 datePickerDialog2.dismiss();
@@ -1725,7 +1715,6 @@ private void choosePassport_camera() {
     private void showMessage(String s) {
         Snackbar.make(layout_signUp, s, Snackbar.LENGTH_SHORT).show();
     }
-
 
 
 }

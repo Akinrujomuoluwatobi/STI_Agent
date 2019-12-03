@@ -184,6 +184,7 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             personal_detail_swiss.setGender(userPreferences.getSwissIGender());
                             personal_detail_swiss.setMarital_status(userPreferences.getSwissIMaritalStatus());
                             personal_detail_swiss.setPhone(userPreferences.getSwissIPhoneNum());
+                            personal_detail_swiss.setEmail(userPreferences.getSwissIAddEmailPersona());
                             personal_detail_swiss.setResident_address(userPreferences.getSwissIResAdrr());
                             personal_detail_swiss.setNext_of_kin(userPreferences.getSwissINextKin());
                             personal_detail_swiss.setNext_of_kin_address(userPreferences.getSwissINextKinAddr());
@@ -191,7 +192,8 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             personal_detail_swiss.setDate_of_birth(userPreferences.getSwissIDob());
                             personal_detail_swiss.setDisability(userPreferences.getSwissIDisable());
                             personal_detail_swiss.setBenefit_category(userPreferences.getSwissIBenefit());
-                           
+                            personal_detail_swiss.setPicture(userPreferences.getSwissIPersonal_image());
+
                             //Additional Insured List
                             AdditionInsured additionInsured=new AdditionInsured();
                             additionInsured.setFirst_name(userPreferences.getSwissIAddFirstName());
@@ -204,6 +206,7 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             additionInsured.setBenefit_category(userPreferences.getSwissIAddBenefitCat());
                             additionInsured.setMarital_status(userPreferences.getSwissIAddMaritalStatus());
                             additionInsured.setPicture("");
+                            additionInsured.setPrice(userPreferences.getInitSwissQuotePrice());
                             RealmList<AdditionInsured> additionInsuredList=new RealmList<>();
                             additionInsuredList.add(additionInsured);
 
@@ -239,7 +242,8 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             additionInsured.setDisability(userPreferences.getSwissIAddDisability());
                             additionInsured.setBenefit_category(userPreferences.getSwissIAddBenefitCat());
                             additionInsured.setMarital_status(userPreferences.getSwissIAddMaritalStatus());
-                            additionInsured.setPicture("");
+                            additionInsured.setPicture(userPreferences.getSwissIAddPicture());
+                            additionInsured.setPrice(userPreferences.getInitSwissQuotePrice());
 
                             RealmList<AdditionInsured>additionInsuredList=new RealmList<>();
                             additionInsuredList.add(additionInsured);
@@ -310,6 +314,7 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                     personal_detail_swiss.setGender(userPreferences.getSwissIGender());
                     personal_detail_swiss.setMarital_status(userPreferences.getSwissIMaritalStatus());
                     personal_detail_swiss.setPhone(userPreferences.getSwissIPhoneNum());
+                    personal_detail_swiss.setEmail(userPreferences.getSwissIAddEmailPersona());
                     personal_detail_swiss.setResident_address(userPreferences.getSwissIResAdrr());
                     personal_detail_swiss.setNext_of_kin(userPreferences.getSwissINextKin());
                     personal_detail_swiss.setNext_of_kin_address(userPreferences.getSwissINextKinAddr());
@@ -317,6 +322,7 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                     personal_detail_swiss.setDate_of_birth(userPreferences.getSwissIDob());
                     personal_detail_swiss.setDisability(userPreferences.getSwissIDisable());
                     personal_detail_swiss.setBenefit_category(userPreferences.getSwissIBenefit());
+                    personal_detail_swiss.setPicture(userPreferences.getSwissIPersonal_image());
 
                     //Additional Insured List
                     AdditionInsured additionInsured=new AdditionInsured();

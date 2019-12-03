@@ -1,7 +1,5 @@
 package com.example.sti_agent.Model.AllRisk;
 
-import com.example.sti_agent.Model.Marine.Personal_Detail_marine;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -13,7 +11,7 @@ public class AllriskPolicy extends RealmObject {
 
 
     String quote_price;
-    String  pin;
+    String pin;
     String payment_source;
     String agent_id;
     RealmList<Personal_Detail_allrisk> personal_detail_allrisks;

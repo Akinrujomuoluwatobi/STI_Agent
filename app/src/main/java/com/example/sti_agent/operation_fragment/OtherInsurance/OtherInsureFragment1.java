@@ -98,6 +98,8 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
     EditText mLastnameEditxtO1;
     @BindView(R.id.gender_spinner_o1)
     Spinner mGenderSpinnerO1;
+    @BindView(R.id.state_spinner)
+    Spinner state_spinner;
     @BindView(R.id.inputLayoutResAddr_o1)
     TextInputLayout mInputLayoutResAddrO1;
     @BindView(R.id.residents_addr_editxt_o1)
@@ -126,7 +128,7 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
     AVLoadingIndicatorView mProgressbar1O1;
     
 
-    String typeString,genderString,prifixString,cameraFilePath;
+    String typeString,genderString,prifixString,cameraFilePath, stateString;
     private int currentStep = 0;
 
     int PICK_IMAGE_PASSPORT = 1;
@@ -135,6 +137,7 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
 
     Uri personal_info_img_uri;
     String personal_img_url;
+    private UserPreferences userPreferences;
 
 
     public OtherInsureFragment1() {
@@ -177,12 +180,11 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
 
         mStepView.go(currentStep, true);
 
-
-
         init();
 
         mTypeSpinnerO1();
         mPrefixSpinnerO1();
+        stateSpinner();
         mGenderSpinnerO1();
         setViewActions();
 
@@ -190,7 +192,7 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
     }
 
     private  void init(){
-        UserPreferences userPreferences = new UserPreferences(getContext());
+        userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
 
@@ -380,6 +382,36 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
             public void onNothingSelected(AdapterView<?> parent) {
                 mPrefixSpinnerO1.getItemAtPosition(0);
 
+
+            }
+        });
+
+    }
+
+    private void stateSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(getContext(), R.array.state_array,
+                        android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        state_spinner.setAdapter(staticAdapter);
+
+        state_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String stateText = (String) parent.getItemAtPosition(position);
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                state_spinner.getItemAtPosition(0);
 
             }
         });
@@ -790,7 +822,6 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
         mProgressbar1O1.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
 
             //Temporal save and go to next Operation
 

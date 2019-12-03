@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -23,6 +24,8 @@ import com.example.sti_agent.Model.Errors.ErrorUtils;
 import com.example.sti_agent.Model.ServiceGenerator;
 import com.example.sti_agent.Model.Vehicle.BrandType.VehicleBrandType;
 import com.example.sti_agent.Model.Vehicle.BrandType.VehicleTypeData;
+import com.example.sti_agent.Model.Vehicle.Quote.PostVehicleData;
+import com.example.sti_agent.Model.Vehicle.Quote.QouteHead;
 import com.example.sti_agent.Model.Vehicle.VehicleBrand.VehicleData;
 import com.example.sti_agent.Model.Vehicle.VehicleBrand.Vehicles_Brand;
 import com.example.sti_agent.R;
@@ -72,13 +75,14 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     EditText motor_cycle_value;
     @BindView(R.id.vehicle_value)
     EditText vehicle_value;
+    @BindView(R.id.vehicletype_tag)
+    TextView vehicletype_tag;
 
     @BindView(R.id.qb_form_layout2)
     FrameLayout qb_form_layout2;
 
     //TextInput
-    @BindView(R.id.inputLayoutStartDate)
-    TextInputLayout inputLayoutStartDate;
+
     @BindView(R.id.inputLayoutYear)
     TextInputLayout inputLayoutYear;
     @BindView(R.id.inputLayoutRegNum)
@@ -93,14 +97,10 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     TextInputLayout inputLayoutVehicleValue;
 
     //Spinners
-    @BindView(R.id.poly_type_spinner)
-    Spinner poly_type_spinner;
-    @BindView(R.id.private_type_spinner)
-    Spinner private_type_spinner;
-    @BindView(R.id.commercial_type_spinner)
-    Spinner commercial_type_spinner;
-    @BindView(R.id.motor_cycle_type_spinner)
-    Spinner motor_cycle_type_spinner;
+    @BindView(R.id.private_comm_spinner)
+    Spinner private_comm_spinner;
+    @BindView(R.id.poly_select_type_spinner)
+    Spinner poly_select_type_spinner;
     @BindView(R.id.vehicle_make_spinner)
     Spinner vehicle_make_spinner;
     @BindView(R.id.vehicle_type_spinner)
@@ -110,16 +110,24 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     @BindView(R.id.prEnhance_type_spinner)
     Spinner prEnhance_type_spinner;
 
+    UserPreferences userPreferences;
+
     private int currentStep = 1;
 
+    String private_commString,polySelectTypeString,prEnhanceString;
+    String motorCycleTypeString,vehicleMakeString,vehicleTypeString,vehincleBodyString,startDateStrg;
     //The variables for VehincleData
     List<VehicleData> vehicleDataList;
     ArrayList<String> vehiclesMakerSpinnerList=new ArrayList<>();
     //The Variables for VehicleBrandType
     List<VehicleTypeData> vehicleBrandTypeList;
     ArrayList<String> vehiclesBrandSpinnerList=new ArrayList<>();
+    String value="";
 
     int vehicleId;
+    String quote_price;
+
+    ArrayList<String> covers=new ArrayList<>();
 
   //Button
     @BindView(R.id.v_next_btn1)
@@ -136,8 +144,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     @BindView(R.id.progressbar)
     AVLoadingIndicatorView progressbar;
 
-    String polyTypeString,privateTypeString,prEnhanceString,commerTypeString;
-    String motorCycleTypeString,vehicleMakeString,vehicleTypeString,vehincleBodyString,startDateStrg;
+    String polyTypeString,privateTypeString,commerTypeString;
     ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
     DatePickerDialog datePickerDialog1;
@@ -179,6 +186,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
         View view=inflater.inflate(R.layout.fragment_motor_insured2, container, false);
         ButterKnife.bind(this,view);
         //        stepView next registration step
+        userPreferences = new UserPreferences(getContext());
 
         inputLayoutMotorCyValue.setClickable(false);
 
@@ -186,16 +194,12 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
         init();
 
-        policytypeSpinner();
-       // polyTypeString = poly_type_spinner.getSelectedItem().toString();
-        privatetypeSpinner();
-       // privateTypeString = private_type_spinner.getSelectedItem().toString();
+        private_CommSpinner();
+
+        polySelectSpinner();
+        // privateTypeString = private_type_spinner.getSelectedItem().toString();
         pEnhancetypeSpinner();
-        //prEnhanceString = prEnhance_type_spinner.getSelectedItem().toString();
-        commercialtypeSpinner();
-        //commerTypeString = commercial_type_spinner.getSelectedItem().toString();
-        motoCycletypeSpinner();
-        //motorCycleTypeString = motor_cycle_type_spinner.getSelectedItem().toString();
+
         setViewActions();
 
         vehicleBodySpinner();
@@ -231,8 +235,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     }
 
-
-    private void policytypeSpinner() {
+    private void private_CommSpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
         ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
                 .createFromResource(getContext(), R.array.policy_type_array,
@@ -242,32 +245,41 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
         staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // Apply the adapter to the spinner
-        poly_type_spinner.setAdapter(staticAdapter);
+        private_comm_spinner.setAdapter(staticAdapter);
 
-        poly_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        private_comm_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String stringText = (String) parent.getItemAtPosition(position);
                 if(stringText.equals("Private")){
 
-                    poly_type_spinner.setVisibility(View.VISIBLE);
-                    poly_type_spinner.setClickable(true);
+                    private_comm_spinner.setVisibility(View.VISIBLE);
+                    private_comm_spinner.setClickable(true);
+                    //private_commString="private";
+
 
                     //De-Visualizing the corporate form
-                    commercial_type_spinner.setVisibility(View.GONE);
-                    commercial_type_spinner.setClickable(false);
-                    motor_cycle_type_spinner.setVisibility(View.GONE);
-                    motor_cycle_type_spinner.setClickable(false);
+
                     inputLayoutMotorCyValue.setVisibility(View.GONE);
                     inputLayoutMotorCyValue.setClickable(false);
 
 
                     //Visualizing the individual form
-                    inputLayoutStartDate.setVisibility(View.VISIBLE);
-                    inputLayoutStartDate.setClickable(true);
-                    private_type_spinner.setVisibility(View.VISIBLE);
-                    private_type_spinner.setClickable(true);
+                    start_date.setVisibility(View.VISIBLE);
+                    start_date.setClickable(true);
+                    poly_select_type_spinner.setVisibility(View.VISIBLE);
+                    poly_select_type_spinner.setClickable(true);
+                    vehicletype_tag.setVisibility(View.VISIBLE);
+
+                    covers.clear();
+                    covers.add("Select Covers");
+                    covers.add("3rd Party Only");
+                    covers.add("3rd Party Fire & Theft");
+                    covers.add("Enhanced 3rd Party");
+                    covers.add("Comprehensive");
+
+                    polySelectSpinner();
 
                     vehicle_make_spinner.setVisibility(View.VISIBLE);
                     vehicle_make_spinner.setClickable(true);
@@ -289,26 +301,32 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
                 }else if(stringText.equals("Commercial")){
 
-                    poly_type_spinner.setVisibility(View.VISIBLE);
-                    poly_type_spinner.setClickable(true);
+                    private_comm_spinner.setVisibility(View.VISIBLE);
+                    private_comm_spinner.setClickable(true);
+                    // private_commString="commercial";
 
-                    commercial_type_spinner.setVisibility(View.VISIBLE);
-                    commercial_type_spinner.setClickable(true);
+                    poly_select_type_spinner.setVisibility(View.VISIBLE);
+                    poly_select_type_spinner.setClickable(true);
+                    vehicletype_tag.setVisibility(View.VISIBLE);
+
+
+                    covers.clear();
+                    covers.add("Select Covers");
+                    covers.add("3rd Party Only");
+                    covers.add("Comprehensive");
+
+                    polySelectSpinner();
 
                     //De-Visualizing the corporate form
-                    private_type_spinner.setVisibility(View.GONE);
-                    private_type_spinner.setClickable(false);
                     prEnhance_type_spinner.setVisibility(View.GONE);
                     prEnhance_type_spinner.setClickable(false);
-                    motor_cycle_type_spinner.setVisibility(View.GONE);
-                    motor_cycle_type_spinner.setClickable(false);
                     inputLayoutMotorCyValue.setVisibility(View.GONE);
                     inputLayoutMotorCyValue.setClickable(false);
 
 
                     //Visualizing the individual form
-                    inputLayoutStartDate.setVisibility(View.VISIBLE);
-                    inputLayoutStartDate.setClickable(true);
+                    start_date.setVisibility(View.VISIBLE);
+                    start_date.setClickable(true);
                     vehicle_make_spinner.setVisibility(View.VISIBLE);
                     vehicle_make_spinner.setClickable(true);
                     vehicle_type_spinner.setVisibility(View.VISIBLE);
@@ -327,19 +345,26 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                     inputLayoutVehicleValue.setClickable(true);
 
                 }else if(stringText.equals("Motor Cycle")){
-                    poly_type_spinner.setVisibility(View.VISIBLE);
-                    poly_type_spinner.setClickable(true);
+                    private_comm_spinner.setVisibility(View.VISIBLE);
+                    private_comm_spinner.setClickable(true);
+                    //private_commString="motor_cycle";
+                    vehicleTypeString="motor_cycle";
 
-                    motor_cycle_type_spinner.setVisibility(View.VISIBLE);
-                    motor_cycle_type_spinner.setClickable(true);
+                    poly_select_type_spinner.setVisibility(View.VISIBLE);
+                    poly_select_type_spinner.setClickable(true);
+
+                    vehicletype_tag.setVisibility(View.GONE);
+
+                    covers.clear();
+                    covers.add("Select Covers");
+                    covers.add("3rd Party Only");
+                    covers.add("Comprehensive");
+
+                    polySelectSpinner();
 
                     //De-Visualizing the corporate form
-                    private_type_spinner.setVisibility(View.GONE);
-                    private_type_spinner.setClickable(false);
                     prEnhance_type_spinner.setVisibility(View.GONE);
                     prEnhance_type_spinner.setClickable(false);
-                    commercial_type_spinner.setVisibility(View.GONE);
-                    commercial_type_spinner.setClickable(false);
                     vehicle_make_spinner.setVisibility(View.GONE);
                     vehicle_make_spinner.setClickable(false);
                     vehicle_type_spinner.setVisibility(View.GONE);
@@ -353,8 +378,8 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
 
                     //Visualizing the individual form
-                    inputLayoutStartDate.setVisibility(View.VISIBLE);
-                    inputLayoutStartDate.setClickable(true);
+                    start_date.setVisibility(View.VISIBLE);
+                    start_date.setClickable(true);
                     inputLayoutYear.setVisibility(View.VISIBLE);
                     inputLayoutYear.setClickable(true);
                     inputLayoutRegNum.setVisibility(View.VISIBLE);
@@ -372,28 +397,26 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                poly_type_spinner.getItemAtPosition(0);
+                private_comm_spinner.getItemAtPosition(0);
                 //De-Visualizing the individual form
-                private_type_spinner.setVisibility(View.GONE);
-                private_type_spinner.setClickable(false);
+                vehicletype_tag.setVisibility(View.GONE);
+                poly_select_type_spinner.setVisibility(View.GONE);
+                poly_select_type_spinner.setClickable(false);
                 vehicle_body_type_spinner.setVisibility(View.GONE);
                 vehicle_body_type_spinner.setClickable(false);
-                motor_cycle_type_spinner.setVisibility(View.GONE);
-                motor_cycle_type_spinner.setClickable(false);
+                vehicle_make_spinner.setVisibility(View.GONE);
+                vehicle_make_spinner.setClickable(false);
+                vehicle_type_spinner.setVisibility(View.GONE);
+                vehicle_type_spinner.setClickable(false);
+
                 inputLayoutMotorCyValue.setVisibility(View.GONE);
                 inputLayoutMotorCyValue.setClickable(false);
-                commercial_type_spinner.setVisibility(View.GONE);
-                commercial_type_spinner.setClickable(false);
 
                 //Visualizing the individual form
-                inputLayoutStartDate.setVisibility(View.VISIBLE);
-                inputLayoutStartDate.setClickable(true);
-                poly_type_spinner.setVisibility(View.VISIBLE);
-                poly_type_spinner.setClickable(true);
-                vehicle_make_spinner.setVisibility(View.VISIBLE);
-                vehicle_make_spinner.setClickable(true);
-                vehicle_type_spinner.setVisibility(View.VISIBLE);
-                vehicle_type_spinner.setClickable(true);
+                start_date.setVisibility(View.VISIBLE);
+                start_date.setClickable(true);
+                private_comm_spinner.setVisibility(View.VISIBLE);
+                private_comm_spinner.setClickable(true);
                 inputLayoutYear.setVisibility(View.VISIBLE);
                 inputLayoutYear.setClickable(true);
                 inputLayoutRegNum.setVisibility(View.VISIBLE);
@@ -411,19 +434,15 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     }
 
-    private void privatetypeSpinner() {
+    private void polySelectSpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
-        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-                .createFromResource(getContext(), R.array.private_type_array,
-                        android.R.layout.simple_spinner_item);
+        poly_select_type_spinner
+                .setAdapter(new ArrayAdapter<String>(getContext(),
+                        android.R.layout.simple_spinner_dropdown_item,
+                        covers));
 
-        // Specify the layout to use when the list of choices appears
-        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the adapter to the spinner
-        private_type_spinner.setAdapter(staticAdapter);
-
-        private_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        poly_select_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
@@ -434,6 +453,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                 }else{
                     prEnhance_type_spinner.setVisibility(View.GONE);
                     prEnhance_type_spinner.setClickable(false);
+
                 }
 
 
@@ -441,7 +461,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                private_type_spinner.getItemAtPosition(0);
+                poly_select_type_spinner.getItemAtPosition(0);
             }
         });
 
@@ -473,66 +493,6 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 prEnhance_type_spinner.getItemAtPosition(0);
-            }
-        });
-
-    }
-
-
-    private void commercialtypeSpinner() {
-        // Create an ArrayAdapter using the string array and a default spinner
-        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-                .createFromResource(getContext(), R.array.commercial_type_array,
-                        android.R.layout.simple_spinner_item);
-
-        // Specify the layout to use when the list of choices appears
-        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Apply the adapter to the spinner
-        commercial_type_spinner.setAdapter(staticAdapter);
-
-        commercial_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                String commercialTypeString = (String) parent.getItemAtPosition(position);
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                commercial_type_spinner.getItemAtPosition(0);
-            }
-        });
-
-    }
-
-
-    private void motoCycletypeSpinner() {
-        // Create an ArrayAdapter using the string array and a default spinner
-        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-                .createFromResource(getContext(), R.array.motor_cycle_type_array,
-                        android.R.layout.simple_spinner_item);
-
-        // Specify the layout to use when the list of choices appears
-        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Apply the adapter to the spinner
-        motor_cycle_type_spinner.setAdapter(staticAdapter);
-
-        motor_cycle_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                String motorCycleTypeString = (String) parent.getItemAtPosition(position);
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                motor_cycle_type_spinner.getItemAtPosition(0);
             }
         });
 
@@ -617,11 +577,10 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     private void validateUserInputs() {
 
-
         boolean isValid = true;
 
-        if (start_date.getText().toString().isEmpty()&&inputLayoutStartDate.isClickable()) {
-            inputLayoutStartDate.setError("Your Start Date is required!");
+        if (start_date.getText().toString().isEmpty()&&start_date.isClickable()) {
+            showMessage("Your Start Date is required!");
 
             isValid = false;
         } else if (vehicle_year.getText().toString().isEmpty()&&inputLayoutYear.isClickable()) {
@@ -645,7 +604,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
             isValid = false;
         }else {
-            inputLayoutStartDate.setErrorEnabled(false);
+
             inputLayoutYear.setErrorEnabled(false);
             inputLayoutRegNum.setErrorEnabled(false);
             inputLayoutChasisNum.setErrorEnabled(false);
@@ -655,7 +614,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
         if (motor_cycle_value.getText().toString().isEmpty()&&inputLayoutMotorCyValue.isClickable()) {
             inputLayoutMotorCyValue.setError("Motor Cycle Value Number is required!");
-            String b=String.valueOf(motor_cycle_value.isClickable());
+            String b= String.valueOf(motor_cycle_value.isClickable());
 
             isValid = false;
         }else {
@@ -665,58 +624,51 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
         // Spinner Validations
         //policyType validation
-        polyTypeString = poly_type_spinner.getSelectedItem().toString();
-        if (polyTypeString.equals("Select Policy Type")&&poly_type_spinner.isClickable()) {
-            showMessage("Select Policy Type");
+        private_commString = private_comm_spinner.getSelectedItem().toString();
+        if (private_commString.equals("Select Policy Type")&&private_comm_spinner.isClickable()) {
+            showMessage("Select Policy Type*");
             isValid = false;
         }
         //Private Spinner
         prEnhanceString = prEnhance_type_spinner.getSelectedItem().toString();
-        if (prEnhanceString.equals("Select Enhanced 3rd Party")&&prEnhance_type_spinner.isClickable()) {
+        if (prEnhanceString.equals("Select Enhanced 3rd Party*") && prEnhance_type_spinner.isClickable()) {
             showMessage("Select your Enhance Party Category");
             isValid = false;
         }
 
         //Private Spinner
-        privateTypeString = private_type_spinner.getSelectedItem().toString();
-        if (privateTypeString.equals("Select Cover")&&private_type_spinner.isClickable()) {
-            showMessage("Select your Private Category");
+        polySelectTypeString = poly_select_type_spinner.getSelectedItem().toString();
+
+        if (polySelectTypeString.equals("Select Cover*") && poly_select_type_spinner.isClickable()) {
+            showMessage("Select your Covers");
             isValid = false;
         }
 
-        //Commercial Spinner
-        commerTypeString = commercial_type_spinner.getSelectedItem().toString();
-        if (commerTypeString.equals("Select Cover")&&commercial_type_spinner.isClickable()) {
-            showMessage("Select your Commercial Category");
-            isValid = false;
-        }
 
-        //Motor Cycle Spinner
-        motorCycleTypeString = motor_cycle_type_spinner.getSelectedItem().toString();
-        if (motorCycleTypeString.equals("Select Motor Cycle Policy")&&motor_cycle_type_spinner.isClickable()) {
-            showMessage("Select your Motor Cycle Category");
-            isValid = false;
-        }
+        private_commString = private_comm_spinner.getSelectedItem().toString();
+        if (!private_commString.equals("Motor Cycle")) {
+            //VehincleMaker Spinner
+            vehicleMakeString = vehicle_make_spinner.getSelectedItem().toString();
+            if (vehicleMakeString.equals("Select Vehicle Maker*") && vehicle_make_spinner.isClickable()) {
+                showMessage("Select your Motor Vehicle Maker");
+                isValid = false;
+            }
 
-        //VehincleMaker Spinner
-        vehicleMakeString = vehicle_make_spinner.getSelectedItem().toString();
-        if (vehicleMakeString.equals("Select Vehicle Maker")&&vehicle_make_spinner.isClickable()) {
-            showMessage("Select your Motor Vehicle Maker");
-            isValid = false;
-        }
+            //VehicleType Spinner
 
-        //VehicleType Spinner
-        vehicleTypeString = vehicle_type_spinner.getSelectedItem().toString();
-        if (vehicleTypeString.equals("Select Brand")&&vehicle_type_spinner.isClickable()) {
-            showMessage("Select your Motor Brand");
-            isValid = false;
-        }
+            vehicleTypeString = vehicle_type_spinner.getSelectedItem().toString();
+            if (vehicleTypeString.equals("Select Brand*") && vehicle_type_spinner.isClickable()) {
+                showMessage("Select your Motor Brand");
+                isValid = false;
+            }
 
-        //VehicleBody Spinner
-        vehincleBodyString = vehicle_body_type_spinner.getSelectedItem().toString();
-        if (vehincleBodyString.equals("Select Body Type")&&vehicle_body_type_spinner.isClickable()) {
-            showMessage("Select your Vehicle Body Type");
-            isValid = false;
+
+            //VehicleBody Spinner
+            vehincleBodyString = vehicle_body_type_spinner.getSelectedItem().toString();
+            if (vehincleBodyString.equals("Select Body Type*") && vehicle_body_type_spinner.isClickable()) {
+                showMessage("Select your Vehicle Body Type");
+                isValid = false;
+            }
         }
 
 
@@ -728,13 +680,176 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     }
 
+    private void sendVehicleData(PostVehicleData postVehicleData){
+
+
+        //get client and call object for request
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+
+
+        Call<QouteHead> call=client.getVehicleQuote("Token "+userPreferences.getUserToken(),postVehicleData);
+
+        call.enqueue(new Callback<QouteHead>() {
+            @Override
+            public void onResponse(Call<QouteHead> call, Response<QouteHead> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+
+                if(response.code()==400){
+                    showMessage("Check your internet connection");
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==429){
+                    showMessage("Too many requests on database");
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==500){
+                    showMessage("Server Error");
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==401){
+                    showMessage("Unauthorized access, please try login again");
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                }
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try{
+                            APIError apiError= ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: "+apiError.getErrors());
+                            Log.i("Invalid EntryK",apiError.getErrors().toString());
+                            Log.i("Invalid Entry",response.errorBody().toString());
+
+                        }catch (Exception e){
+                            Log.i("InvalidEntry",e.getMessage());
+                            Log.i("ResponseError",response.errorBody().string());
+                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                            btn_layout2.setVisibility(View.VISIBLE);
+                            progressbar.setVisibility(View.GONE);
+
+                        }
+                        btn_layout2.setVisibility(View.VISIBLE);
+                        progressbar.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    quote_price=response.body().getData().getPrice();
+
+                    double roundOff = Math.round(Double.valueOf(quote_price)*100)/100.00;
+
+
+                    Log.i("quote_price",quote_price);
+                    showMessage("Successfully Fetched Quote");
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+
+                    userPreferences.setInitQuotePrice(String.valueOf(roundOff));
+                    if (!private_commString.equals("motor_cycle")) {
+                        // Fragment quoteBuyFragment3 = new MotorInsureFragment3();
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment3.newInstance(userPreferences.getMotorVehicleMake(), String.valueOf(roundOff)), MotorInsureFragment3.class.getSimpleName());
+                        ft.commit();
+                    } else {
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment3.newInstance("Motor Cycle ", String.valueOf(roundOff)), MotorInsureFragment3.class.getSimpleName());
+                        ft.commit();
+                    }
+                }catch (Exception e){
+                    Log.i("policyResponse", e.getMessage());
+                    btn_layout2.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                }
+
+            }
+            @Override
+            public void onFailure(Call<QouteHead> call, Throwable t) {
+                showMessage("Submission Failed "+t.getMessage());
+                Log.i("GEtError",t.getMessage());
+                btn_layout2.setVisibility(View.VISIBLE);
+                progressbar.setVisibility(View.GONE);
+            }
+        });
+
+    }
+
     private void initFragment() {
         btn_layout2.setVisibility(View.GONE);
         progressbar.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
 
+            switch (private_commString) {
+                case "Private":
+                    private_commString = "private";
+                    value=vehicle_value.getText().toString();
+                    break;
+                case "Commercial":
+                    private_commString = "commercial";
+                    value=vehicle_value.getText().toString();
+                    break;
+                case "Motor Cycle":
+                    private_commString = "motor_cycle";
+                    vehicleTypeString="motor_cycle";
+                    userPreferences.setMotorVehicleMake("Motor Cycle");
+                    userPreferences.setMotorVehicleBody(" ");
+                    value=motor_cycle_value.getText().toString();
+
+                    break;
+
+            }
+
+
+
+            if(poly_select_type_spinner.isClickable()) {
+                switch (polySelectTypeString) {
+                    case "3rd Party Only":
+                        polySelectTypeString = "third_party_only";
+                        prEnhanceString = "third_party_only";
+                        break;
+                    case "3rd Party Fire & Theft":
+                        polySelectTypeString = "third_party_fire_theft";
+                        prEnhanceString = "third_party_fire_theft";
+                        break;
+                    case "Comprehensive":
+                        polySelectTypeString = "comprehensive";
+                        prEnhanceString = "comprehensive";
+                        break;
+
+                    case "Enhanced 3rd Party":
+                        polySelectTypeString = "enhanced_third_party";
+                        break;
+                }
+
+                if(prEnhance_type_spinner.isClickable()){
+                    switch (prEnhanceString) {
+                        case "Unique":
+                            polySelectTypeString = "third_party_unique";
+                            prEnhanceString="Third_Party";
+                            break;
+                        case "Luxury":
+                            polySelectTypeString = "third_party_luxury";
+                            prEnhanceString="Third_Party";
+                            break;
+                        case "Prestige":
+                            polySelectTypeString = "third_party_prestige";
+                            prEnhanceString="Third_Party";
+                            break;
+                    }
+                }
+
+                Log.i("Testing",private_commString+":"+polySelectTypeString+":"+prEnhanceString+":"+vehicleTypeString);
+
+                PostVehicleData postVehicleData = new PostVehicleData(value, private_commString,
+                        polySelectTypeString, prEnhanceString, vehicleTypeString);
+
+                sendVehicleData(postVehicleData);
+
+            }
             //Temporal save and go to next Operation
 
             userPreferences.setMotorStartDate(start_date.getText().toString());

@@ -14,7 +14,7 @@ public class Personal_Detail_swiss extends RealmObject {
     String resident_address;
     String marital_status;
     String date_of_birth;
-
+    String picture;
     String next_of_kin;
     String next_of_kin_phone;
     String next_of_kin_address;
@@ -28,7 +28,13 @@ public class Personal_Detail_swiss extends RealmObject {
 
     }
 
+    public String getPicture() {
+        return picture;
+    }
 
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 
     public String getFirst_name() {
         return first_name;

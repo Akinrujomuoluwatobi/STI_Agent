@@ -1,14 +1,8 @@
 package com.example.sti_agent.operation_fragment.Swiss;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -34,10 +28,10 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.sti_agent.BuildConfig;
 import com.example.sti_agent.NetworkConnection;
+import com.example.sti_agent.PermissionCheckClass;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
 import com.google.android.material.snackbar.Snackbar;
-
 import com.google.android.material.textfield.TextInputLayout;
 import com.shuhart.stepview.StepView;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -49,14 +43,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class SwissFragment1 extends Fragment implements View.OnClickListener{
+public class SwissFragment1 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -117,24 +109,31 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
     TextInputLayout mInputLayoutDisabilityS1;
     @BindView(R.id.disabilty_editxt_s1)
     EditText mDisabiltyEditxtS1;
+
+    @BindView(R.id.inputLayoutEmail_s1)
+    TextInputLayout mTextInputLayoutEmailS1;
+    @BindView(R.id.email_editxt_s1)
+    EditText mEmailEditTxtS;
     @BindView(R.id.upload_passport_btn_s1)
     Button mUploadPassportBtnS1;
     @BindView(R.id.next_btn1_s1)
     Button mNextBtn1S1;
     @BindView(R.id.progressbar1_s1)
     AVLoadingIndicatorView mProgressbar1S1;
-   
 
-    String maritalString,genderString,prifixString,benefitString,DobString,cameraFilePath;
+
+    String maritalString, genderString, prifixString, benefitString, DobString, cameraFilePath;
     DatePickerDialog datePickerDialog1;
     private int currentStep = 0;
 
     int PICK_IMAGE_PASSPORT = 1;
     int CAM_IMAGE_PASSPORT = 2;
-    NetworkConnection networkConnection=new NetworkConnection();
+    NetworkConnection networkConnection = new NetworkConnection();
 
     Uri personal_info_img_uri;
     String personal_img_url;
+
+    PermissionCheckClass mPermissionCheckClass;
 
 
     public SwissFragment1() {
@@ -172,12 +171,12 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_swiss1, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_swiss1, container, false);
+        ButterKnife.bind(this, view);
 
         mStepView.go(currentStep, true);
 
-
+        mPermissionCheckClass = new PermissionCheckClass(getActivity());
 
         init();
 
@@ -188,17 +187,15 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
         setViewActions();
         showDatePicker();
 
-        return  view;
+        return view;
     }
 
 
-
-    private  void init(){
+    private void init() {
         UserPreferences userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
 
-        
 
         mFirstnameEditxtS1.setText(userPreferences.getSwissIFirstName());
 
@@ -209,13 +206,14 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
         mNextKinEditxtAddrS1.setText(userPreferences.getSwissINextKinAddr());
         mPhoneNextkinEditxtS1.setText(userPreferences.getSwissINextKinPhoneNum());
         mPhoneNoEditxtS1.setText(userPreferences.getSwissIPhoneNum());
+        mEmailEditTxtS.setText(userPreferences.getSwissIAddEmailPersona());
         mDobEditxtS.setText(userPreferences.getSwissIDob());
 
         mDisabiltyEditxtS1.setText(userPreferences.getSwissIDisable());
 
     }
 
-    private void benfitSpinner(){
+    private void benfitSpinner() {
 
         // Create an ArrayAdapter using the string array and a default spinner
         ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
@@ -311,6 +309,7 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
         });
 
     }
+
     private void genderSpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
         ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
@@ -362,8 +361,13 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
                     switch (option) {
                         case 0:
                             // direct entry
-                            chooseIdImage_camera();
-                            dialog.dismiss();
+                            if (!mPermissionCheckClass.checkPermission()){
+                                mPermissionCheckClass.requestPermission();
+                            }else{
+                                chooseIdImage_camera();
+                                dialog.dismiss();
+                            }
+
                             break;
 
                         case 1: // export
@@ -382,6 +386,7 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
 
                 break;
             case R.id.dob_editxt_s:
+                showDatePicker();
                 datePickerDialog1.show();
                 break;
 
@@ -418,7 +423,6 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
     }
 
 
-
     private void chooseIdImage_camera() {
 
         try {
@@ -427,11 +431,10 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
             startActivityForResult(intent, CAM_IMAGE_PASSPORT);
         } catch (IOException ex) {
             ex.printStackTrace();
-            showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            showMessage("Invalid Entry: "+ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
     }
-
 
 
     @Override
@@ -445,16 +448,16 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
 
         showMessage("Uploading...");
         if (networkConnection.isNetworkConnected(getContext())) {
-            Random random=new Random();
-            String rand= String.valueOf(random.nextInt());
+            Random random = new Random();
+            String rand = String.valueOf(random.nextInt());
             if (requestCode == 1) {
                 personal_info_img_uri = data.getData();
 
                 try {
                     if (personal_info_img_uri != null) {
-                        String name = mFirstnameEditxtS1.getText().toString()+rand;
+                        String name = mFirstnameEditxtS1.getText().toString() + rand;
                         if (name.equals("")) {
-                            showMessage("Enter your your first name first");
+                            showMessage("Enter your first name first");
 
                         } else {
 
@@ -519,12 +522,12 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
 
                 }
 
-            }else if (requestCode == 2) {
+            } else if (requestCode == 2) {
                 personal_info_img_uri = Uri.parse(cameraFilePath);
 
                 try {
                     if (personal_info_img_uri != null) {
-                        String name = mFirstnameEditxtS1.getText().toString()+rand;
+                        String name = mFirstnameEditxtS1.getText().toString() + rand;
                         if (name.equals("")) {
                             showMessage("Enter your your first name first");
 
@@ -601,110 +604,118 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
 
         boolean isValid = true;
 
-            if (mFirstnameEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutFirstNameS1.setError("Your FirstName is required!");
-                isValid = false;
-            } else if (mLastnameEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutLastNameS1.setError("Your LastName is required!");
-                isValid = false;
-            } else{
-                mInputLayoutFirstNameS1.setErrorEnabled(false);
-                mInputLayoutLastNameS1.setErrorEnabled(false);
+        if (mFirstnameEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutFirstNameS1.setError("Your FirstName is required!");
+            isValid = false;
+        } else if (mLastnameEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutLastNameS1.setError("Your LastName is required!");
+            isValid = false;
+        } else {
+            mInputLayoutFirstNameS1.setErrorEnabled(false);
+            mInputLayoutLastNameS1.setErrorEnabled(false);
 
-            }
+        }
 
-            
-            if (mPhoneNoEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutPhoneS1.setError("Phone number is required");
-                isValid = false;
-            } else if (mPhoneNoEditxtS1.getText().toString().trim().length() < 11 ) {
-                mInputLayoutPhoneS1.setError("Your Phone number must be 11 in length");
-                isValid = false;
-            } else {
-                mInputLayoutPhoneS1.setErrorEnabled(false);
-            }
 
-            if (mResidentsAddrEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutResAddrS1.setError("Resident Address is required");
-                isValid = false;
-            } else {
-                mInputLayoutResAddrS1.setErrorEnabled(false);
-            }
+        if (mPhoneNoEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutPhoneS1.setError("Phone number is required");
+            isValid = false;
+        } else if (mPhoneNoEditxtS1.getText().toString().trim().length() < 11) {
+            mInputLayoutPhoneS1.setError("Your Phone number must be 11 in length");
+            isValid = false;
+        } else {
+            mInputLayoutPhoneS1.setErrorEnabled(false);
+        }
 
-            if (mNextKinEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutNextKinS1.setError("Next of Kin Name is required");
-                isValid = false;
-            } else {
-                mInputLayoutNextKinS1.setErrorEnabled(false);
-            }
+        if (mEmailEditTxtS.getText().toString().isEmpty()) {
+            mTextInputLayoutEmailS1.setError("Email Address is required");
+            isValid = false;
+        } /*else if (mEmailEditTxtS.getText().toString().trim().length() < 11) {
+            mInputLayoutPhoneS1.setError("Your Phone number must be 11 in length");
+            isValid = false;
+        }*/ else {
+            mTextInputLayoutEmailS1.setErrorEnabled(false);
+        }
 
-            if (mNextKinEditxtAddrS1.getText().toString().isEmpty()) {
-                mInputLayoutNextKinAddrS1.setError("Next of Kin Address is required");
-                isValid = false;
-            } else {
-                mInputLayoutNextKinAddrS1.setErrorEnabled(false);
-            }
-            if (mPhoneNextkinEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutPhoneNextKinS1.setError("Next of Kin Phone number is required");
-                isValid = false;
-            } else if (mPhoneNextkinEditxtS1.getText().toString().trim().length() < 11 ) {
-                mInputLayoutPhoneNextKinS1.setError("Next of Kin Phone number must be 11 in length");
-                isValid = false;
-            } else {
-                mInputLayoutPhoneNextKinS1.setErrorEnabled(false);
-            }
+        if (mResidentsAddrEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutResAddrS1.setError("Resident Address is required");
+            isValid = false;
+        } else {
+            mInputLayoutResAddrS1.setErrorEnabled(false);
+        }
 
-            if (mDobEditxtS.getText().toString().isEmpty()) {
-                mInputLayoutDateofBirthS1.setError("Date of Birth is required");
-                isValid = false;
-            } else {
-                mInputLayoutDateofBirthS1.setErrorEnabled(false);
-            }
-            if (mDisabiltyEditxtS1.getText().toString().isEmpty()) {
-                mInputLayoutDisabilityS1.setError("If No, Enter No");
-                isValid = false;
-            } else {
-                mInputLayoutDisabilityS1.setErrorEnabled(false);
-            }
+        if (mNextKinEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutNextKinS1.setError("Next of Kin Name is required");
+            isValid = false;
+        } else {
+            mInputLayoutNextKinS1.setErrorEnabled(false);
+        }
 
-            if (personal_img_url==null) {
-                showMessage("Please upload an image: passport,company license..etc");
-                isValid = false;
-            }
+        if (mNextKinEditxtAddrS1.getText().toString().isEmpty()) {
+            mInputLayoutNextKinAddrS1.setError("Next of Kin Address is required");
+            isValid = false;
+        } else {
+            mInputLayoutNextKinAddrS1.setErrorEnabled(false);
+        }
+        if (mPhoneNextkinEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutPhoneNextKinS1.setError("Next of Kin Phone number is required");
+            isValid = false;
+        } else if (mPhoneNextkinEditxtS1.getText().toString().trim().length() < 11) {
+            mInputLayoutPhoneNextKinS1.setError("Next of Kin Phone number must be 11 in length");
+            isValid = false;
+        } else {
+            mInputLayoutPhoneNextKinS1.setErrorEnabled(false);
+        }
 
-            //Type Spinner
-            maritalString = mMaritalSpinnerS1.getSelectedItem().toString();
-            if (maritalString.equals("Select Marital Status")) {
+        if (mDobEditxtS.getText().toString().isEmpty()) {
+            mInputLayoutDateofBirthS1.setError("Date of Birth is required");
+            isValid = false;
+        } else {
+            mInputLayoutDateofBirthS1.setErrorEnabled(false);
+        }
+        if (mDisabiltyEditxtS1.getText().toString().isEmpty()) {
+            mInputLayoutDisabilityS1.setError("If No, Enter No");
+            isValid = false;
+        } else {
+            mInputLayoutDisabilityS1.setErrorEnabled(false);
+        }
 
-                showMessage("Select Marital Status");
-                isValid = false;
-            }
-            //Prefix Spinner
-            prifixString = mPrefixSpinnerS.getSelectedItem().toString();
-            if (prifixString.equals("Select Prefix")) {
-                showMessage("Select your Prefix e.g Mr.");
-                isValid = false;
-            }
+        if (personal_img_url == null) {
+            showMessage("Please upload an image: passport,company license..etc");
+            isValid = false;
+        }
 
-            genderString = mGenderSpinnerS1.getSelectedItem().toString();
-            if (genderString.equals("Gender")) {
-                showMessage("Don't forget to Select Gender");
-                isValid = false;
-            }
+        //Type Spinner
+        maritalString = mMaritalSpinnerS1.getSelectedItem().toString();
+        if (maritalString.equals("Select Marital Status")) {
 
-            benefitString = mBenefitSpinnerS.getSelectedItem().toString();
-            if (benefitString.equals("Select Benefit Category")) {
-                showMessage("Don't forget to Select Benefit Category");
-                isValid = false;
-            }
+            showMessage("Select Marital Status");
+            isValid = false;
+        }
+        //Prefix Spinner
+        prifixString = mPrefixSpinnerS.getSelectedItem().toString();
+        if (prifixString.equals("Select Prefix")) {
+            showMessage("Select your Prefix e.g Mr.");
+            isValid = false;
+        }
 
-            if (isValid) {
+        genderString = mGenderSpinnerS1.getSelectedItem().toString();
+        if (genderString.equals("Gender")) {
+            showMessage("Don't forget to Select Gender");
+            isValid = false;
+        }
+
+        benefitString = mBenefitSpinnerS.getSelectedItem().toString();
+        if (benefitString.equals("Select Benefit Category")) {
+            showMessage("Don't forget to Select Benefit Category");
+            isValid = false;
+        }
+
+        if (isValid) {
 //            send inputs to next next page
 //            Goto to the next Registration step
-                initFragment();
-            }
-
-
+            initFragment();
+        }
 
 
     }
@@ -729,6 +740,7 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
             userPreferences.setSwissIDob(mDobEditxtS.getText().toString());
             userPreferences.setSwissIDisable(mDisabiltyEditxtS1.getText().toString());
             userPreferences.setSwissIPhoneNum(mPhoneNoEditxtS1.getText().toString());
+            userPreferences.setSwissIAddEmailPersona(mEmailEditTxtS.getText().toString());
             userPreferences.setSwissIPersonal_image(personal_img_url);
 
             if (currentStep < mStepView.getStepCount() - 1) {
@@ -743,8 +755,8 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
             }
 
 
-        }catch (Exception e){
-            Log.i("Form Error",e.getMessage());
+        } catch (Exception e) {
+            Log.i("Form Error", e.getMessage());
             mProgressbar1S1.setVisibility(View.GONE);
             mNextBtn1S1.setVisibility(View.VISIBLE);
             showMessage("Error: " + e.getMessage());
@@ -768,21 +780,19 @@ public class SwissFragment1 extends Fragment implements View.OnClickListener{
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
                 //Change birthdayEdittext's text and dismiss dialog.
-                if(year>calendar.get(Calendar.YEAR)){
+                if (year > calendar.get(Calendar.YEAR)) {
 
                     showMessage("Invalid Born Date");
-                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    Log.i("Calendar", year + " " + calendar.get(Calendar.YEAR));
                     return;
                 }
-                int monthofYear=monthOfYear+1;
-                DobString = dayOfMonth + "-" + monthofYear + "-" + year;
+                int monthofYear = monthOfYear + 1;
+                DobString = year+ "-" + monthofYear + "-" + dayOfMonth;
                 mDobEditxtS.setText(DobString);
                 datePickerDialog1.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
     }
-
-
 
 
 }

@@ -115,7 +115,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Date of Birth"
+                            android:hint="Date of Birth(yyyy-mm-dd)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="date"
                             android:padding="@dimen/size_ten"

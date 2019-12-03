@@ -1,6 +1,7 @@
 package com.example.sti_agent.operation_fragment.AllRisk;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -8,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sti_agent.MainActivity;
 import com.example.sti_agent.Model.AllRisk.AllriskPolicy;
 import com.example.sti_agent.Model.AllRisk.ItemDetail;
 import com.example.sti_agent.Model.AllRisk.Personal_Detail_allrisk;
@@ -29,12 +32,16 @@ import com.google.android.material.snackbar.Snackbar;
 import com.shuhart.stepview.StepView;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-class AllriskFragment3 extends Fragment implements View.OnClickListener{
+public class AllriskFragment3 extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String SELECTED_ITEM = "seleted_item";
@@ -74,7 +81,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
 
     AllriskPolicy id=new AllriskPolicy();
     String primaryKey=id.getId();
-
+    private UserPreferences userPreferences;
 
 
     public AllriskFragment3() {
@@ -105,12 +112,12 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             selectedItem = getArguments().getString(SELECTED_ITEM);
-            int oldquote=userPreferences.getTempAllRiskQuotePrice();
+            double oldquote= Double.parseDouble(userPreferences.getTempAllRiskQuotePrice());
             p_amount=getArguments().getString(PREMIUM_AMOUNT);
 
-            int newquote=Integer.parseInt(getArguments().getString(PREMIUM_AMOUNT));
-            int total_quote=oldquote+newquote;
-            userPreferences.setTempAllRiskQuotePrice(total_quote);
+            double newquote=Double.parseDouble(getArguments().getString(PREMIUM_AMOUNT));
+            double total_quote=oldquote+newquote;
+            userPreferences.setTempAllRiskQuotePrice(String.valueOf(total_quote));
             Log.i("PrimaryVariable",primaryKey);
 
 
@@ -127,7 +134,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
         mStepView.go(currentStep, true);
 
         realm=Realm.getDefaultInstance();
-        UserPreferences userPreferences=new UserPreferences(getContext());
+        userPreferences=new UserPreferences(getContext());
 
         mSelectedItemTxtA3.setText(selectedItem);
         if(p_amount==null){
@@ -135,13 +142,34 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
             String format = p_amount + ".00";
             mAmountA3.setText(format);
         }else {
-            String format = p_amount + ".00";
-            mAmountA3.setText(format);
+            //String format = p_amount ;
+
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en", "US"));
+            nf.setMaximumFractionDigits(2);
+            DecimalFormat df = (DecimalFormat) nf;
+            String v_price = "₦" + df.format(Double.valueOf(p_amount));
+            mAmountA3.setText(v_price);
         }
 
-
+        //Toast.makeText(getActivity(), "Click the Add Button, to add more Item", Toast.LENGTH_LONG).show();
 
         setViewActions();
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i("backPress_KeyCode", "keyCode: " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.i("backPress", "onKey Back listener is working!!!");
+                    userPreferences.setTempAllRiskQuotePrice("0.0");
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return  view;
     }
@@ -180,8 +208,6 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.fabAddItem_a3:
-                UserPreferences userPreferences=new UserPreferences(getContext());
-
 
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
@@ -220,7 +246,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
 
                                     AllriskPolicy allriskPolicy=realm.createObject(AllriskPolicy.class,primaryKey);
                                     allriskPolicy.setAgent_id("1");
-                                    allriskPolicy.setQuote_price(String.valueOf(userPreferences.getTempAllRiskQuotePrice()));
+                                    allriskPolicy.setQuote_price(userPreferences.getTempAllRiskQuotePrice());
                                     allriskPolicy.setPayment_source("paystack");
                                     allriskPolicy.setPin("11234");
 
@@ -250,7 +276,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
 
                             AllriskPolicy allriskPolicy=realm.createObject(AllriskPolicy.class,primaryKey);
                             allriskPolicy.setAgent_id("1");
-                            allriskPolicy.setQuote_price(String.valueOf(userPreferences.getTempAllRiskQuotePrice()));
+                            allriskPolicy.setQuote_price(userPreferences.getTempAllRiskQuotePrice());
                             allriskPolicy.setPayment_source("paystack");
                             allriskPolicy.setPin("11234");
 
@@ -284,7 +310,6 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
 
     private void mSummary() {
 
-        UserPreferences userPreferences=new UserPreferences(getContext());
         mBtnLayout3A3.setVisibility(View.GONE);
         mProgressbar.setVisibility(View.VISIBLE);
 
@@ -297,6 +322,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
         personal_detail_allrisk.setEmail(userPreferences.getAllRiskIEmail());
         personal_detail_allrisk.setGender(userPreferences.getAllRiskIGender());
         personal_detail_allrisk.setPhone(userPreferences.getAllRiskIPhoneNum());
+        personal_detail_allrisk.setState(userPreferences.getAllRiskIState());
         personal_detail_allrisk.setResident_address(userPreferences.getAllRiskIResAdrr());
         personal_detail_allrisk.setNext_of_kin(userPreferences.getAllRiskINextKin());
         personal_detail_allrisk.setPolicy_type(userPreferences.getAllRiskPtype());
@@ -305,12 +331,16 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
         personal_detail_allrisk.setTin_num(userPreferences.getAllRiskITinNumber());
         personal_detail_allrisk.setOffice_address(userPreferences.getAllRiskIOff_addr());
         personal_detail_allrisk.setContact_person(userPreferences.getAllRiskIContPerson());
+        personal_detail_allrisk.setPicture(userPreferences.getAllRiskPersonalImage());
         //Item List
         ItemDetail itemDetail=new ItemDetail();
         itemDetail.setStartDate(userPreferences.getAllRiskStartDate());
         itemDetail.setItem(userPreferences.getAllRiskItemType());
         itemDetail.setSerial(userPreferences.getAllRiskSerialNo());
         itemDetail.setValue(userPreferences.getAllRiskItemValue());
+        itemDetail.setReceipt(userPreferences.getAllRiskItemReceipt());
+        itemDetail.setDesc_item(userPreferences.getAllRiskItemDesc());
+        itemDetail.setImei(userPreferences.getAllRiskItemImei());
 
         RealmList<ItemDetail>itemDetailList=new RealmList<>();
         itemDetailList.add(itemDetail);
@@ -327,7 +357,7 @@ class AllriskFragment3 extends Fragment implements View.OnClickListener{
 
                 AllriskPolicy allriskPolicy=realm.createObject(AllriskPolicy.class,primaryKey);
                 allriskPolicy.setAgent_id("1");
-                allriskPolicy.setQuote_price(String.valueOf(userPreferences.getTempAllRiskQuotePrice()));
+                allriskPolicy.setQuote_price(userPreferences.getTempAllRiskQuotePrice());
                 allriskPolicy.setPayment_source("paystack");
                 allriskPolicy.setPin("11234");
 

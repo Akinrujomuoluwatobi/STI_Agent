@@ -2,12 +2,16 @@ package com.example.sti_agent.operation_fragment.AllRisk;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,26 +25,48 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
+import com.example.sti_agent.BuildConfig;
+import com.example.sti_agent.Import.MotorInsureImportFragment1;
+import com.example.sti_agent.Model.AllRisk.QouteHeadAllrisk;
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.ServiceGenerator;
+import com.example.sti_agent.NetworkConnection;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
 import com.example.sti_agent.operation_fragment.MotorInsurance.MotorInsureFragment1;
 import com.example.sti_agent.operation_fragment.MotorInsurance.MotorInsureFragment3;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.shuhart.stepview.StepView;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class AllriskFragment2 extends Fragment implements View.OnClickListener{
@@ -56,25 +82,33 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
     @BindView(R.id.qb_form_layout2)
     FrameLayout mQbFormLayout2;
     @BindView(R.id.step_view)
-    com.shuhart.stepview.StepView mStepView;
+    StepView mStepView;
     @BindView(R.id.item_type_spinner_a2)
     Spinner mItemTypeSpinnerA2;
     @BindView(R.id.inputLayoutItemDescriptn_a2)
     TextInputLayout mInputLayoutItemDescriptnA2;
     @BindView(R.id.item_desc_a2)
     EditText mItemDescA2;
-    @BindView(R.id.inputLayoutStartDate_a2)
-    TextInputLayout mInputLayoutStartDateA2;
     @BindView(R.id.start_date_a2)
     EditText mStartDateA2;
+    @BindView(R.id.upload_img_btn1_a2)
+    Button mUploadImgBtn1A2;
     @BindView(R.id.inputLayoutSerialNo_a2)
     TextInputLayout mInputLayoutSerialNoA2;
     @BindView(R.id.serial_num_a2)
     EditText mSerialNumA2;
     @BindView(R.id.inputLayoutItemValue_a2)
     TextInputLayout mInputLayoutItemValueA2;
+
+    @BindView(R.id.item_imei_a2)
+    EditText mImeiA2;
+    @BindView(R.id.inputLayoutItemImei_a2)
+    TextInputLayout mInputLayoutItemImeiA2;
+
     @BindView(R.id.item_value_a2)
     EditText mItemValueA2;
+    @BindView(R.id.upload_receipt_btn2_a2)
+    Button mUploadReceiptBtn2A2;
     @BindView(R.id.btn_layout2_a2)
     LinearLayout mBtnLayout2A2;
     @BindView(R.id.v_back_btn2_a2)
@@ -87,10 +121,24 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
 
     private int currentStep = 1;
 
- 
+
 
     String itemTypeString,startDateStrg;
     DatePickerDialog datePickerDialog1;
+    UserPreferences userPreferences;
+
+    int PICK_IMAGE_RECEIPT = 11;
+    int CAM_IMAGE_RECEIPT = 12;
+    int PICK_IMAGE_PASSPORT = 21;
+    int CAM_IMAGE_PASSPORT = 22;
+    private String cameraFilePath;
+    NetworkConnection networkConnection;
+
+    Uri receipt_info_img_uri;
+    String receipt_img_url;
+
+    Uri personal_info_img_uri;
+    String personal_item_img_url;
 
     public AllriskFragment2() {
         // Required empty public constructor
@@ -133,6 +181,8 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
         
 
         mStepView.go(currentStep, true);
+        userPreferences = new UserPreferences(getContext());
+        networkConnection = new NetworkConnection();
 
         init();
 
@@ -147,8 +197,6 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
 
 
     private  void init(){
-        UserPreferences userPreferences = new UserPreferences(getContext());
-
         //Temporal save and go to next Operation
 
 
@@ -180,7 +228,29 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                String stringText = (String) parent.getItemAtPosition(position);
+                String itemtypeText = (String) parent.getItemAtPosition(position);
+                if (itemtypeText.equals("Mobile Phones")) {
+
+                    mInputLayoutSerialNoA2.setVisibility(View.VISIBLE);
+                    mInputLayoutSerialNoA2.setClickable(true);
+                    mInputLayoutItemImeiA2.setVisibility(View.VISIBLE);
+                    mInputLayoutItemImeiA2.setClickable(true);
+
+
+                } else if (itemtypeText.equals("Laptops")) {
+
+                    mInputLayoutSerialNoA2.setVisibility(View.VISIBLE);
+                    mInputLayoutSerialNoA2.setClickable(true);
+                    mInputLayoutItemImeiA2.setVisibility(View.GONE);
+                    mInputLayoutItemImeiA2.setClickable(false);
+
+                } else {
+                    mInputLayoutSerialNoA2.setVisibility(View.GONE);
+                    mInputLayoutSerialNoA2.setClickable(false);
+                    mInputLayoutItemImeiA2.setVisibility(View.GONE);
+                    mInputLayoutItemImeiA2.setClickable(false);
+                }
+
 
 
             }
@@ -188,7 +258,10 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 mItemTypeSpinnerA2.getItemAtPosition(0);
-
+                mInputLayoutSerialNoA2.setVisibility(View.GONE);
+                mInputLayoutSerialNoA2.setClickable(false);
+                mInputLayoutItemImeiA2.setVisibility(View.GONE);
+                mInputLayoutItemImeiA2.setClickable(false);
 
 
             }
@@ -203,6 +276,8 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
         mVNextBtn2A2.setOnClickListener(this);
         mVBackBtn2A2.setOnClickListener(this);
         mStartDateA2.setOnClickListener(this);
+        mUploadImgBtn1A2.setOnClickListener(this);
+        mUploadReceiptBtn2A2.setOnClickListener(this);
 
     }
 
@@ -232,38 +307,488 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
                 ft.commit();
 
                 break;
+
+            case R.id.upload_img_btn1_a2:
+                // setup the alert builder
+                AlertDialog.Builder builderImg = new AlertDialog.Builder(getContext());
+                builderImg.setTitle("Choose Mode of Entry");
+// add a list
+                String[] entryImg = {"Camera", "Gallery"};
+                builderImg.setItems(entryImg, (dialogImg, option) -> {
+                    switch (option) {
+                        case 0:
+                            // direct entry
+                            chooseIdImage1_camera();
+                            dialogImg.dismiss();
+                            break;
+
+                        case 1: // export
+
+                            chooseImageFile1();
+                            dialogImg.dismiss();
+
+                            break;
+
+                    }
+                });
+// create and show the alert dialog
+                AlertDialog dialogImg = builderImg.create();
+                dialogImg.show();
+                mUploadImgBtn1A2.setBackgroundColor(getResources().getColor(R.color.colorAccentEnds));
+
+                break;
+
+            case R.id.upload_receipt_btn2_a2:
+                // setup the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Choose Mode of Entry");
+// add a list
+                String[] entry = {"Camera", "Gallery"};
+                builder.setItems(entry, (dialog, option) -> {
+                    switch (option) {
+                        case 0:
+                            // direct entry
+                            chooseIdImage_camera();
+                            dialog.dismiss();
+                            break;
+
+                        case 1: // export
+
+                            chooseImageFile();
+                            dialog.dismiss();
+
+                            break;
+
+                    }
+                });
+// create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                mUploadReceiptBtn2A2.setBackgroundColor(getResources().getColor(R.color.colorAccentEnds));
+
+                break;
         }
     }
 
-    private void validateUserInputs() {
+    private void chooseImageFile1() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction("android.intent.action.GET_CONTENT");
+        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_PASSPORT);
+    }
 
+    private void chooseImageFile() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction("android.intent.action.GET_CONTENT");
+        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_RECEIPT);
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        //This is the directory in which the file will be created. This is the default location of Camera photos
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        // Save a file: path for using again
+        cameraFilePath = "file://" + image.getAbsolutePath();
+        return image;
+    }
+
+
+    private void chooseIdImage1_camera() {
+
+        try {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".fileprovider", createImageFile()));
+            startActivityForResult(intent, CAM_IMAGE_PASSPORT);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showMessage("Invalid Entry");
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
+        }
+    }
+    private void chooseIdImage_camera() {
+
+        try {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".fileprovider", createImageFile()));
+            startActivityForResult(intent, CAM_IMAGE_RECEIPT);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showMessage("Invalid Entry");
+            Log.i("Invalid_Cam_Entry",ex.getMessage());
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 0) {
+            showMessage("No image is selected, try again");
+            return;
+        }
+
+
+        showMessage("Uploading...");
+        if (networkConnection.isNetworkConnected(getContext())) {
+            Random random=new Random();
+            String rand= String.valueOf(random.nextInt());
+            if (requestCode == 11) {
+                receipt_info_img_uri = data.getData();
+
+                try {
+                    if (receipt_info_img_uri != null) {
+                        String name = userPreferences.getAllRiskIPhoneNum() + rand;
+                        if (name.equals("")) {
+                            showMessage("Enter your phone number first");
+
+                        } else {
+
+                            String imageId = MediaManager.get().upload(Uri.parse(receipt_info_img_uri.toString()))
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            mBtnLayout2A2.setVisibility(View.GONE);
+                                            mProgressbar.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            mProgressbar.setVisibility(View.VISIBLE);
+                                            if(!networkConnection.isNetworkConnected(getContext())){
+                                                mProgressbar.setVisibility(View.GONE);
+                                                mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                                showMessage("Internet Connection Failed");
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Image Uploaded Successfully");
+                                            Log.i("ImageRequestId ", requestId);
+                                            Log.i("ImageUrl ", String.valueOf(resultData.get("url")));
+                                            mProgressbar.setVisibility(View.GONE);
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            receipt_img_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showMessage("Please Check your Image");
+
+                }
+
+            } else if (requestCode == 12) {
+                receipt_info_img_uri = Uri.parse(cameraFilePath);
+
+                try {
+                    if (receipt_info_img_uri != null) {
+                        String name = userPreferences.getAllRiskIPhoneNum() + rand;
+                        if (name.equals("")) {
+                            showMessage("Enter your phone number first");
+
+                        } else {
+
+                            String imageId = MediaManager.get().upload(receipt_info_img_uri)
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            mBtnLayout2A2.setVisibility(View.GONE);
+                                            mProgressbar.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            mProgressbar.setVisibility(View.VISIBLE);
+                                            if(!networkConnection.isNetworkConnected(getContext())){
+                                                mProgressbar.setVisibility(View.GONE);
+                                                mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                                showMessage("Internet Connection Failed");
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Image Uploaded Successfully");
+                                            Log.i("ImageRequestId ", requestId);
+                                            Log.i("ImageUrl ", String.valueOf(resultData.get("url")));
+                                            mProgressbar.setVisibility(View.GONE);
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            receipt_img_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showMessage("Please Check your Image");
+
+                }
+            } else if (requestCode == 21) {
+                personal_info_img_uri = data.getData();
+
+                try {
+                    if (personal_info_img_uri != null) {
+                        String name = userPreferences.getAllRiskIPhoneNum() + rand;
+                        if (name.equals("")) {
+                            showMessage("Enter your phone number first");
+
+                        } else {
+
+                            String imageId = MediaManager.get().upload(Uri.parse(personal_info_img_uri.toString()))
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            mBtnLayout2A2.setVisibility(View.GONE);
+                                            mProgressbar.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            mProgressbar.setVisibility(View.VISIBLE);
+                                            if (!networkConnection.isNetworkConnected(getContext())) {
+                                                mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                                mProgressbar.setVisibility(View.GONE);
+                                                showMessage("Internet Connection Failed");
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Image Uploaded Successfully");
+                                            Log.i("ImageRequestId ", requestId);
+                                            Log.i("ImageUrl ", String.valueOf(resultData.get("url")));
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                            personal_item_img_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showMessage("Please Check your Image");
+
+                }
+
+            } else if (requestCode == 22) {
+                personal_info_img_uri = Uri.parse(cameraFilePath);
+
+                try {
+                    if (personal_info_img_uri != null) {
+                        String name = userPreferences.getAllRiskIPhoneNum() + rand;
+                        if (name.equals("")) {
+                            showMessage("Enter your phone number first");
+
+                        } else {
+
+                            String imageId = MediaManager.get().upload(personal_info_img_uri)
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            mBtnLayout2A2.setVisibility(View.GONE);
+                                            mProgressbar.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            mProgressbar.setVisibility(View.VISIBLE);
+                                            if (!networkConnection.isNetworkConnected(getContext())) {
+                                                mBtnLayout2A2.setVisibility(View.GONE);
+                                                mProgressbar.setVisibility(View.VISIBLE);
+                                                showMessage("Internet Connection Failed");
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Image Uploaded Successfully");
+                                            Log.i("ImageRequestId ", requestId);
+                                            Log.i("ImageUrl ", String.valueOf(resultData.get("url")));
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                            personal_item_img_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+                                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                                            mProgressbar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showMessage("Image Error, Please Check your Image");
+
+                }
+            }
+            return;
+        }
+        showMessage("No Internet connection discovered!");
+    }
+
+
+    private void validateUserInputs() {
 
         boolean isValid = true;
 
-        if (mItemDescA2.getText().toString().isEmpty()) {
-            mInputLayoutItemDescriptnA2.setError("Your Item Description is required!");
+        if (mStartDateA2.getText().toString().isEmpty()) {
+            showMessage("Start Date is required!");
 
             isValid = false;
-        } else if (mStartDateA2.getText().toString().isEmpty()) {
-            mInputLayoutStartDateA2.setError("Start Date is required!");
-
-            isValid = false;
-        } else if (mSerialNumA2.getText().toString().isEmpty()) {
+        } else if (mSerialNumA2.getText().toString().isEmpty() && mInputLayoutSerialNoA2.isClickable()) {
             mInputLayoutSerialNoA2.setError("Serial Number is required!");
             isValid = false;
+        } else if (mImeiA2.getText().toString().isEmpty() && mInputLayoutItemImeiA2.isClickable()) {
+            mInputLayoutItemImeiA2.setError("IMEI Number is required!");
+            isValid = false;
         } else if (mItemValueA2.getText().toString().isEmpty()) {
-            mInputLayoutItemValueA2.setError("Chasis Number is required!");
+            mInputLayoutItemValueA2.setError("Item value is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutItemValueA2.setErrorEnabled(false);
             mInputLayoutSerialNoA2.setErrorEnabled(false);
-            mInputLayoutStartDateA2.setErrorEnabled(false);
             mInputLayoutItemDescriptnA2.setErrorEnabled(false);
+            mInputLayoutItemImeiA2.setErrorEnabled(false);
 
         }
+
+        if (personal_item_img_url == null) {
+            showMessage("Please upload the Item image");
+            isValid = false;
+        }
+
+        if (receipt_img_url == null) {
+            showMessage("Please upload the Item receipt");
+            isValid = false;
+        }
+
         itemTypeString = mItemTypeSpinnerA2.getSelectedItem().toString();
-        if (itemTypeString.equals("Select Item")) {
+        if (itemTypeString.equals("Select Item*")) {
             showMessage("Select Item");
             isValid = false;
         }
@@ -285,22 +810,27 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
         mProgressbar.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
 
             //Temporal save and go to next Operation
 
             userPreferences.setAllRiskItemDesc(mItemDescA2.getText().toString());
             userPreferences.setAllRiskStartDate(mStartDateA2.getText().toString());
-
             userPreferences.setAllRiskItemType(itemTypeString);
-            userPreferences.setAllRiskSerialNo(mSerialNumA2.getText().toString());
+            if (mInputLayoutSerialNoA2.isClickable()) {
+                userPreferences.setAllRiskSerialNo(mSerialNumA2.getText().toString());
+            } else {
+                userPreferences.setAllRiskSerialNo(" ");
+            }
             userPreferences.setAllRiskItemValue(mItemValueA2.getText().toString());
+            if (mInputLayoutItemImeiA2.isClickable()) {
+                userPreferences.setAllRiskItemImei(mImeiA2.getText().toString());
+            } else {
+                userPreferences.setAllRiskItemImei(" ");
+            }
+            userPreferences.setAllRiskItemReceipt(receipt_img_url);
+            userPreferences.setAllRiskPersonalImage(personal_item_img_url);
 
-           // Fragment quoteBuyFragment3 = new MotorInsureFragment3();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_allrisk_form_container, AllriskFragment3.newInstance(userPreferences.getAllRiskItemType(),"8000"), AllriskFragment3.class.getSimpleName());
-            ft.commit();
-
+            sendAllRiskData();
 
         }catch (Exception e){
             Log.i("Form Error",e.getMessage());
@@ -310,6 +840,97 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
         }
     }
 
+    private void sendAllRiskData(){
+
+
+        //get client and call object for request
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+
+
+        Call<QouteHeadAllrisk> call=client.allrisk_quote("Token "+userPreferences.getUserToken(), mItemValueA2.getText().toString());
+
+        call.enqueue(new Callback<QouteHeadAllrisk>() {
+            @Override
+            public void onResponse(Call<QouteHeadAllrisk> call, Response<QouteHeadAllrisk> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+                if(response.code()==400){
+                    showMessage("Check your internet connection");
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==429){
+                    showMessage("Too many requests on database");
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==500){
+                    showMessage("Server Error");
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==401){
+                    showMessage("Unauthorized access, please try login again");
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                    return;
+                }
+
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try{
+                            APIError apiError= ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: "+apiError.getErrors());
+                            Log.i("Invalid EntryK",apiError.getErrors().toString());
+                            Log.i("Invalid Entry",response.errorBody().toString());
+                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                            mProgressbar.setVisibility(View.GONE);
+
+                        }catch (Exception e){
+                            Log.i("InvalidEntry",e.getMessage());
+                            Log.i("ResponseError",response.errorBody().string());
+                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                            mBtnLayout2A2.setVisibility(View.VISIBLE);
+                            mProgressbar.setVisibility(View.GONE);
+
+                        }
+                        mBtnLayout2A2.setVisibility(View.VISIBLE);
+                        mProgressbar.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    long quote_price=response.body().getData().getPrice();
+
+                    double roundOff = Math.round(quote_price*100)/100.00;
+
+                    Log.i("quote_price", String.valueOf(quote_price));
+                    showMessage("Successfully Fetched Quote");
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+
+
+                    // Fragment quoteBuyFragment3 = new MotorInsureFragment3();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_allrisk_form_container, AllriskFragment3.newInstance(userPreferences.getAllRiskItemType(), String.valueOf(roundOff)), AllriskFragment3.class.getSimpleName());
+                    ft.commit();
+                }catch (Exception e){
+                    Log.i("policyResponse", e.getMessage());
+                    mBtnLayout2A2.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                }
+
+            }
+            @Override
+            public void onFailure(Call<QouteHeadAllrisk> call, Throwable t) {
+                showMessage("Submission Failed "+t.getMessage());
+                Log.i("GEtError",t.getMessage());
+                mBtnLayout2A2.setVisibility(View.VISIBLE);
+                mProgressbar.setVisibility(View.GONE);
+            }
+        });
+
+    }
 
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout2, s, Snackbar.LENGTH_SHORT).show();

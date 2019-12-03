@@ -1,7 +1,5 @@
 package com.example.sti_agent.Model.AllRisk;
 
-import com.example.sti_agent.Model.Vehicle.Personal_detail;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -20,6 +18,9 @@ public class Personal_Detail_allrisk extends RealmObject {
     String tin_num;
 
     String next_of_kin;
+    String state;
+
+
 
     String prefix;
     String contact_person;
@@ -64,6 +65,13 @@ public class Personal_Detail_allrisk extends RealmObject {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getMailing_addr() {

@@ -1,6 +1,7 @@
 package com.example.sti_agent.operation_fragment.Marine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -9,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sti_agent.MainActivity;
 import com.example.sti_agent.Model.Marine.CargoDetail;
 import com.example.sti_agent.Model.Marine.MarinePolicy;
 import com.example.sti_agent.Model.Marine.Personal_Detail_marine;
@@ -40,7 +43,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-class MarineFragment3 extends Fragment implements View.OnClickListener{
+public class MarineFragment3 extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,13 +74,14 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
     @BindView(R.id.fabAddCargo_m3)
     FloatingActionButton mFabAddCargoM3;
 
-    private  int currentStep=2;
+    private int currentStep = 2;
 
     Realm realm;
+    UserPreferences userPreferences;
 
 
-    MarinePolicy id=new MarinePolicy();
-    String primaryKey=id.getId();
+    MarinePolicy id = new MarinePolicy();
+    String primaryKey = id.getId();
 
     public MarineFragment3() {
         // Required empty public constructor
@@ -104,18 +108,18 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UserPreferences userPreferences=new UserPreferences(getContext());
+        userPreferences = new UserPreferences(getContext());
 
         if (getArguments() != null) {
             cargo = getArguments().getString(CARGO);
 
 
-            int oldquote=userPreferences.getTempMarineQuotePrice();
-            p_amount=getArguments().getString(PREMIUM_AMOUNT);
+            double oldquote = Double.parseDouble(userPreferences.getTempMarineQuotePrice());
+            p_amount = getArguments().getString(PREMIUM_AMOUNT);
 
-            int newquote=Integer.parseInt(getArguments().getString(PREMIUM_AMOUNT));
-            int total_quote=oldquote+newquote;
-            userPreferences.setTempMarineQuotePrice(total_quote);
+            String newquote = getArguments().getString(PREMIUM_AMOUNT);
+            double total_quote = oldquote + Double.parseDouble(newquote);
+            userPreferences.setTempMarineQuotePrice(String.valueOf(total_quote));
 
 
         }
@@ -125,33 +129,46 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_marine3, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_marine3, container, false);
+        ButterKnife.bind(this, view);
         //        mStepView next registration step
         mStepView.go(currentStep, true);
 
 
         //instancial Realm db
-        realm=Realm.getDefaultInstance();
+        realm = Realm.getDefaultInstance();
 
         mPremiumTxt.setText(cargo);
-        if(p_amount==null){
-            p_amount="000";
+        if (p_amount == null) {
+            p_amount = "000";
             String format = p_amount + ".00";
             mAmountM3.setText(format);
-        }else {
+        } else {
             String format = p_amount + ".00";
             mAmountM3.setText(format);
         }
 
 
-
-
         setViewActions();
 
-        return  view;
-    }
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i("backPress_KeyCode", "keyCode: " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.i("backPress", "onKey Back listener is working!!!");
+                    userPreferences.setTempMarineQuotePrice("0.0");
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
 
+        return view;
+    }
 
 
     //seting onclicks listeners
@@ -168,23 +185,22 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
         switch (view.getId()) {
 
 
-
             case R.id.v_next_btn3_m3:
 //                send quote to client and sti
                 mailClientAndSt();
                 break;
 
             case R.id.fabAddCargo_m3:
-                UserPreferences userPreferences=new UserPreferences(getContext());
+                UserPreferences userPreferences = new UserPreferences(getContext());
 
 
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
 
-                        Personal_Detail_marine personal_detail_marine=new Personal_Detail_marine();
+                        Personal_Detail_marine personal_detail_marine = new Personal_Detail_marine();
 
-                        if(realm.isEmpty()){
+                        if (realm.isEmpty()) {
 
 
                             personal_detail_marine.setPrefix(userPreferences.getMarineIPrefix());
@@ -203,7 +219,7 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
                             personal_detail_marine.setOffice_address(userPreferences.getMarineIOff_addr());
                             personal_detail_marine.setContact_person(userPreferences.getMarineIContPerson());
                             //Vehicle List
-                            CargoDetail cargoDetail=new CargoDetail();
+                            CargoDetail cargoDetail = new CargoDetail();
 
                             cargoDetail.setPfi_number(userPreferences.getMarineIProfInvNO());
                             cargoDetail.setPfi_date(userPreferences.getMarineIDateProfInv());
@@ -217,36 +233,32 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
                             cargoDetail.setDischarge_port(userPreferences.getMarineIPortOfDischarge());
                             cargoDetail.setConveyance_mode(userPreferences.getMarineIModeOfConvey());
                             cargoDetail.setPicture("");
-                            
 
-                            RealmList<CargoDetail>cargoDetailList=new RealmList<>();
+
+                            RealmList<CargoDetail> cargoDetailList = new RealmList<>();
                             cargoDetailList.add(cargoDetail);
 
                             personal_detail_marine.setCargoDetails(cargoDetailList);
 
 
+                            final Personal_Detail_marine personal_detail_marine1 = realm.copyToRealm(personal_detail_marine);
 
-
-                            final Personal_Detail_marine personal_detail_marine1=realm.copyToRealm(personal_detail_marine);
-
-                            MarinePolicy marinePolicy=realm.createObject(MarinePolicy.class,primaryKey);
+                            MarinePolicy marinePolicy = realm.createObject(MarinePolicy.class, primaryKey);
                             marinePolicy.setAgent_id("1");
-                            marinePolicy.setQuote_price(String.valueOf(userPreferences.getTempMarineQuotePrice()));
+                            marinePolicy.setQuote_price(userPreferences.getTempMarineQuotePrice());
                             marinePolicy.setPayment_source("paystack");
                             marinePolicy.setPin("11234");
 
-                            Log.i("Primary1",primaryKey);
+                            Log.i("Primary1", primaryKey);
 
                             marinePolicy.getPersonal_detail_marines().add(personal_detail_marine1);
 
 
-
-                        }else if(!realm.isEmpty()){
-
+                        } else if (!realm.isEmpty()) {
 
 
                             //Vehicle List
-                            CargoDetail cargoDetail=new CargoDetail();
+                            CargoDetail cargoDetail = new CargoDetail();
                             cargoDetail.setPfi_number(userPreferences.getMarineIProfInvNO());
                             cargoDetail.setPfi_date(userPreferences.getMarineIDateProfInv());
                             cargoDetail.setDesc_goods(userPreferences.getMarineIDescOfGoods());
@@ -261,28 +273,25 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
                             cargoDetail.setPicture("");
 
 
-                            RealmList<CargoDetail>cargoDetailList=new RealmList<>();
+                            RealmList<CargoDetail> cargoDetailList = new RealmList<>();
                             cargoDetailList.add(cargoDetail);
                             personal_detail_marine.setCargoDetails(cargoDetailList);
 
-                            final Personal_Detail_marine personal_detail_marine2=realm.copyToRealm(personal_detail_marine);
-                            MarinePolicy marinePolicy=realm.createObject(MarinePolicy.class,primaryKey);
-                            marinePolicy.setQuote_price(String.valueOf(userPreferences.getTempMarineQuotePrice()));
+                            final Personal_Detail_marine personal_detail_marine2 = realm.copyToRealm(personal_detail_marine);
+                            MarinePolicy marinePolicy = realm.createObject(MarinePolicy.class, primaryKey);
+                            marinePolicy.setQuote_price(userPreferences.getTempMarineQuotePrice());
                             marinePolicy.getPersonal_detail_marines().add(personal_detail_marine2);
 
                             showMessage(primaryKey);
 
 
-
-                        }else {
+                        } else {
                             showMessage("Invalid transaction");
                         }
 
 
-
                     }
                 });
-
 
 
                 mStepView.done(false);
@@ -293,8 +302,6 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
                 ftrans.replace(R.id.fragment_marine_form_container, marineFragment2);
                 ftrans.commit();
                 break;
-
-
 
 
             case R.id.v_back_btn3_m3:
@@ -323,62 +330,58 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
             @Override
             public void execute(Realm realm) {
 
-                Personal_Detail_marine personal_detail_marine=new Personal_Detail_marine();
+                Personal_Detail_marine personal_detail_marine = new Personal_Detail_marine();
 
 
+                personal_detail_marine.setPrefix(userPreferences.getMarineIPrefix());
+                personal_detail_marine.setFirst_name(userPreferences.getMarineIFirstName());
+                personal_detail_marine.setLast_name(userPreferences.getMarineILastName());
+                personal_detail_marine.setEmail(userPreferences.getMarineIEmail());
+                personal_detail_marine.setGender(userPreferences.getMarineIGender());
+                personal_detail_marine.setMarital_status(userPreferences.getMarineIGender());
+                personal_detail_marine.setPhone(userPreferences.getMarineIPhoneNum());
+                personal_detail_marine.setResident_address(userPreferences.getMarineIResAdrr());
+                personal_detail_marine.setCustomer_type(userPreferences.getMarinePtype());
+                personal_detail_marine.setCompany_name(userPreferences.getMarineICompanyName());
+                personal_detail_marine.setMailing_address(userPreferences.getMarineIMailingAddr());
+                personal_detail_marine.setTin_number(userPreferences.getMarineITinNumber());
+                personal_detail_marine.setTrade(userPreferences.getMarineITinNumber());
+                personal_detail_marine.setOffice_address(userPreferences.getMarineIOff_addr());
+                personal_detail_marine.setContact_person(userPreferences.getMarineIContPerson());
+                //Cargo List
+                CargoDetail cargoDetail = new CargoDetail();
 
-                    personal_detail_marine.setPrefix(userPreferences.getMarineIPrefix());
-                    personal_detail_marine.setFirst_name(userPreferences.getMarineIFirstName());
-                    personal_detail_marine.setLast_name(userPreferences.getMarineILastName());
-                    personal_detail_marine.setEmail(userPreferences.getMarineIEmail());
-                    personal_detail_marine.setGender(userPreferences.getMarineIGender());
-                    personal_detail_marine.setMarital_status(userPreferences.getMarineIGender());
-                    personal_detail_marine.setPhone(userPreferences.getMarineIPhoneNum());
-                    personal_detail_marine.setResident_address(userPreferences.getMarineIResAdrr());
-                    personal_detail_marine.setCustomer_type(userPreferences.getMarinePtype());
-                    personal_detail_marine.setCompany_name(userPreferences.getMarineICompanyName());
-                    personal_detail_marine.setMailing_address(userPreferences.getMarineIMailingAddr());
-                    personal_detail_marine.setTin_number(userPreferences.getMarineITinNumber());
-                    personal_detail_marine.setTrade(userPreferences.getMarineITinNumber());
-                    personal_detail_marine.setOffice_address(userPreferences.getMarineIOff_addr());
-                    personal_detail_marine.setContact_person(userPreferences.getMarineIContPerson());
-                    //Cargo List
-                    CargoDetail cargoDetail=new CargoDetail();
-
-                    cargoDetail.setPfi_number(userPreferences.getMarineIProfInvNO());
-                    cargoDetail.setPfi_date(userPreferences.getMarineIDateProfInv());
-                    cargoDetail.setDesc_goods(userPreferences.getMarineIDescOfGoods());
-                    cargoDetail.setInterest(userPreferences.getMarineIIntetrest());
-                    cargoDetail.setQuantity(userPreferences.getMarineIQuantity());
-                    cargoDetail.setCurrency(userPreferences.getMarineICurrency());
-                    cargoDetail.setValue(userPreferences.getMarineITotalAmount());
-                    cargoDetail.setConversion_rate(userPreferences.getMarineINairaConvert());
-                    cargoDetail.setLoading_port(userPreferences.getMarineIPortOfLoading());
-                    cargoDetail.setDischarge_port(userPreferences.getMarineIPortOfDischarge());
-                    cargoDetail.setConveyance_mode(userPreferences.getMarineIModeOfConvey());
-                    cargoDetail.setPicture("");
-
-
-                    RealmList<CargoDetail>cargoDetailList=new RealmList<>();
-                    cargoDetailList.add(cargoDetail);
-
-                    personal_detail_marine.setCargoDetails(cargoDetailList);
+                cargoDetail.setPfi_number(userPreferences.getMarineIProfInvNO());
+                cargoDetail.setPfi_date(userPreferences.getMarineIDateProfInv());
+                cargoDetail.setDesc_goods(userPreferences.getMarineIDescOfGoods());
+                cargoDetail.setInterest(userPreferences.getMarineIIntetrest());
+                cargoDetail.setQuantity(userPreferences.getMarineIQuantity());
+                cargoDetail.setCurrency(userPreferences.getMarineICurrency());
+                cargoDetail.setValue(userPreferences.getMarineITotalAmount());
+                cargoDetail.setConversion_rate(userPreferences.getMarineINairaConvert());
+                cargoDetail.setLoading_port(userPreferences.getMarineIPortOfLoading());
+                cargoDetail.setDischarge_port(userPreferences.getMarineIPortOfDischarge());
+                cargoDetail.setConveyance_mode(userPreferences.getMarineIModeOfConvey());
+                cargoDetail.setPicture("");
 
 
+                RealmList<CargoDetail> cargoDetailList = new RealmList<>();
+                cargoDetailList.add(cargoDetail);
+
+                personal_detail_marine.setCargoDetails(cargoDetailList);
 
 
-                    final Personal_Detail_marine personal_detail_marine1=realm.copyToRealm(personal_detail_marine);
+                final Personal_Detail_marine personal_detail_marine1 = realm.copyToRealm(personal_detail_marine);
 
-                    MarinePolicy marinePolicy=realm.createObject(MarinePolicy.class,primaryKey);
-                    marinePolicy.setAgent_id("1");
-                    marinePolicy.setQuote_price(String.valueOf(userPreferences.getTempMarineQuotePrice()));
-                    marinePolicy.setPayment_source("paystack");
-                    marinePolicy.setPin("11234");
+                MarinePolicy marinePolicy = realm.createObject(MarinePolicy.class, primaryKey);
+                marinePolicy.setAgent_id("1");
+                marinePolicy.setQuote_price(userPreferences.getTempMarineQuotePrice());
+                marinePolicy.setPayment_source("paystack");
+                marinePolicy.setPin("11234");
 
-                    Log.i("Primary1",primaryKey);
+                Log.i("Primary1", primaryKey);
 
-                    marinePolicy.getPersonal_detail_marines().add(personal_detail_marine1);
-
+                marinePolicy.getPersonal_detail_marines().add(personal_detail_marine1);
 
 
             }
@@ -389,6 +392,7 @@ class MarineFragment3 extends Fragment implements View.OnClickListener{
         ft.commit();
 
     }
+
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout3, s, Snackbar.LENGTH_SHORT).show();
     }

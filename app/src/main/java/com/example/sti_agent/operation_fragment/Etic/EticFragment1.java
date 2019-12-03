@@ -1,5 +1,6 @@
 package com.example.sti_agent.operation_fragment.Etic;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -18,8 +19,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
@@ -47,6 +50,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
@@ -67,11 +71,11 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
 
-
+    /** ButterKnife Code **/
     @BindView(R.id.qb_form_layout1)
     FrameLayout mQbFormLayout1;
     @BindView(R.id.step_view)
-    StepView mStepView;
+    com.shuhart.stepview.StepView mStepView;
     @BindView(R.id.prefix_spinner_e1)
     Spinner mPrefixSpinnerE1;
     @BindView(R.id.inputLayoutFirstName_e1)
@@ -88,28 +92,51 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
     TextInputLayout mInputLayoutResAddrE1;
     @BindView(R.id.residents_addr_editxt_e1)
     EditText mResidentsAddrEditxtE1;
-    @BindView(R.id.inputLayoutNextKin_e1)
-    TextInputLayout mInputLayoutNextKinE1;
-    @BindView(R.id.next_kin_editxt_e1)
-    EditText mNextKinEditxtE1;
+    /* @BindView(R.id.inputLayoutNextKin_e1)
+     TextInputLayout mInputLayoutNextKinE1;
+     @BindView(R.id.next_kin_editxt_e1)
+     EditText mNextKinEditxtE1;*/
     @BindView(R.id.inputLayoutPhone_e1)
     TextInputLayout mInputLayoutPhoneE1;
     @BindView(R.id.phone_no_editxt_e1)
     EditText mPhoneNoEditxtE1;
+    @BindView(R.id.inputLayoutBusiness)
+    TextInputLayout mInputLayoutBusiness;
+    @BindView(R.id.business_editxt_e1)
+    EditText mBusinessEditxtE1;
+    @BindView(R.id.inputLayoutNationality)
+    TextInputLayout mInputLayoutNationality;
+    @BindView(R.id.nationality_editxt_e1)
+    EditText mNationalityEditxtE1;
+    @BindView(R.id.inputLayoutEmployerName)
+    TextInputLayout mInputLayoutEmployerName;
+    @BindView(R.id.employer_name_editxt_e1)
+    EditText mEmployerNameEditxtE1;
+    @BindView(R.id.inputLayoutEmployerAddr)
+    TextInputLayout mInputLayoutEmployerAddr;
+    @BindView(R.id.addr_addr_editxt_e1)
+    EditText mAddrAddrEditxtE1;
+
+    @BindView(R.id.intend_date_editxt_e1)
+    EditText mIntendDateEditxtE1;
+
+    @BindView(R.id.end_date_cover_e1)
+    EditText mEndDateCoverE1;
     @BindView(R.id.inputLayoutEmail_e1)
     TextInputLayout mInputLayoutEmailE1;
     @BindView(R.id.email_editxt_e1)
     EditText mEmailEditxtE1;
-    @BindView(R.id.inputLayoutMailingAddr_e1)
-    TextInputLayout mInputLayoutMailingAddrE1;
-    @BindView(R.id.mail_addr_editxt_e1)
-    EditText mMailAddrEditxtE1;
+    @BindView(R.id.state_spinner)
+    Spinner mStateSpinner;
     @BindView(R.id.upload_img_btn_e1)
     Button mUploadImgBtnE1;
+    @BindView(R.id.reviewed_checked)
+    RadioButton mReviewedChecked;
     @BindView(R.id.next_btn1_e1)
     Button mNextBtn1E1;
     @BindView(R.id.progressbar1_e1)
     AVLoadingIndicatorView mProgressbar1E1;
+    /** ButterKnife Code **/
 
 
     String genderString,prifixString,cameraFilePath;
@@ -119,8 +146,12 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
     int CAM_IMAGE_PASSPORT = 2;
     NetworkConnection networkConnection=new NetworkConnection();
 
+    DatePickerDialog datePickerDialog1,datePickerDialog2;
+    String start_coverString,end_coverString;
+
     Uri personal_info_img_uri;
     String personal_img_url;
+    private String stateString;
 
 
     public EticFragment1() {
@@ -168,6 +199,9 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
         init();
         prefixSpinner();
         genderSpinner();
+        stateSpinner();
+        showDatePicker1();
+        showDatePicker2();
         setViewActions();
 
         return  view;
@@ -185,11 +219,16 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
         mLastnameEditxtE1.setText(userPreferences.getEticILastName());
 
         mResidentsAddrEditxtE1.setText(userPreferences.getEticIResAdrr());
-        mNextKinEditxtE1.setText(userPreferences.getEticINextKin());
+        //mNextKinEditxtE1.setText(userPreferences.getEticINextKin());
         mPhoneNoEditxtE1.setText(userPreferences.getEticIPhoneNum());
         mEmailEditxtE1.setText(userPreferences.getEticIEmail());
+        //mMailAddrEditxtE1.setText(userPreferences.getEticIMailingAddr());
 
-        mMailAddrEditxtE1.setText(userPreferences.getEticIMailingAddr());
+        mBusinessEditxtE1.setText(userPreferences.getEticIBusiness());
+        mNationalityEditxtE1.setText(userPreferences.getEticINationality());
+        mEmployerNameEditxtE1.setText(userPreferences.getEticIEmployerName());
+        mAddrAddrEditxtE1.setText(userPreferences.getEticIMailingAddr());
+
 
     }
 
@@ -218,6 +257,37 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
             public void onNothingSelected(AdapterView<?> parent) {
                 mPrefixSpinnerE1.getItemAtPosition(0);
 
+
+            }
+        });
+
+    }
+
+    private void stateSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(getContext(), R.array.state_array,
+                        android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        mStateSpinner.setAdapter(staticAdapter);
+
+        mStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String stateText = (String) parent.getItemAtPosition(position);
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+                mStateSpinner.getItemAtPosition(0);
 
             }
         });
@@ -258,6 +328,8 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
     private void setViewActions() {
         mUploadImgBtnE1.setOnClickListener(this);
         mNextBtn1E1.setOnClickListener(this);
+        mIntendDateEditxtE1.setOnClickListener(this);
+        mEndDateCoverE1.setOnClickListener(this);
     }
 
     @Override
@@ -296,6 +368,15 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
                 validateUserInputs();
 
 
+                break;
+            case R.id.intend_date_editxt_e1:
+
+                datePickerDialog1.show();
+                break;
+
+            case R.id.end_date_cover_e1:
+
+                datePickerDialog2.show();
                 break;
 
 
@@ -514,25 +595,25 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
         } else if (mLastnameEditxtE1.getText().toString().isEmpty()) {
             mInputLayoutLastNameE1.setError("Your LastName is required!");
             isValid = false;
-        } else if (mNextKinEditxtE1.getText().toString().isEmpty()) {
+        }/* else if (mNextKinEditxtE1.getText().toString().isEmpty()) {
             mInputLayoutNextKinE1.setError("Next of Kin is required!");
             isValid = false;
-        }else{
+        }*/ else {
             mInputLayoutFirstNameE1.setErrorEnabled(false);
             mInputLayoutLastNameE1.setErrorEnabled(false);
-            mInputLayoutNextKinE1.setErrorEnabled(false);
+            // mInputLayoutNextKinE1.setErrorEnabled(false);
 
         }
 
-            if (mEmailEditxtE1.getText().toString().isEmpty()) {
-                mInputLayoutEmailE1.setError("Email is required!");
-                isValid = false;
-            } else if (!isValidEmailAddress(mEmailEditxtE1.getText().toString())) {
+        if (mEmailEditxtE1.getText().toString().isEmpty()) {
+            mInputLayoutEmailE1.setError("Email is required!");
+            isValid = false;
+        } /*else if (!isValidEmailAddress(mEmailEditxtE1.getText().toString())) {
                 mInputLayoutEmailE1.setError("Valid Email is required!");
                 isValid = false;
-            } else {
-                mInputLayoutEmailE1.setErrorEnabled(false);
-            }
+            } */ else {
+            mInputLayoutEmailE1.setErrorEnabled(false);
+        }
 
 
         if (mPhoneNoEditxtE1.getText().toString().isEmpty()) {
@@ -552,26 +633,36 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
             mInputLayoutResAddrE1.setErrorEnabled(false);
         }
 
-       
+        stateString = mStateSpinner.getSelectedItem().toString();
+        if (stateString.equals("Geographical Location*") && mStateSpinner.isClickable()) {
+            showMessage("Select your Geographical Location");
+            isValid = false;
+        }
+
+
+        if (!mReviewedChecked.isChecked()) {
+            showMessage("Please checked below point, to accept you review");
+            isValid = false;
+        }
         //Prefix Spinner
         prifixString = mPrefixSpinnerE1.getSelectedItem().toString();
-        if (prifixString.equals("Select Prefix")) {
+        if (prifixString.equals("Select Prefix*")) {
             showMessage("Select your Prefix e.g Mr.");
             isValid = false;
         }
 
         genderString = mGenderSpinnerE1.getSelectedItem().toString();
-        if (genderString.equals("Gender")) {
+        if (genderString.equals("Gender*")) {
             showMessage("Don't forget to Select Gender");
             isValid = false;
         }
 
         if (personal_img_url==null) {
-            showMessage("Please upload an image: passport,company license..etc");
+            showMessage("Please upload an image: Passport");
             isValid = false;
         }
 
-       
+
         if (isValid) {
 //            send inputs to next next page
 //            Goto to the next Registration step
@@ -582,7 +673,6 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
 
 
     }
-
 
     public static boolean isValidEmailAddress(String email) {
         boolean result = true;
@@ -596,8 +686,8 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
         }
 
         return result;
-    } 
-    
+    }
+
     private void initFragment() {
         mNextBtn1E1.setVisibility(View.GONE);
         mProgressbar1E1.setVisibility(View.VISIBLE);
@@ -606,16 +696,26 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
             UserPreferences userPreferences = new UserPreferences(getContext());
 
             //Temporal save and go to next Operation
-            
+
             userPreferences.setEticIPrefix(prifixString);
             userPreferences.setEticIFirstName(mFirstnameEditxtE1.getText().toString());
             userPreferences.setEticILastName(mLastnameEditxtE1.getText().toString());
             userPreferences.setEticIGender(genderString);
             userPreferences.setEticIResAdrr(mResidentsAddrEditxtE1.getText().toString());
-            userPreferences.setEticINextKin(mNextKinEditxtE1.getText().toString());
+            //userPreferences.setEticINextKin(mNextKinEditxtE1.getText().toString());
             userPreferences.setEticIPhoneNum(mPhoneNoEditxtE1.getText().toString());
             userPreferences.setEticIEmail(mEmailEditxtE1.getText().toString());
-            userPreferences.setEticIMailingAddr(mMailAddrEditxtE1.getText().toString());
+            //userPreferences.setEticIMailingAddr(mMailAddrEditxtE1.getText().toString());
+
+            userPreferences.setEticIBusiness(mBusinessEditxtE1.getText().toString());
+            userPreferences.setEticINationality(mNationalityEditxtE1.getText().toString());
+            userPreferences.setEticIEmployerName(mEmployerNameEditxtE1.getText().toString());
+            userPreferences.setEticIEmployerAddr(mAddrAddrEditxtE1.getText().toString());
+            userPreferences.setEticIState(stateString);
+            userPreferences.setEticIIntendStartDate(mIntendDateEditxtE1.getText().toString());
+            userPreferences.setEticIEndDate(mEndDateCoverE1.getText().toString());
+
+
             userPreferences.setEticIPhoneNum(mPhoneNoEditxtE1.getText().toString());
             userPreferences.setEticIPersonalImage(personal_img_url);
 
@@ -645,7 +745,53 @@ public class EticFragment1 extends Fragment implements View.OnClickListener{
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout1, s, Snackbar.LENGTH_LONG).show();
     }
+    private void showDatePicker1() {
+        //Get current date
+        Calendar calendar = Calendar.getInstance();
 
+        //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
+        datePickerDialog1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                //When a date is selected, it comes here.
+                //Change birthdayEdittext's text and dismiss dialog.
+                if(year<calendar.get(Calendar.YEAR)){
+
+                    showMessage("Invalid Start Date");
+                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    return;
+                }
+                int monthofYear=monthOfYear+1;
+                start_coverString = year + "-" + monthofYear + "-" + dayOfMonth;
+                mIntendDateEditxtE1.setText(start_coverString);
+                datePickerDialog1.dismiss();
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private void showDatePicker2() {
+        //Get current date
+        Calendar calendar = Calendar.getInstance();
+
+        //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
+        datePickerDialog2 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                //When a date is selected, it comes here.
+                //Change birthdayEdittext's text and dismiss dialog.
+                if(year<calendar.get(Calendar.YEAR)){
+
+                    showMessage("Invalid Start Date");
+                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    return;
+                }
+                int monthofYear=monthOfYear+1;
+                end_coverString = year + "-" + monthofYear + "-" + dayOfMonth;
+                mEndDateCoverE1.setText(end_coverString);
+                datePickerDialog2.dismiss();
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+    }
 
 
 }

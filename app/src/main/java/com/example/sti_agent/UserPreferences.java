@@ -31,7 +31,7 @@ public class UserPreferences {
         return sharedPreferences.getBoolean(Constant.IS_FIRST_TIME_LAUNCH, true);
     }
 
-//    User login preferences
+    //    User login preferences
     public void setUserLogged(boolean usLg) {
         editor.putBoolean(Constant.IS_USER_LOGGED, usLg);
         editor.apply();
@@ -41,7 +41,7 @@ public class UserPreferences {
         return sharedPreferences.getBoolean(Constant.IS_USER_LOGGED, false);
     }
 
-    
+
     //Temporal database
     public void setMotorPtype(String MotorPtype) {
         editor.putString(Constant.MOTOR_INSURED_PERSONAL_TYPE, MotorPtype);
@@ -52,7 +52,7 @@ public class UserPreferences {
         return sharedPreferences.getString(Constant.MOTOR_INSURED_PERSONAL_TYPE, "");
     }
 
-//Agent Personal Details Prefs
+    //Agent Personal Details Prefs
     public void setAgentEmail(String email) {
         editor.putString(Constant.AGENT_EMAIL, email);
         editor.apply();
@@ -142,6 +142,7 @@ public class UserPreferences {
     public String getBank() {
         return sharedPreferences.getString(Constant.BANK, "");
     }
+
     public void setAccountNumber(String accountNumber) {
         editor.putString(Constant.ACCOUNT_NUMBER, accountNumber);
         editor.apply();
@@ -150,6 +151,7 @@ public class UserPreferences {
     public String getAccountNumber() {
         return sharedPreferences.getString(Constant.ACCOUNT_NUMBER, "");
     }
+
     public void setUserId(String userId) {
         editor.putString(Constant.User_ID, userId);
         editor.apply();
@@ -395,6 +397,7 @@ public class UserPreferences {
     public String getMotorVehicleBody() {
         return sharedPreferences.getString(Constant.MOTOR_VEHICLE_BODY_TYPE, "");
     }
+
     public void setMotorVehicleYear(String vehicleYear) {
         editor.putString(Constant.MOTOR_VEHICLE_YEAR, vehicleYear);
         editor.apply();
@@ -421,6 +424,7 @@ public class UserPreferences {
     public String getMotorVehicleChasisNum() {
         return sharedPreferences.getString(Constant.MOTOR_VEHICLE_CHASIS_NUM, "");
     }
+
     public void setMotorVehicleEngNum(String engNum) {
         editor.putString(Constant.MOTOR_VEHICLE_ENG_NUM, engNum);
         editor.apply();
@@ -573,7 +577,6 @@ public class UserPreferences {
     }
 
 
-
     public void setSwissIPhoneNum(String phoneNum) {
         editor.putString(Constant.SWISS_INSURED_PHONE_NUM, phoneNum);
         editor.apply();
@@ -677,7 +680,7 @@ public class UserPreferences {
     public String getSwissIAddMaritalStatus() {
         return sharedPreferences.getString(Constant.SWISS_AddMARITAL_STATUS, "");
     }
-    
+
 
     public void setTempSwissQuotePrice(int quotePrice) {
         editor.putInt(Constant.SWISS_QUOTE_PRICE, quotePrice);
@@ -687,8 +690,8 @@ public class UserPreferences {
     public int getTempSwissQuotePrice() {
         return sharedPreferences.getInt(Constant.SWISS_QUOTE_PRICE, 0);
     }
-    
-    
+
+
     //Marine Datas
 
     public void setMarinePtype(String MarinePtype) {
@@ -782,7 +785,6 @@ public class UserPreferences {
     public String getMarineIGender() {
         return sharedPreferences.getString(Constant.MARINE_INSURED_GENDER, "");
     }
-
 
 
     public void setMarineIMaritalStatus(String maritalStatus) {
@@ -942,13 +944,13 @@ public class UserPreferences {
     }
 
 
-    public void setTempMarineQuotePrice(int quotePrice) {
-        editor.putInt(Constant.MARINE_QUOTE_PRICE, quotePrice);
+    public void setTempMarineQuotePrice(String quotePrice) {
+        editor.putString(Constant.MARINE_QUOTE_PRICE, quotePrice);
         editor.apply();
     }
 
-    public int getTempMarineQuotePrice() {
-        return sharedPreferences.getInt(Constant.MARINE_QUOTE_PRICE, 0);
+    public String getTempMarineQuotePrice() {
+        return sharedPreferences.getString(Constant.MARINE_QUOTE_PRICE, "");
     }
 
     //All Risk Datas
@@ -1137,14 +1139,14 @@ public class UserPreferences {
         return sharedPreferences.getString(Constant.ALLRISK_ITEM_VALUE, "");
     }
 
-    
-    public void setTempAllRiskQuotePrice(int quotePrice) {
-        editor.putInt(Constant.ALLRISK_QUOTE_PRICE, quotePrice);
+
+    public void setTempAllRiskQuotePrice(String quotePrice) {
+        editor.putString(Constant.ALLRISK_QUOTE_PRICE, quotePrice);
         editor.apply();
     }
 
-    public int getTempAllRiskQuotePrice() {
-        return sharedPreferences.getInt(Constant.ALLRISK_QUOTE_PRICE, 0);
+    public String getTempAllRiskQuotePrice() {
+        return sharedPreferences.getString(Constant.ALLRISK_QUOTE_PRICE, "0.0");
     }
 
     //Etic datas
@@ -1227,9 +1229,26 @@ public class UserPreferences {
         editor.putString(Constant.ETIC_INSURED_EMAIL, email);
         editor.apply();
     }
-
     public String getEticIEmail() {
         return sharedPreferences.getString(Constant.ETIC_INSURED_EMAIL, "");
+    }
+
+    public void setEticIBusiness(String business) {
+        editor.putString(Constant.ETIC_INSURED_BUSINESS, business);
+        editor.apply();
+    }
+
+    public String getEticIBusiness() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_BUSINESS, "");
+    }
+
+    public void setEticINationality(String nationality) {
+        editor.putString(Constant.ETIC_INSURED_NATIONALITY, nationality);
+        editor.apply();
+    }
+
+    public String getEticINationality() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_NATIONALITY, "");
     }
 
     public void setEticIMailingAddr(String mailingAddr) {
@@ -1241,6 +1260,50 @@ public class UserPreferences {
         return sharedPreferences.getString(Constant.ETIC_INSURED_MAILING_ADDR, "");
     }
 
+    public void setEticIEmployerName(String employerName) {
+        editor.putString(Constant.ETIC_INSURED_EMPLOYER_NAME, employerName);
+        editor.apply();
+    }
+
+    public String getEticIEmployerName() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_EMPLOYER_NAME, "");
+    }
+
+    public void setEticIEmployerAddr(String employerAddr) {
+        editor.putString(Constant.ETIC_INSURED_EMPLOYER_ADDR, employerAddr);
+        editor.apply();
+    }
+
+    public String getEticIEmployerAddr() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_EMPLOYER_ADDR, "");
+    }
+
+    public void setEticIState(String state) {
+        editor.putString(Constant.ETIC_INSURED_STATE, state);
+        editor.apply();
+    }
+
+    public String getEticIState() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_STATE, "");
+    }
+
+    public void setEticIIntendStartDate(String intendStartDate) {
+        editor.putString(Constant.ETIC_INSURED_INTENDED_START_DATE, intendStartDate);
+        editor.apply();
+    }
+
+    public String getEticIIntendStartDate() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_INTENDED_START_DATE, "");
+    }
+
+    public void setEticIEndDate(String eticIEndDate) {
+        editor.putString(Constant.ETIC_INSURED_END_DATE, eticIEndDate);
+        editor.apply();
+    }
+
+    public String getEticIEndDate() {
+        return sharedPreferences.getString(Constant.ETIC_INSURED_END_DATE, "");
+    }
 
     public void setEticITripDuration(String tripDuration) {
         editor.putString(Constant.ETIC_TRIP_DURATION, tripDuration);
@@ -1287,6 +1350,7 @@ public class UserPreferences {
     public String getEticIDisabilityDetail() {
         return sharedPreferences.getString(Constant.ETIC_DISABILITY_DETAIL, "");
     }
+
     public void setEticIDeparturePlc(String departurePlc) {
         editor.putString(Constant.ETIC_DEPARTURE_PL, departurePlc);
         editor.apply();
@@ -1315,15 +1379,13 @@ public class UserPreferences {
     }
 
 
-
-
-    public void setTempEticQuotePrice(int quotePrice) {
-        editor.putInt(Constant.ETIC_QUOTE_PRICE, quotePrice);
+    public void setTempEticQuotePrice(String quotePrice) {
+        editor.putString(Constant.ETIC_QUOTE_PRICE, quotePrice);
         editor.apply();
     }
 
-    public int getTempEticQuotePrice() {
-        return sharedPreferences.getInt(Constant.ETIC_QUOTE_PRICE, 0);
+    public String getTempEticQuotePrice() {
+        return sharedPreferences.getString(Constant.ETIC_QUOTE_PRICE, "0.0");
     }
 
     //Other Insured datas
@@ -1493,22 +1555,89 @@ public class UserPreferences {
     }
 
 
+    public void setSwissIPersonal_QuotePrice(int swiss_quote_price) {
+        editor.putInt(Constant.SWISS_IPERSONAL_QUOTE_PRICE, swiss_quote_price);
+        editor.apply();
+    }
 
+    public void setSwissIAddEmailPersona(String emailPersona) {
+        editor.putString(Constant.SWISS_PERSONAL_EMAIL, emailPersona);
+        editor.apply();
+    }
 
+    public String getSwissIAddEmailPersona() {
+        return sharedPreferences.getString(Constant.SWISS_PERSONAL_EMAIL, "");
+    }
 
+    public void setSwissIAddPicture(String addpersonal_img_url) {
+        editor.putString(Constant.SWISS_ADDPICTURE, addpersonal_img_url);
+        editor.apply();
+    }
 
+    public String getSwissIAddPicture() {
+        return sharedPreferences.getString(Constant.SWISS_ADDPICTURE, "");
+    }
 
+    public void setVehicleQuote(String vehicleQuotePrice) {
+        editor.putString(Constant.MOTOR_VEHICLE_QUOTE, vehicleQuotePrice);
+        editor.apply();
+    }
 
+    public String getVehicleQuote() {
+        return sharedPreferences.getString(Constant.MOTOR_VEHICLE_QUOTE, "");
+    }
 
+    public void setInitQuotePrice(String quotePrice) {
+        editor.putString("init_quote", quotePrice);
+        editor.apply();
+    }
 
+    public String getInitQuotePrice() {
+        return sharedPreferences.getString("init_quote", "0.0");
+    }
 
+    public void setMotorPolySelectType(String selectType) {
+        editor.putString(Constant.MOTOR_POLY_SELECT_TYPE, selectType);
+        editor.apply();
+    }
 
+    public String getMotorPolySelectType() {
+        return sharedPreferences.getString(Constant.MOTOR_POLY_SELECT_TYPE, "");
+    }
 
+    public void setInitSwissQuotePrice(String initSwissQuotePrice) {
+        editor.putString(Constant.SWISS_QUOTE_PRICE_INIT, initSwissQuotePrice);
+        editor.apply();
+    }
 
+    public String getInitSwissQuotePrice() {
+        return sharedPreferences.getString(Constant.SWISS_QUOTE_PRICE_INIT, "0.0");
+    }
 
+    public void setAllRiskIState(String state) {
+        editor.putString(Constant.ALLRISK_INSURED_STATE, state);
+        editor.apply();
+    }
 
+    public String getAllRiskIState() {
+        return sharedPreferences.getString(Constant.ALLRISK_INSURED_STATE, "");
+    }
 
+    public void setAllRiskItemImei(String imei) {
+        editor.putString(Constant.ALLRISK_ITEM_IMEI, imei);
+        editor.apply();
+    }
 
+    public String getAllRiskItemImei() {
+        return sharedPreferences.getString(Constant.ALLRISK_ITEM_IMEI, "");
+    }
 
+    public void setAllRiskItemReceipt(String receipt) {
+        editor.putString(Constant.ALLRISK_ITEM_RECEIPT, receipt);
+        editor.apply();
+    }
 
+    public String getAllRiskItemReceipt() {
+        return sharedPreferences.getString(Constant.ALLRISK_ITEM_RECEIPT, "");
+    }
 }

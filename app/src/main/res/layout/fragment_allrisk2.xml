@@ -64,55 +64,56 @@
 
 
                     <Spinner
-                    android:id="@+id/item_type_spinner_a2"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="@dimen/size_three"
-                    android:background="@drawable/spinner_bg"
-                    android:visibility="visible"
-                    />
+                        android:id="@+id/item_type_spinner_a2"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/spinner_bg"
+                        android:visibility="visible"
+                        />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutItemDescriptn_a2"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="visible"
+                        android:layout_marginTop="3dp"
                         >
 
                         <EditText
                             android:id="@+id/item_desc_a2"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="3dp"
+                            android:singleLine="false"
+                            android:inputType="text|textMultiLine"
+                            android:maxLines="5"
+                            android:textAlignment="textStart"
+                            android:gravity="start"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Describe the item"
+                            android:hint="Describe the item* (required)"
                             android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutStartDate_a2"
+
+
+                    <EditText
+                        android:id="@+id/start_date_a2"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/rounded_bg"
+                        android:hint="Start Date* (required)"
+                        android:inputType="none"
+                        android:focusable="false"
                         android:visibility="visible"
-                        >
+                        android:padding="@dimen/size_ten"
+                        tools:targetApi="o"
+                        />
 
-                        <EditText
-                            android:id="@+id/start_date_a2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Start Date"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="date"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutSerialNo_a2"
@@ -127,7 +128,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Serial Number"
+                            android:hint="Serial Number* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -135,6 +136,27 @@
                             />
                     </com.google.android.material.textfield.TextInputLayout>
 
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutItemImei_a2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        >
+
+                        <EditText
+                            android:id="@+id/item_imei_a2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Item IMEI* (required)"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="text"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutItemValue_a2"
                         android:layout_width="match_parent"
@@ -148,7 +170,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Item Value"
+                            android:hint="Item Value* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -156,6 +178,33 @@
                             />
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <Button
+                        android:id="@+id/upload_img_btn1_a2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_bg"
+                        android:drawableEnd="@drawable/ic_camera_alt_black_24dp"
+                        android:padding="@dimen/size_ten"
+                        android:text="Upload Image*"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:textColor="@android:color/darker_gray"
+                        android:layout_marginBottom="@dimen/size_ten"
+                        android:visibility="visible" />
+
+
+                    <Button
+                        android:id="@+id/upload_receipt_btn2_a2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_bg"
+                        android:drawableEnd="@drawable/ic_camera_alt_black_24dp"
+                        android:padding="@dimen/size_ten"
+                        android:text="Upload Receipt*"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:textColor="@android:color/darker_gray"
+                        android:layout_marginBottom="@dimen/size_ten"
+                        android:visibility="visible"
+                        />
 
                     <LinearLayout
                         android:id="@+id/btn_layout2_a2"

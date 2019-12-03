@@ -12,12 +12,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
@@ -28,6 +31,7 @@ import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.sti_agent.BuildConfig;
+import com.example.sti_agent.MainActivity;
 import com.example.sti_agent.Model.Vehicle.Personal_detail;
 import com.example.sti_agent.Model.Vehicle.VehicleDetails;
 import com.example.sti_agent.Model.Vehicle.VehiclePictures;
@@ -52,7 +56,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
+public class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String VEHICLE_MAKER = "vehicle_maker";
@@ -70,6 +74,10 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
 
     @BindView(R.id.v_back_btn2)
     Button v_back_btn;
+
+
+    @BindView(R.id.vehicle_not_compul)
+    TextView vehicle_not_compul;
 
     @BindView(R.id.front_img_btn)
     Button front_img_btn;
@@ -120,13 +128,12 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
 
 
 
-
-
     private  int currentStep=3;
     Realm realm;
 
     VehiclePolicy id=new VehiclePolicy();
     String primaryKey=id.getId();
+    UserPreferences userPreferences;
 
 
 
@@ -154,8 +161,8 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        UserPreferences userPreferences=new UserPreferences(getContext());
         super.onCreate(savedInstanceState);
+        userPreferences = new UserPreferences(getContext());
         if (getArguments() != null) {
             vehicleMaker = getArguments().getString(VEHICLE_MAKER);
             int oldquote=userPreferences.getTempQuotePrice();
@@ -165,6 +172,10 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
             userPreferences.setTempQuotePrice(total_quote);
             Log.i("PrimaryVariable",primaryKey);
 
+            userPreferences.setTempQuotePrice(total_quote);
+            Log.i("PrimaryVariable",primaryKey);
+
+            p_amount= total_quote;
 
         }
     }
@@ -179,11 +190,33 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
         stepView.go(currentStep, true);
 
         realm=Realm.getDefaultInstance();
-        UserPreferences userPreferences=new UserPreferences(getContext());
+        if (userPreferences.getMotorPolySelectType().equals("third_party_only")) {
+
+            vehicle_not_compul.setVisibility(View.VISIBLE);
+
+        }
+
 
 
 
         setViewActions();
+        Toast.makeText(getActivity(), "Click the Add Button, to add more vehicle", Toast.LENGTH_LONG).show();
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i("backPress_KeyCode", "keyCode: " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.i("backPress", "onKey Back listener is working!!!");
+                    userPreferences.setTempQuotePrice(0);
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return  view;
     }
@@ -1027,7 +1060,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
                 AlertDialog dialog4 = builder4.create();
                 dialog4.show();
                 left_img_btn.setBackgroundColor(getResources().getColor(R.color.colorLightGrey));
-                 
+
 
                 break;
 
@@ -1059,7 +1092,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
                 AlertDialog dialog5 = builder5.create();
                 dialog5.show();
                 right_img_btn1.setBackgroundColor(getResources().getColor(R.color.colorLightGrey));
-                  
+
 
                 break;
 
@@ -1109,6 +1142,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
                             personal_detail.setTin_number(userPreferences.getMotorITinNumber());
                             personal_detail.setOffice_address(userPreferences.getMotorIOff_addr());
                             personal_detail.setContact_person(userPreferences.getMotorIContPerson());
+                            personal_detail.setPicture(userPreferences.getMotorIPersonal_image());
                             //Vehicle List
                             VehicleDetails vehicleDetails=new VehicleDetails();
                             vehicleDetails.setPeriod("");
@@ -1127,6 +1161,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
                             vehicleDetails.setEngine_number(userPreferences.getMotorVehicleEngNum());
                             vehicleDetails.setMotorcylce_value(userPreferences.getMotorCycleValue());
                             vehicleDetails.setVehicle_value(userPreferences.getMotorVehicleValue());
+                            vehicleDetails.setPrice(userPreferences.getInitQuotePrice());
 
                             //Vehicle Picture List
                             VehiclePictures vehiclePictures=new VehiclePictures();
@@ -1176,6 +1211,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
                             vehicleDetails.setEngine_number(userPreferences.getMotorVehicleEngNum());
                             vehicleDetails.setMotorcylce_value(userPreferences.getMotorCycleValue());
                             vehicleDetails.setVehicle_value(userPreferences.getMotorVehicleValue());
+                            vehicleDetails.setPrice(userPreferences.getInitQuotePrice());
                             //Vehicle Picture List
                             VehiclePictures vehiclePictures=new VehiclePictures();
 
@@ -1259,6 +1295,7 @@ class MotorInsureFragment4 extends Fragment implements View.OnClickListener{
         personal_detail.setTin_number(userPreferences.getMotorITinNumber());
         personal_detail.setOffice_address(userPreferences.getMotorIOff_addr());
         personal_detail.setContact_person(userPreferences.getMotorIContPerson());
+        personal_detail.setPicture(userPreferences.getMotorIPersonal_image());
         //Vehicle List
         VehicleDetails vehicleDetails=new VehicleDetails();
         vehicleDetails.setPeriod("");

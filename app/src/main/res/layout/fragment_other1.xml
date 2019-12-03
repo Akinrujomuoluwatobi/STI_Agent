@@ -305,6 +305,14 @@
                             />
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <Spinner
+                        android:id="@+id/state_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="3dp"
+                        android:background="@drawable/spinner_bg"
+                        android:visibility="visible" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutMailingAddr_o1"
                         android:layout_width="match_parent"

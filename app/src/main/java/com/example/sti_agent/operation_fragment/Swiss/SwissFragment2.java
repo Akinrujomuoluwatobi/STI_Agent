@@ -34,9 +34,14 @@ import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.sti_agent.BuildConfig;
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.ServiceGenerator;
+import com.example.sti_agent.Model.Swiss.QouteHeadSwiss;
 import com.example.sti_agent.NetworkConnection;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 
 
@@ -56,6 +61,9 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class SwissFragment2 extends Fragment implements View.OnClickListener{
@@ -112,6 +120,8 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
     Button mVNextBtn2S2;
     @BindView(R.id.progressbar2_s2)
     AVLoadingIndicatorView mProgressbar2S2;
+
+
   
 
     private int currentStep = 1;
@@ -124,10 +134,14 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
     Uri addaddinsure_person_img_uri;
     String addpersonal_img_url,DobString;
 
-    DatePickerDialog datePickerDialog1;
+    DatePickerDialog datePickerDialog2;
 
     String maritalString,genderString,benefitString;
+    String quote_price,category;
 
+    int benefit_count = 0;
+
+    UserPreferences userPreferences;
     public SwissFragment2() {
         // Required empty public constructor
     }
@@ -169,6 +183,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         
 
         mStepView.go(currentStep, true);
+        userPreferences = new UserPreferences(getContext());
 
         init();
 
@@ -187,8 +202,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
 
     private  void init(){
-        UserPreferences userPreferences = new UserPreferences(getContext());
-
         //Temporal save and go to next Operation
 
 
@@ -267,7 +280,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
     }
 
-
     private void benefittypeSpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
         ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
@@ -285,8 +297,20 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String benefitTypeString = (String) parent.getItemAtPosition(position);
-
-
+                switch (benefitTypeString) {
+                    case "Single":
+                        benefit_count = 1;
+                        break;
+                    case "Double":
+                        benefit_count = 2;
+                        break;
+                    case "Triple":
+                        benefit_count = 3;
+                        break;
+                    default:
+                        showMessage("Pick a benefit category");
+                        break;
+                }
 
             }
 
@@ -297,7 +321,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         });
 
     }
-
 
 
     //seting onclicks listeners
@@ -318,7 +341,8 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.dob_editxt_s2:
-                datePickerDialog1.show();
+                showDatePicker();
+                datePickerDialog2.show();
                 break;
 
             case R.id.v_back_btn2_s2:
@@ -661,7 +685,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         mProgressbar2S2.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
 
             //Temporal save and go to next Operation
 
@@ -673,11 +696,11 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             userPreferences.setSwissIAddPhoneNum(mPhoneNoEditxtS2.getText().toString());
             userPreferences.setSwissIAddEmail(mEmailEditxtS2.getText().toString());
             userPreferences.setSwissIAddDisability(mDisableEditxtS2.getText().toString());
+            userPreferences.setSwissIAddDOB(mDobEditxtS2.getText().toString());
+            userPreferences.setSwissIAddPicture(addpersonal_img_url);
 
-           // Fragment quoteBuyFragment3 = new SwissInsureFragment3();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_swiss_form_container, SwissFragment3.newInstance("Eligible","8000"), SwissFragment3.class.getSimpleName());
-            ft.commit();
+            sendSwissData();
+
 
         }catch (Exception e){
             Log.i("Form Error",e.getMessage());
@@ -687,6 +710,110 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         }
     }
 
+    private void sendSwissData(){
+
+        //get client and call object for request
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+
+
+        Call<QouteHeadSwiss> call=client.swiss_quote("Token "+userPreferences.getUserToken(),mDobEditxtS2.getText().toString());
+
+        call.enqueue(new Callback<QouteHeadSwiss>() {
+            @Override
+            public void onResponse(Call<QouteHeadSwiss> call, Response<QouteHeadSwiss> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+
+                if(response.code()==400){
+                    showMessage("Check your internet connection");
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==429){
+                    showMessage("Too many requests on database");
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==500){
+                    showMessage("Server Error");
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==401){
+                    showMessage("Unauthorized access, please try login again");
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                    return;
+                }
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try{
+                            APIError apiError= ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: "+apiError.getErrors());
+                            Log.i("Invalid EntryK",apiError.getErrors().toString());
+                            Log.i("Invalid Entry",response.errorBody().toString());
+
+                        }catch (Exception e){
+                            Log.i("InvalidEntry",e.getMessage());
+                            Log.i("ResponseError",response.errorBody().string());
+                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                            mBtnLayout2S2.setVisibility(View.VISIBLE);
+                            mProgressbar2S2.setVisibility(View.GONE);
+
+                        }
+                        mBtnLayout2S2.setVisibility(View.VISIBLE);
+                        mProgressbar2S2.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    quote_price=response.body().getData().getPrice();
+                    category=response.body().getData().getCategory();
+                    switch (category) {
+                        case "Adult":
+                            int mul_price_adult = 1500 * benefit_count;
+                            quote_price = String.valueOf(mul_price_adult);
+                            break;
+                        case "Child":
+                            int mul_price_child = 250 * benefit_count;
+                            quote_price = String.valueOf(mul_price_child);
+                            break;
+
+                        default:
+                            quote_price = "0.0";
+                            break;
+
+                    }
+
+                    double roundOff = Math.round(Double.valueOf(quote_price)*100)/100.00;
+
+                    Log.i("quote_price",quote_price);
+                    showMessage("Successfully Fetched Quote");
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                    userPreferences.setInitSwissQuotePrice(String.valueOf(roundOff));
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_swiss_form_container, SwissFragment3.newInstance(category, String.valueOf(roundOff)), SwissFragment3.class.getSimpleName());
+                    ft.commit();
+
+                }catch (Exception e){
+                    Log.i("policyResponse", e.getMessage());
+                    mBtnLayout2S2.setVisibility(View.VISIBLE);
+                    mProgressbar2S2.setVisibility(View.GONE);
+                }
+
+            }
+            @Override
+            public void onFailure(Call<QouteHeadSwiss> call, Throwable t) {
+                showMessage("Submission Failed "+t.getMessage());
+                Log.i("GEtError",t.getMessage());
+                mBtnLayout2S2.setVisibility(View.VISIBLE);
+                mProgressbar2S2.setVisibility(View.GONE);
+            }
+        });
+
+    }
 
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout2, s, Snackbar.LENGTH_LONG).show();
@@ -713,7 +840,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         Calendar calendar = Calendar.getInstance();
 
         //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
-        datePickerDialog1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        datePickerDialog2 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
@@ -725,9 +852,9 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                     return;
                 }
                 int monthofYear=monthOfYear+1;
-                DobString = dayOfMonth + "-" + monthofYear + "-" + year;
+                DobString = year + "-" + monthofYear + "-" + dayOfMonth;
                 mDobEditxtS2.setText(DobString);
-                datePickerDialog1.dismiss();
+                datePickerDialog2.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
     }

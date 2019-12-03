@@ -1,41 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".UserMain_Fragment.Fragment_Customers">
-    <ImageView
-        android:id="@+id/bg_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/dashboard_bg"
-        />
+    android:id="@+id/trasanction_history_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@drawable/dashboard_bg"
+    android:orientation="vertical">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/progressbar_customer"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/size_twenty_eight"
-        android:visibility="visible"
-        android:layout_gravity="center"
-        app:indicatorColor="@color/colorAccent"
-        app:indicatorName="BallPulseSyncIndicator"
-        tools:ignore="RtlHardcoded"/>
-
-  <!--  <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:scrollbars="vertical"
-        android:visibility="visible"
-        tools:listitem="@layout/dash_list" />-->
+        android:textSize="18sp"
+        android:text="Customers"
+        android:layout_margin="4dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_semibold"/>
+
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avi1"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/size_thirty"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:indicatorColor="@color/colorAccent"
+        app:indicatorName="BallPulseIndicator" />
+
+    <LinearLayout
+        android:id="@+id/search_not_found_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+       >
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/img_empty" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:text="No Item Found for your search"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_customers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

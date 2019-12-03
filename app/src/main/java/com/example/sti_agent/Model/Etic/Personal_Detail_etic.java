@@ -20,6 +20,13 @@ public class Personal_Detail_etic extends RealmObject {
     String next_of_kin_phone;
     String next_of_kin_address;
     String prefix;
+    String business;
+    String nationality;
+    String employer_name;
+    String employer_addr;
+    String state;
+    String intnded_start_dateCover;
+    String end_dateCover;
     RealmList<Travel_Info> travel_infos;
 
 
@@ -127,6 +134,59 @@ public class Personal_Detail_etic extends RealmObject {
         this.travel_infos = travel_infos;
     }
 
+    public String getBusiness() {
+        return business;
+    }
 
+    public void setBusiness(String business) {
+        this.business = business;
+    }
 
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getEmployer_name() {
+        return employer_name;
+    }
+
+    public void setEmployer_name(String employer_name) {
+        this.employer_name = employer_name;
+    }
+
+    public String getEmployer_addr() {
+        return employer_addr;
+    }
+
+    public void setEmployer_addr(String employer_addr) {
+        this.employer_addr = employer_addr;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getIntnded_start_dateCover() {
+        return intnded_start_dateCover;
+    }
+
+    public void setIntnded_start_dateCover(String intnded_start_dateCover) {
+        this.intnded_start_dateCover = intnded_start_dateCover;
+    }
+
+    public String getEnd_dateCover() {
+        return end_dateCover;
+    }
+
+    public void setEnd_dateCover(String end_dateCover) {
+        this.end_dateCover = end_dateCover;
+    }
 }

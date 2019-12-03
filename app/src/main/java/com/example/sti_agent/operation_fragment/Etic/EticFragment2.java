@@ -24,6 +24,10 @@ import android.widget.Spinner;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.Etic.QouteHeadEtic;
+import com.example.sti_agent.Model.ServiceGenerator;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
 import com.example.sti_agent.operation_fragment.Etic.EticFragment1;
@@ -31,6 +35,7 @@ import com.example.sti_agent.operation_fragment.Etic.EticFragment2;
 import com.example.sti_agent.operation_fragment.Etic.EticFragment3;
 import com.example.sti_agent.operation_fragment.MotorInsurance.MotorInsureFragment1;
 import com.example.sti_agent.operation_fragment.MotorInsurance.MotorInsureFragment3;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 
 
@@ -45,6 +50,9 @@ import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class EticFragment2 extends Fragment implements View.OnClickListener{
@@ -60,19 +68,15 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
     @BindView(R.id.qb_form_layout2)
     FrameLayout mQbFormLayout2;
     @BindView(R.id.step_view)
-    com.shuhart.stepview.StepView mStepView;
+    StepView mStepView;
     @BindView(R.id.inputLayoutTripDuratn_e2)
     TextInputLayout mInputLayoutTripDuratnE2;
     @BindView(R.id.trip_duration_e2)
     EditText mTripDurationE2;
-    @BindView(R.id.inputLayoutStartDate_e2)
-    TextInputLayout mInputLayoutStartDateE2;
     @BindView(R.id.start_date_e2)
     EditText mStartDateE2;
-    @BindView(R.id.inputLayoutTravelMode_e2)
-    TextInputLayout mInputLayoutTravelModeE2;
-    @BindView(R.id.travel_mode_e2)
-    EditText mTravelModeE2;
+    @BindView(R.id.travel_mode_spinner_e2)
+    Spinner travel_mode_spinner_e2;
     @BindView(R.id.disability_spinner_e2)
     Spinner mDisabilitySpinnerE2;
     @BindView(R.id.inputLayoutDisabilityDetail_e2)
@@ -92,8 +96,8 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
     TextInputLayout mInputLayoutCountryVisitAddrE2;
     @BindView(R.id.countryVisit_addr_txt_e2)
     EditText mCountryVisitAddrE2;
-    
-    
+
+
     @BindView(R.id.btn_layout2_e2)
     LinearLayout mBtnLayout2E2;
     @BindView(R.id.v_back_btn2_e2)
@@ -106,8 +110,9 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
 
     private int currentStep = 1;
 
-    String disabilityString,startDateStrg;
+    String disabilityString, startDateStrg, disable_DetailString, travelModeString;
     DatePickerDialog datePickerDialog1;
+    UserPreferences userPreferences;
 
 
 
@@ -151,6 +156,7 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_etic2, container, false);
         ButterKnife.bind(this,view);
+        userPreferences = new UserPreferences(getContext());
         //        mStepView next registration step
 
         mStepView.go(currentStep, true);
@@ -158,6 +164,7 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         init();
 
         disabilitytypeSpinner();
+        travelModetypeSpinner();
         setViewActions();
         showDatePicker();
 
@@ -166,7 +173,6 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
 
 
     private  void init(){
-        UserPreferences userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
 
@@ -175,7 +181,7 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
 
         mStartDateE2.setText(userPreferences.getEticStartDate());
 
-        mTravelModeE2.setText(userPreferences.getEticITravelMode());
+        //mTravelModeE2.setText(userPreferences.getEticITravelMode());
 
         mDisableDetailE2.setText(userPreferences.getEticIDisabilityDetail());
 
@@ -227,6 +233,38 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
 
     }
 
+    private void travelModetypeSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(getContext(), R.array.travel_mode_array,
+                        android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        travel_mode_spinner_e2.setAdapter(staticAdapter);
+
+        travel_mode_spinner_e2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String travelModeString = (String) parent.getItemAtPosition(position);
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //De-Visualizing the individual form
+                travel_mode_spinner_e2.getItemAtPosition(0);
+
+
+            }
+        });
+
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -266,14 +304,7 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutTripDuratnE2.setError("Trip Duration is required!");
             isValid = false;
         } else if (mStartDateE2.getText().toString().isEmpty()) {
-            mInputLayoutStartDateE2.setError("Start Date is required!");
-            isValid = false;
-        } else if (mTravelModeE2.getText().toString().isEmpty()) {
-            mInputLayoutTravelModeE2.setError("Travel Mode is required!");
-
-            isValid = false;
-        } else if (mDisableDetailE2.getText().toString().isEmpty()) {
-            mInputLayoutDisabilityDetailE2.setError("Diasability Detail is required!");
+            showMessage("Start Date is required!");
             isValid = false;
         } else if (mDeptPlaceTxtE2.getText().toString().isEmpty()) {
             mInputLayoutDeptPlaceE2.setError("Departure Place is required!");
@@ -285,9 +316,6 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         }else {
             mInputLayoutCountryVisitAddrE2.setErrorEnabled(false);
             mInputLayoutDeptPlaceE2.setErrorEnabled(false);
-            mInputLayoutDisabilityDetailE2.setErrorEnabled(false);
-            mInputLayoutStartDateE2.setErrorEnabled(false);
-            mInputLayoutTravelModeE2.setErrorEnabled(false);
             mInputLayoutTripDuratnE2.setErrorEnabled(false);
         }
 
@@ -298,13 +326,32 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         }else {
             mInputLayoutArivalPlaceE2.setErrorEnabled(false);
         }
-                // Spinner Validations
+        // Spinner Validations
 
         disabilityString = mDisabilitySpinnerE2.getSelectedItem().toString();
-        if (disabilityString.equals("Select Disability")) {
+        if (disabilityString.equals("Yes")) {
+            if (mDisableDetailE2.getText().toString().isEmpty() && mDisableDetailE2.isClickable()) {
+                mInputLayoutDisabilityDetailE2.setError("Disability detail is required!");
+                isValid = false;
+            } else {
+                mInputLayoutDisabilityDetailE2.setErrorEnabled(false);
+            }
+        }
+
+        if (disabilityString.equals("Select Disability*")) {
             showMessage("Select Yes or No for disability");
             isValid = false;
         }
+
+        //mode of travel validation
+        travelModeString = travel_mode_spinner_e2.getSelectedItem().toString();
+        if (travelModeString.equals("Select Mode of Travel*")) {
+            showMessage("Select mode of travel");
+            isValid = false;
+        }
+
+
+
 
         if (isValid) {
 //            send inputs to next next page
@@ -322,23 +369,25 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         mProgressbar2E2.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
+
 
             //Temporal save and go to next Operation
 
             userPreferences.setEticITripDuration(mTripDurationE2.getText().toString());
             userPreferences.setEticIDisability(disabilityString);
             userPreferences.setEticStartDate(mStartDateE2.getText().toString());
-            userPreferences.setEticITravelMode(mTravelModeE2.getText().toString());
-            userPreferences.setEticIDisabilityDetail(mDisableDetailE2.getText().toString());
+            userPreferences.setEticITravelMode(travelModeString);
             userPreferences.setEticIDeparturePlc(mDeptPlaceTxtE2.getText().toString());
+            if (disabilityString.equals("Yes")) {
+                userPreferences.setEticIDisabilityDetail(mDisableDetailE2.getText().toString());
+
+            } else {
+                userPreferences.setEticIDisabilityDetail("null");
+            }
             userPreferences.setEticIArrivalPlc(mArrivalPlaceTxtE2.getText().toString());
             userPreferences.setEticICountryOfVisit(mCountryVisitAddrE2.getText().toString());
 
-
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_etic_form_container, EticFragment3.newInstance("Premium","8000"), EticFragment3.class.getSimpleName());
-            ft.commit();
+            sendEticData();
 
         }catch (Exception e){
             Log.i("Form Error",e.getMessage());
@@ -348,12 +397,105 @@ public class EticFragment2 extends Fragment implements View.OnClickListener{
         }
     }
 
-
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout2, s, Snackbar.LENGTH_SHORT).show();
     }
 
 
+    private void sendEticData(){
+
+
+        //get client and call object for request
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+        Call<QouteHeadEtic> call=client.etic_quote("Token "+userPreferences.getUserToken(), 2000);
+
+        call.enqueue(new Callback<QouteHeadEtic>() {
+            @Override
+            public void onResponse(Call<QouteHeadEtic> call, Response<QouteHeadEtic> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+
+                if(response.code()==406){
+                    showMessage("Error! Wrong Value provided!");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                    return;
+                }
+
+                if(response.code()==400){
+                    showMessage("Check your internet connection");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==429){
+                    showMessage("Too many requests on database");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==500){
+                    showMessage("Server Error");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                    return;
+                }else if(response.code()==401){
+                    showMessage("Unauthorized access, please try login again");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                    return;
+                }
+
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try{
+                            APIError apiError= ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: "+apiError.getErrors());
+                            Log.i("Invalid EntryK",apiError.getErrors().toString());
+                            Log.i("Invalid Entry",response.errorBody().toString());
+
+                        }catch (Exception e){
+                            Log.i("InvalidEntry",e.getMessage());
+                            Log.i("ResponseError",response.errorBody().string());
+                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                            mBtnLayout2E2.setVisibility(View.VISIBLE);
+                            mProgressbar2E2.setVisibility(View.GONE);
+
+                        }
+                        mBtnLayout2E2.setVisibility(View.VISIBLE);
+                        mProgressbar2E2.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    String quote_price=response.body().getData().getPrice();
+
+                    double roundOff = Math.round(Double.valueOf(quote_price)*100)/100.00;
+
+                    Log.i("quote_price", String.valueOf(roundOff));
+                    showMessage("Successfully Fetched Quote");
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_etic_form_container, EticFragment3.newInstance(travelModeString, String.valueOf(roundOff)), EticFragment3.class.getSimpleName());
+                    ft.commit();
+                }catch (Exception e){
+                    Log.i("policyResponse", e.getMessage());
+                    mBtnLayout2E2.setVisibility(View.VISIBLE);
+                    mProgressbar2E2.setVisibility(View.GONE);
+                }
+
+            }
+            @Override
+            public void onFailure(Call<QouteHeadEtic> call, Throwable t) {
+                showMessage("Submission Failed "+t.getMessage());
+                Log.i("GEtError",t.getMessage());
+                mBtnLayout2E2.setVisibility(View.VISIBLE);
+                mProgressbar2E2.setVisibility(View.GONE);
+            }
+        });
+
+    }
 
     private void showDatePicker() {
         //Get current date

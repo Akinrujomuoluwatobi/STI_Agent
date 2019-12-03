@@ -34,6 +34,15 @@ public static final String USER_TYPE = "user_type";
     public static final String ROLE = "role";
     public static final String PROFILE_PIC = "profile_pic";
 
+    //PAYMENT
+    public static final String TOTAL_PRICE = "total_price";
+    public static final String POLICY_NUM = "policy_number";
+    public static final String REF = "ref";
+    public static final String POLICY_TYPE = "policy_type";
+
+
+
+
 //    Login pref. constant
     public static final String IS_USER_LOGGED = "user_login";
 
@@ -42,6 +51,17 @@ public static final String USER_TYPE = "user_type";
     public static final String CARD_OPTION_TITLE = "more_option_title";
     public static final String CARD_OPTION_SUBTITLE = "more_option_subtitle";
     public static final String YOUTUBE_ID = "youtubeId";
+    public static final String SWISS_IPERSONAL_QUOTE_PRICE = "swiss_quote_price";
+    public static final String SWISS_PERSONAL_EMAIL = "swiss_personal_email";
+    public static final String WALLET_AMOUNT_FUNDING = "wallet_amount_funding";
+    public static final String WALLET_DESC = "wallet_desc";
+    public static final String SWISS_ADDPICTURE = "swiss_add_picture";
+    public static final String MOTOR_VEHICLE_QUOTE = "motor_vehicle_quote";
+    public static final String MOTOR_POLY_SELECT_TYPE = "motor_p_select_type";
+    public static final String SWISS_QUOTE_PRICE_INIT = "swiss_quote_price_init";
+    public static final String ALLRISK_INSURED_STATE = "allrisk_insured_state";
+    public static final String ALLRISK_ITEM_IMEI = "allrisk_item_imei";
+    public static final String ALLRISK_ITEM_RECEIPT = "allrisk_item_receipt";
 
 
     public static String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
@@ -58,10 +78,6 @@ public static final String USER_TYPE = "user_type";
     public static String BANK = "bank";
     public static String ACCOUNT_NUMBER = "account_number";
     public static String ACCOUNT_NAME = "account_name";
-
-
-
-
 
 
 
@@ -212,6 +228,14 @@ public static final String USER_TYPE = "user_type";
     public static final String ETIC_INSURED_PHONE_NUM = "etic_insured_ph_num";
     public static final String ETIC_INSURED_EMAIL = "etic_insured_email";
     public static final String ETIC_INSURED_MAILING_ADDR = "etic_insured_mail_addr";
+    public static final String ETIC_INSURED_BUSINESS = "etic_insured_business";
+    public static final String ETIC_INSURED_NATIONALITY = "etic_insured_nationality";
+    public static final String ETIC_INSURED_EMPLOYER_NAME = "etic_insured_employer_name";
+    public static final String ETIC_INSURED_EMPLOYER_ADDR= "etic_insured_employer_addr";
+    public static final String ETIC_INSURED_STATE = "etic_insured_state";
+    public static final String ETIC_INSURED_INTENDED_START_DATE = "etic_insured_intend_strt_date";
+    public static final String ETIC_INSURED_END_DATE = "etic_insured_end_date";
+
 
     //Travel  Details
     public static final String ETIC_TRIP_DURATION = "etic_trip_duration";

@@ -71,10 +71,4 @@ public class SwissInsured extends RealmObject {
         this.personal_detail_swisses = personal_detail_swisses;
     }
 
-
-
-
-
-
-
 }

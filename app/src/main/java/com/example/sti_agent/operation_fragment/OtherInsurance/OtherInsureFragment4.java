@@ -46,7 +46,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-class OtherInsureFragment4 extends Fragment implements View.OnClickListener{
+public class OtherInsureFragment4 extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
 
     private static final String PRIMARY_KEY = "primaryKey";

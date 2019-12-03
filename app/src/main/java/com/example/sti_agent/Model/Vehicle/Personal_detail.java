@@ -24,10 +24,18 @@ public class Personal_detail extends RealmObject {
     String tin_number;
     String office_address;
     String contact_person;
+    String picture;
+
 
     RealmList<VehicleDetails> vehicle_info;
 
+    public String getPicture() {
+        return picture;
+    }
 
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 
     public String getFirst_name() {
         return first_name;

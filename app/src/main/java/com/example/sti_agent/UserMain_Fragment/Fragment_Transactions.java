@@ -2,20 +2,33 @@ package com.example.sti_agent.UserMain_Fragment;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sti_agent.GridSpacingItemDecoration;
 import com.example.sti_agent.Model.Card;
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.ServiceGenerator;
+import com.example.sti_agent.Model.TransactionHistroy.History;
+import com.example.sti_agent.Model.TransactionHistroy.TransactionHead;
 import com.example.sti_agent.R;
+import com.example.sti_agent.UserPreferences;
 import com.example.sti_agent.adapter.CardAdapter;
+import com.example.sti_agent.adapter.TransactionAdapter;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
+import com.google.android.material.snackbar.Snackbar;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
@@ -23,9 +36,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class Fragment_Transactions extends Fragment {
+public class Fragment_Transactions extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -34,14 +50,25 @@ public class Fragment_Transactions extends Fragment {
     private String mParam1;
     private String mParam2;
 
-  /*  @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    /** ButterKnife Code **/
+    @BindView(R.id.trasanction_history_layout)
+    LinearLayout mPaymentHistoryLayout;
+    @BindView(R.id.avi1)
+    AVLoadingIndicatorView mAvi1;
+    @BindView(R.id.search_not_found_layout)
+    LinearLayout mSearchNotFoundLayout;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_payment_history)
+    RecyclerView mRecyclerPaymentHistory;
+    /** ButterKnife Code **/
 
-    private CardAdapter cardAdapter;
-    private List<Card> cardList;*/
+    private TransactionAdapter transactionAdapter;
+    LinearLayoutManager layoutManager;
+    UserPreferences userPreferences;
 
-    @BindView(R.id.progressbar_trans)
-    AVLoadingIndicatorView progressbar_trans;
+    ApiInterface client= ServiceGenerator.createService(ApiInterface.class);
+
 
 
 
@@ -80,9 +107,10 @@ public class Fragment_Transactions extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_transactions, container, false);
+        View view=inflater.inflate(R.layout.fragment_transaction_history, container, false);
         ButterKnife.bind(this,view);
-        progressbar_trans.setVisibility(View.VISIBLE);
+        //progressbar_trans.setVisibility(View.VISIBLE);
+        init();
 
         /*cardList = new ArrayList<>();
         cardAdapter = new CardAdapter(getContext(), cardList);
@@ -98,6 +126,91 @@ public class Fragment_Transactions extends Fragment {
 */
 
         return  view;
+    }
+
+    private void init() {
+        userPreferences = new UserPreferences(getContext());
+        getHistory();
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        getHistory();
+    }
+
+    private void getHistory(){
+
+
+        //get client and call object for request
+
+        Call<TransactionHead> call=client.transaction_hist("Token "+userPreferences.getUserToken());
+        call.enqueue(new Callback<TransactionHead>() {
+            @Override
+            public void onResponse(Call<TransactionHead> call, Response<TransactionHead> response) {
+
+                if(!response.isSuccessful()){
+                    try {
+                        APIError apiError = ErrorUtils.parseError(response);
+
+                        showMessage("Fetch Failed: " + apiError.getErrors());
+                        Log.i("Invalid Fetch", String.valueOf(apiError.getErrors()));
+                        //Log.i("Invalid Entry", response.errorBody().toString());
+
+                    } catch (Exception e) {
+                        Log.i("Fetch Failed", e.getMessage());
+                        showMessage("Fetch Failed");
+
+                    }
+
+                    return;
+                }
+                mSwipeRefreshLayout.setRefreshing(false);
+
+                List<History> policy_item=response.body().getHistory();
+
+                int count=policy_item.size();
+
+                Log.i("Re-SuccessSize", String.valueOf(policy_item.size()));
+
+                if(count==0){
+                    mSearchNotFoundLayout.setVisibility(View.VISIBLE);
+                    mSwipeRefreshLayout.setVisibility(View.GONE);
+
+                }else {
+                    mSearchNotFoundLayout.setVisibility(View.GONE);
+                    mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+
+                    layoutManager = new LinearLayoutManager(getContext());
+                    mRecyclerPaymentHistory.setLayoutManager(layoutManager);
+                    transactionAdapter = new TransactionAdapter(getContext(), policy_item);
+                    mRecyclerPaymentHistory.setAdapter(transactionAdapter);
+                    transactionAdapter.notifyDataSetChanged();
+
+                    Log.i("Success", response.body().toString());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<TransactionHead> call, Throwable t) {
+                showMessage("Fetch failed, please try again "+t.getMessage());
+                Log.i("GEtError",t.getMessage());
+            }
+        });
+
+
+    }
+
+    private void showMessage(String s) {
+        Snackbar.make(mPaymentHistoryLayout, s, Snackbar.LENGTH_SHORT).show();
     }
 
 

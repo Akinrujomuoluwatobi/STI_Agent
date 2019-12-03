@@ -5,6 +5,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sti_agent.Model.Auth.ChangePassPost;
 import com.example.sti_agent.Model.Auth.UserPassword;
@@ -19,23 +34,6 @@ import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.wang.avi.AVLoadingIndicatorView;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
    /* @BindView(R.id.message)
     TextView mTextMessage;*/
 
-
+    PermissionCheckClass mPermissionCheckClass;
     Fragment fragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -67,27 +65,27 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     //mTextMessage.setText(R.string.title_home);
-                    applyToolbar("Dashboard","Supporting your clients");
+                    applyToolbar("Dashboard", "Supporting your clients");
                     fragment = new Fragment_Dashboard();
                     showFragment(fragment);
                     return true;
                 case R.id.navigation_customer:
-                   // mTextMessage.setText(R.string.title_customer);
-                    applyToolbarChildren("Customers Board","Manage your clients");
+                    // mTextMessage.setText(R.string.title_customer);
+                    applyToolbarChildren("Customers Board", "Manage your clients");
                     fragment = new Fragment_Customers();
                     showFragment(fragment);
 
                     return true;
                 case R.id.navigation_transaction:
-                   // mTextMessage.setText(R.string.title_transaction);
-                    applyToolbarChildren("Transactions","Check previous transactions");
+                    // mTextMessage.setText(R.string.title_transaction);
+                    applyToolbarChildren("Transactions", "Check previous transactions");
                     fragment = new Fragment_Transactions();
                     showFragment(fragment);
                     return true;
 
                 case R.id.navigation_profile:
-                   // mTextMessage.setText(R.string.title_profile);
-                    applyToolbarChildren("Profile","Agent information");
+                    // mTextMessage.setText(R.string.title_profile);
+                    applyToolbarChildren("Profile", "Agent information");
                     fragment = new ProfileFragment();
                     showFragment(fragment);
                     return true;
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    NetworkConnection networkConnection=new NetworkConnection();
+    NetworkConnection networkConnection = new NetworkConnection();
     ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
     UserPreferences userPreferences;
 
@@ -107,10 +105,14 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         ButterKnife.bind(this);
-        userPreferences=new UserPreferences(this);
+        userPreferences = new UserPreferences(this);
 
+        mPermissionCheckClass = new PermissionCheckClass(this);
+        if (!mPermissionCheckClass.checkPermission()){
+            mPermissionCheckClass.requestPermission();
+        }
 
-        applyToolbar("Dashboard","Supporting your clients");
+        applyToolbar("Dashboard", "Supporting your clients");
 
 
         fragment = new Fragment_Dashboard();
@@ -118,8 +120,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    private void applyToolbar(String title,String subtitle) {
+    private void applyToolbar(String title, String subtitle) {
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void applyToolbarChildren(String title,String subtitle) {
+    private void applyToolbarChildren(String title, String subtitle) {
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -163,19 +164,19 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (itemId == R.id.profile) {
 
-            applyToolbarChildren("Profile","Agent information");
+            applyToolbarChildren("Profile", "Agent information");
             fragment = new ProfileFragment();
             showFragment(fragment);
 
 
-        }else if (itemId == R.id.action_change_pass) {
+        } else if (itemId == R.id.action_change_pass) {
 
             changePassword();
 
-        } else if(itemId==R.id.action_faq){
+        } else if (itemId == R.id.action_faq) {
 
             return true;
-        }else if(itemId==R.id.action_share){
+        } else if (itemId == R.id.action_share) {
 
             Intent sharingIntent = new Intent(Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
@@ -186,9 +187,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(sharingIntent, "Share via"));
 
 
-
             return true;
-        }else if(itemId==R.id.action_update){
+        } else if (itemId == R.id.action_update) {
             goPlayStore();
 
             return true;
@@ -208,21 +208,21 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setTitle("Change Password");
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView= inflater.inflate(R.layout.change_pass, null);
+        View dialogView = inflater.inflate(R.layout.change_pass, null);
         builder.setView(dialogView);
         EditText oldPassword = dialogView.findViewById(R.id.oldpass);
         EditText newPassword = dialogView.findViewById(R.id.newpass);
-        AVLoadingIndicatorView progressBar=dialogView.findViewById(R.id.progressbar);
+        AVLoadingIndicatorView progressBar = dialogView.findViewById(R.id.progressbar);
 
         builder.setPositiveButton("Change", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
 
-                if (oldPassword.getText().toString().isEmpty()||oldPassword.getText().toString().trim().length()<6) {
+                if (oldPassword.getText().toString().isEmpty() || oldPassword.getText().toString().trim().length() < 6) {
                     showMessage("Invalid Password, ensure at least 6 characters");
                     return;
-                }else if(oldPassword.getText().toString().isEmpty()||oldPassword.getText().toString().trim().length()<6){
+                } else if (oldPassword.getText().toString().isEmpty() || oldPassword.getText().toString().trim().length() < 6) {
                     showMessage("Invalid Password, ensure at least 6 characters");
                     return;
                 }
@@ -230,12 +230,12 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
 
-                UserPassword userPassword=new UserPassword(oldPassword.getText().toString().trim(),newPassword.getText().toString().trim());
+                UserPassword userPassword = new UserPassword(oldPassword.getText().toString().trim(), newPassword.getText().toString().trim());
 
-                ChangePassPost changePassPost=new ChangePassPost(userPassword);
+                ChangePassPost changePassPost = new ChangePassPost(userPassword);
 
                 //change_password(changePassPost);
-                Call<ResponseBody> call = client.change_password("Token "+userPreferences.getUserToken(), changePassPost);
+                Call<ResponseBody> call = client.change_password("Token " + userPreferences.getUserToken(), changePassPost);
 
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         dialog.dismiss();
                         showMessage("Password Changed Successfully");
-                        startActivity(new Intent(MainActivity.this,SignIn.class));
+                        startActivity(new Intent(MainActivity.this, SignIn.class));
                         finish();
 
                     }
@@ -273,8 +273,6 @@ public class MainActivity extends AppCompatActivity {
                         //progressBar.setVisibility(View.GONE);
                     }
                 });
-
-
 
 
             }
@@ -292,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
     private void showMessage(String s) {
         Snackbar.make(main_content, s, Snackbar.LENGTH_SHORT).show();
     }
-
 
 
 }

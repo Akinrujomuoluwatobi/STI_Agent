@@ -53,6 +53,17 @@
 
                 />
 
+            <TextView
+                android:id="@+id/vehicle_not_compul"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vehicle Images are not Compulsory"
+                android:layout_margin="2dp"
+                android:visibility="gone"
+                android:textColor="@color/colorPrimary"
+
+                />
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">

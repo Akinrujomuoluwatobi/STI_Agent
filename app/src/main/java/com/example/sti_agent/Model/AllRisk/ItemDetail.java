@@ -12,6 +12,9 @@ public class ItemDetail extends RealmObject {
     String receipt;
 
 
+    String imei;
+
+
     public  ItemDetail(){
 
     }
@@ -62,6 +65,15 @@ public class ItemDetail extends RealmObject {
 
     public void setReceipt(String receipt) {
         this.receipt = receipt;
+    }
+
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 
 

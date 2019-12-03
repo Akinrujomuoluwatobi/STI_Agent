@@ -61,7 +61,7 @@ public void onBindViewHolder(@NonNull MyViewHolder holder, int i) {
                 case "Make a Claim":
                     nextActivity("Claim", "Making claims for clients", MakeClaimActivity.class);
                         break;
-                case "Customer Management":
+                case "Manage Policy":
                         //nextActivity(cardList.get(pos).getTitle(), cardList.get(pos).getDesc(), AlarmActivity.class);
                         break;
                 case "Renewal of Insurance Policy":

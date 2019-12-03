@@ -173,6 +173,25 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutEmail_s1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/email_editxt_s1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Email Address"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="textEmailAddress"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutNextKin_s1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -245,7 +264,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Date of Birth"
+                            android:hint="Date of Birth(yyyy-dd-mm)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="date"
                             android:padding="@dimen/size_ten"

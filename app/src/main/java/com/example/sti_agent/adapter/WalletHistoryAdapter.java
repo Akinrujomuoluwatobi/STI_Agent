@@ -54,7 +54,7 @@ public class WalletHistoryAdapter extends RecyclerView.Adapter<WalletHistoryAdap
 
         //Color randomize
         Random random=new Random();
-        int rand = random.nextInt(walletList.size())+1;
+        int rand = random.nextInt((COLORS.length));
 
 
         holder.header.setBackgroundColor(Color.parseColor(COLORS[rand]));

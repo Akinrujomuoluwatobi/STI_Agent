@@ -22,6 +22,14 @@
     <item> Corporate</item>
     </string-array>
 
+    <string-array name="travel_mode_array">
+        <item> Select Mode of Travel* </item>
+        <item> Road </item>
+        <item> Air </item>
+        <item> Sea </item>
+        <item> Rail </item>
+    </string-array>
+
     <string-array name="sti_est_array">
         <item> Should STI Provide Estimate </item>
         <item> Yes </item>
@@ -220,13 +228,10 @@
         <item> Saloon/Sedans </item>
     </string-array>
 
-
-
-
-
-
-
-
+    <string name="naira_currency">NGN</string>
+    <string name="policy_no">Policy Num</string>
+    <string name="desc">Wallet Description</string>
+    <string name="privacy">I declare to the best of my knowledge and belief that the above information are true and all necessary particulars affecting the assessment of the risk have been disclosed.</string>
 
 
 </resources>

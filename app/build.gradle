@@ -74,7 +74,9 @@ dependencies {
 
     //paystack
  //   implementation 'co.paystack.android:paystack:3.0.12'
-
+    //paystack
+    implementation 'co.paystack.android:paystack:3.0.12'
+    implementation 'co.paystack.android.design.widget:pinpad:1.0.1'
 
     //cloudinary API
     implementation group: 'com.cloudinary', name: 'cloudinary-android', version: '1.24.0'

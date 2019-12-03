@@ -1028,6 +1028,7 @@ public class SubFragment_Claim extends Fragment implements View.OnClickListener{
                 }
 
                 pinString = input.getText().toString();
+                mPinEditxt.setText(pinString);
 
                //Post request to set pin with other parameter
                 showMessage("Pin Set Successfully");

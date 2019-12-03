@@ -34,11 +34,16 @@ import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.sti_agent.BuildConfig;
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.Marine.MarineQuote;
+import com.example.sti_agent.Model.Marine.QouteHeadMarine;
+import com.example.sti_agent.Model.ServiceGenerator;
 import com.example.sti_agent.NetworkConnection;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
-
 
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -57,9 +62,12 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class MarineFragment2 extends Fragment implements View.OnClickListener{
+public class MarineFragment2 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -124,21 +132,20 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
     Button mVNextBtn2M2;
     @BindView(R.id.progressbar2_m2)
     AVLoadingIndicatorView mProgressbar2M2;
-    
-   
+
 
     private int currentStep = 1;
-    String currencyString,conveyString,profInvDateStrg,cameraFilePath;
+    String currencyString, conveyString, profInvDateStrg, cameraFilePath;
     int PICK_IMAGE_DOC = 1;
     int CAM_IMAGE_PASSPORT = 2;
-    
-    NetworkConnection networkConnection=new NetworkConnection();
+
+    NetworkConnection networkConnection = new NetworkConnection();
     DatePickerDialog datePickerDialog1;
 
     Uri doc_img_uri;
     String doc_img_url;
 
-
+    UserPreferences userPreferences;
 
 
     public MarineFragment2() {
@@ -176,12 +183,13 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_marine2, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_marine2, container, false);
+        ButterKnife.bind(this, view);
         //        mStepView next registration step
 
         mStepView.go(currentStep, true);
 
+        userPreferences = new UserPreferences(getContext());
         init();
 
 
@@ -190,11 +198,11 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         setViewActions();
         showDatePicker();
 
-        return  view;
+        return view;
     }
 
 
-    private  void init(){
+    private void init() {
         UserPreferences userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
@@ -217,11 +225,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         mPortdischargeTxtM2.setText(userPreferences.getMarineIPortOfDischarge());
 
 
-
     }
-    
-    
-
 
 
     private void currencySpinner() {
@@ -241,7 +245,6 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String currencyString = (String) parent.getItemAtPosition(position);
-
 
 
             }
@@ -343,7 +346,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
                 mUploadProfDocBtnM2.setBackgroundColor(getResources().getColor(R.color.colorAccentEnds));
 
                 break;
-                
+
         }
     }
 
@@ -373,7 +376,6 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
     }
 
 
-
     private void chooseIdImage_camera() {
 
         try {
@@ -383,7 +385,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         } catch (IOException ex) {
             ex.printStackTrace();
             showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
     }
 
@@ -391,7 +393,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 0 ) {
+        if (resultCode == 0) {
             showMessage("No image is selected, try again");
             return;
         }
@@ -472,7 +474,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
 
                 }
 
-            }else if(requestCode==2){
+            } else if (requestCode == 2) {
                 doc_img_uri = Uri.parse(cameraFilePath);
 
                 try {
@@ -572,10 +574,10 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutQuantityM2.setError("Quantity is required!");
 
             isValid = false;
-        }else if (mTotalAmtTxtM2.getText().toString().isEmpty()) {
+        } else if (mTotalAmtTxtM2.getText().toString().isEmpty()) {
             mInputLayoutTotalAmt.setError("Total Amount or Value on Proforma invoice is required!");
             isValid = false;
-        }else {
+        } else {
             mInputLayoutProfInvoiceM2.setErrorEnabled(false);
             mInputLayoutTotalAmt.setErrorEnabled(false);
             mInputLayoutDescGoodsM2.setErrorEnabled(false);
@@ -588,7 +590,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutConversionRate.setError("Conversion rate is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutConversionRate.setErrorEnabled(false);
         }
 
@@ -596,7 +598,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutProfInvoiceM2.setError("Port of Loading is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutProfInvoiceM2.setErrorEnabled(false);
         }
 
@@ -604,7 +606,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutPortDischargeM2.setError("Port of Discharge is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutPortDischargeM2.setErrorEnabled(false);
         }
 
@@ -624,15 +626,11 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         }
 
 
-
-
         if (isValid) {
 //            send inputs to next next page
 //            Goto to the next Registration step
             initFragment();
         }
-
-
 
 
     }
@@ -642,8 +640,6 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         mProgressbar2M2.setVisibility(View.VISIBLE);
 
         try {
-            UserPreferences userPreferences = new UserPreferences(getContext());
-
             //Temporal save and go to next Operation
 
             userPreferences.setMarineIProfInvNO(mProfInvoiceTxtM2.getText().toString());
@@ -658,28 +654,121 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
             userPreferences.setMarineIPortOfLoading(mPortofloadTxtM2.getText().toString());
             userPreferences.setMarineIPortOfDischarge(mPortdischargeTxtM2.getText().toString());
             userPreferences.setMarineIProfImage(doc_img_url);
+            sendMarineData();
 
 
-
-
-           // Fragment quoteBuyFragment3 = new MarineInsureFragment3();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_marine_form_container, MarineFragment3.newInstance("Premium","4000"), MarineFragment3.class.getSimpleName());
-            ft.commit();
-
-        }catch (Exception e){
-            Log.i("Form Error",e.getMessage());
+        } catch (Exception e) {
+            Log.i("Form Error", e.getMessage());
             mProgressbar2M2.setVisibility(View.GONE);
             mVNextBtn2M2.setVisibility(View.VISIBLE);
             showMessage("Error: " + e.getMessage());
         }
     }
 
+    private void sendMarineData() {
+
+        //get client and call object for request
+        MarineQuote marineQuote = new MarineQuote(mTotalAmtTxtM2.getText().toString(), mCoversionRateTxtM2.getText().toString());
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+        Call<QouteHeadMarine> call = client.marine_quote("Token " + userPreferences.getUserToken(), marineQuote);
+
+        call.enqueue(new Callback<QouteHeadMarine>() {
+            @Override
+            public void onResponse(Call<QouteHeadMarine> call, Response<QouteHeadMarine> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+
+
+                if (response.code() == 400) {
+                    showMessage("Check your internet connection");
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 429) {
+                    showMessage("Too many requests on database");
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 500) {
+                    showMessage("Server Error");
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 401) {
+                    showMessage("Unauthorized access, please try login again");
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+                    return;
+                }
+
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: " + apiError.getErrors());
+                            Log.i("Invalid EntryK", apiError.getErrors().toString());
+                            Log.i("Invalid Entry", response.errorBody().toString());
+
+                        } catch (Exception e) {
+                            Log.i("InvalidEntry", e.getMessage());
+                            Log.i("ResponseError", response.errorBody().string());
+                            showMessage("Failed to Fetch Quote" + e.getMessage());
+                            mBtnLayout2M2.setVisibility(View.VISIBLE);
+                            mProgressbar2M2.setVisibility(View.GONE);
+
+                        }
+                        mBtnLayout2M2.setVisibility(View.VISIBLE);
+                        mProgressbar2M2.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    double quote_price = response.body().getData().getPrice();
+                    double sum_insured = response.body().getData().getSum_insured();
+                    Log.i("insured_price", String.valueOf(sum_insured));
+
+                    double roundOff = Math.round(quote_price * 100) / 100.00;
+                    double roundOffInsured = Math.round(sum_insured * 100) / 100.00;
+
+
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+
+                    String price_coverted = String.format("%.2f", roundOff);
+                    String sum_covert = String.format("%.2f", roundOffInsured);
+
+                    Log.i("quote_price", price_coverted);
+                    Log.i("insured_amt", sum_covert);
+
+                    // Fragment quoteBuyFragment3 = new MarineInsureFragment3();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_marine_form_container, MarineFragment3.newInstance(sum_covert, price_coverted), MarineFragment3.class.getSimpleName());
+                    ft.commit();
+                    showMessage("Successfully Fetched Quote");
+
+                } catch (Exception e) {
+                    Log.i("policyResponse", e.getMessage());
+                    mBtnLayout2M2.setVisibility(View.VISIBLE);
+                    mProgressbar2M2.setVisibility(View.GONE);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<QouteHeadMarine> call, Throwable t) {
+                showMessage("Submission Failed " + t.getMessage());
+                Log.i("GEtError", t.getMessage());
+                mBtnLayout2M2.setVisibility(View.VISIBLE);
+                mProgressbar2M2.setVisibility(View.GONE);
+            }
+        });
+
+    }
+
 
     private void showMessage(String s) {
         Snackbar.make(mQbFormLayout2, s, Snackbar.LENGTH_LONG).show();
     }
-
 
 
     private void showDatePicker() {
@@ -690,7 +779,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener{
         datePickerDialog1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                int monthofYear=monthOfYear+1;
+                int monthofYear = monthOfYear + 1;
                 profInvDateStrg = dayOfMonth + "-" + monthofYear + "-" + year;
                 mProfInvoiceDateTxtM2.setText(profInvDateStrg);
                 datePickerDialog1.dismiss();

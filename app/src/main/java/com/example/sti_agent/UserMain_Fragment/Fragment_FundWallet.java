@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sti_agent.Constant;
 import com.example.sti_agent.Model.Errors.APIError;
 import com.example.sti_agent.Model.Errors.ErrorUtils;
 import com.example.sti_agent.Model.ServiceGenerator;
@@ -26,6 +27,8 @@ import com.example.sti_agent.NetworkConnection;
 import com.example.sti_agent.R;
 import com.example.sti_agent.SignIn;
 import com.example.sti_agent.UserPreferences;
+import com.example.sti_agent.operation_activity.PolicyPaymentActivity;
+import com.example.sti_agent.operation_activity.WalletPaymentActivity;
 import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -128,7 +131,8 @@ public class Fragment_FundWallet extends Fragment {
 
                 //Do debit operation on Paystack and fund wallet API
                 //Post Request to Api
-                sendData(amountEditxt.getText().toString(),descEditxt.getText().toString());
+                launchWalletPayment(amountEditxt.getText().toString(),descEditxt.getText().toString());
+                //sendData(amountEditxt.getText().toString(),descEditxt.getText().toString());
             }
 
             return;
@@ -136,63 +140,16 @@ public class Fragment_FundWallet extends Fragment {
         showMessage("No Internet connection discovered!");
     }
 
-
-    private void sendData(String amount,String desc){
-
-        FundWallet fundWallet=new FundWallet(amount,desc,"CREDIT");
-        //To create retrofit instance
-        //get client and call object for request
-        avi1.setVisibility(View.VISIBLE);
-        fundBtn.setVisibility(View.GONE);
-
-        Call<GetWalletFunded> call = client.fund_wallet("Token "+userPreferences.getUserToken(), fundWallet);
-        Log.i("Token",userPreferences.getUserToken());
-
-        call.enqueue(new Callback<GetWalletFunded>() {
-            @Override
-            public void onResponse(Call<GetWalletFunded> call, Response<GetWalletFunded> response) {
-                    if (!response.isSuccessful()) {
-
-                        try {
-                            APIError apiError = ErrorUtils.parseError(response);
-
-                            showMessage("Invalid Entry: " + apiError.getErrors());
-                            Log.i("Invalid EntryK", apiError.getErrors().toString());
-                            Log.i("Invalid Entry", response.errorBody().toString());
-
-                        } catch (Exception e) {
-                            Log.i("InvalidEntry", e.getMessage());
-                            showMessage("Invalid Entry");
-
-                        }
-                        fundBtn.setVisibility(View.VISIBLE);
-                        avi1.setVisibility(View.GONE);
-                        return;
-                    }
-                    try {
-                        avi1.setVisibility(View.GONE);
-                        int newBalance = response.body().getWallet().getBalance();
-                        userPreferences.setWalletBalance(String.valueOf(newBalance));
-                        fragment = new Fragment_Dashboard();
-                        showFragment(fragment);
-                    }catch (Exception e){
-                        showMessage("Failed to Save Balance");
-                    }
-
-            }
-
-            @Override
-            public void onFailure(Call<GetWalletFunded> call, Throwable t) {
-                showMessage("Login Failed " + t.getMessage());
-                Log.i("GEtError", t.getMessage());
-                fundBtn.setVisibility(View.VISIBLE);
-                avi1.setVisibility(View.GONE);
-            }
-        });
-
-
-
+    private void launchWalletPayment(String amount, String desc) {
+        Intent intent = new Intent(getContext(), WalletPaymentActivity.class);
+        intent.putExtra(Constant.WALLET_AMOUNT_FUNDING, amount);
+        intent.putExtra(Constant.WALLET_DESC, desc);
+        startActivity(intent);
+        getActivity().finish();
     }
+
+
+
 
     private void showMessage(String s) {
         Snackbar.make(fund_layout, s, Snackbar.LENGTH_SHORT).show();

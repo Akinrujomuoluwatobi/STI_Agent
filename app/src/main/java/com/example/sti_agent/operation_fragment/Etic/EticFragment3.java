@@ -1,6 +1,7 @@
 package com.example.sti_agent.operation_fragment.Etic;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -8,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sti_agent.MainActivity;
 import com.example.sti_agent.Model.Etic.EticPolicy;
 import com.example.sti_agent.Model.Etic.Personal_Detail_etic;
 import com.example.sti_agent.Model.Etic.Travel_Info;
@@ -26,6 +29,10 @@ import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
 import com.google.android.material.snackbar.Snackbar;
 import com.wang.avi.AVLoadingIndicatorView;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,6 +73,7 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
 
     EticPolicy id=new EticPolicy();
     String primaryKey=id.getId();
+    private UserPreferences userPreferences;
 
     public EticFragment3() {
         // Required empty public constructor
@@ -95,13 +103,13 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             premiumText = getArguments().getString(PREMIUM_TXT);
-            UserPreferences userPreferences=new UserPreferences(getContext());
-            int oldquote=userPreferences.getTempEticQuotePrice();
+            userPreferences=new UserPreferences(getContext());
+            double oldquote= Double.parseDouble(userPreferences.getTempEticQuotePrice());
             p_amount=getArguments().getString(PREMIUM_AMOUNT);
 
-            int newquote=Integer.parseInt(getArguments().getString(PREMIUM_AMOUNT));
-            int total_quote=oldquote+newquote;
-            userPreferences.setTempEticQuotePrice(total_quote);
+            double newquote=Double.parseDouble(getArguments().getString(PREMIUM_AMOUNT));
+            double total_quote=oldquote+newquote;
+            userPreferences.setTempEticQuotePrice(String.valueOf(total_quote));
             Log.i("PrimaryVariable",primaryKey);
 
 
@@ -128,9 +136,30 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
             String format = p_amount + ".00";
             mAmountE3.setText(format);
         }else {
-            String format = p_amount + ".00";
-            mAmountE3.setText(format);
+            //String format = p_amount;
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en", "US"));
+            nf.setMaximumFractionDigits(2);
+            DecimalFormat df = (DecimalFormat) nf;
+            String v_price = "₦" + df.format(Double.valueOf(p_amount));
+            mAmountE3.setText(v_price);
         }
+
+        setViewActions();
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i("backPress_KeyCode", "keyCode: " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.i("backPress", "onKey Back listener is working!!!");
+                    userPreferences.setTempEticQuotePrice(String.valueOf(0));
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
 
@@ -175,7 +204,6 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
     }
 
     private void mailClientAndSti() {
-        UserPreferences userPreferences = new UserPreferences(getContext());
 
         mBtnLayout3E3.setVisibility(View.GONE);
         mProgressbar3E3.setVisibility(View.VISIBLE);
@@ -197,7 +225,14 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
                 personal_detail_etic.setNext_of_kin(userPreferences.getEticINextKin());
                 personal_detail_etic.setMailing_addr(userPreferences.getEticIMailingAddr());
                 personal_detail_etic.setEmail(userPreferences.getEticIEmail());
-                
+                personal_detail_etic.setBusiness(userPreferences.getEticIBusiness());
+                personal_detail_etic.setNationality(userPreferences.getEticINationality());
+                personal_detail_etic.setEmployer_name(userPreferences.getEticIEmployerName());
+                personal_detail_etic.setEmployer_addr(userPreferences.getEticIEmployerAddr());
+                personal_detail_etic.setState(userPreferences.getEticIState());
+                personal_detail_etic.setIntnded_start_dateCover(userPreferences.getEticIIntendStartDate());
+                personal_detail_etic.setEnd_dateCover(userPreferences.getEticIEndDate());
+
                 //Additional Insured List
                 Travel_Info travel_info=new Travel_Info();
                 travel_info.setTrip_duration(userPreferences.getEticITripDuration());
@@ -219,7 +254,7 @@ public class EticFragment3 extends Fragment implements View.OnClickListener{
 
                 EticPolicy eticPolicy=realm.createObject(EticPolicy.class,primaryKey);
                 eticPolicy.setAgent_id("1");
-                eticPolicy.setQuote_price(String.valueOf(userPreferences.getTempEticQuotePrice()));
+                eticPolicy.setQuote_price(userPreferences.getTempEticQuotePrice());
                 eticPolicy.setPayment_source("paystack");
                 eticPolicy.setPin("11234");
 

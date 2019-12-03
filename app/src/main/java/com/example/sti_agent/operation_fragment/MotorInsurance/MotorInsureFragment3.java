@@ -1,12 +1,15 @@
 package com.example.sti_agent.operation_fragment.MotorInsurance;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +17,41 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sti_agent.Constant;
+import com.example.sti_agent.MainActivity;
+import com.example.sti_agent.Model.Errors.APIError;
+import com.example.sti_agent.Model.Errors.ErrorUtils;
+import com.example.sti_agent.Model.ServiceGenerator;
+import com.example.sti_agent.Model.Vehicle.FormSuccessDetail.BuyQuoteFormGetHead;
+import com.example.sti_agent.Model.Vehicle.Quote.PostVehicleData;
+import com.example.sti_agent.Model.Vehicle.Quote.QouteHead;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
+import com.example.sti_agent.operation_activity.PolicyPaymentActivity;
+import com.example.sti_agent.retrofit_interface.ApiInterface;
 import com.google.android.material.snackbar.Snackbar;
 import com.shuhart.stepview.StepView;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import org.apache.poi.ss.formula.functions.T;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class MotorInsureFragment3 extends Fragment implements View.OnClickListener{
+public class MotorInsureFragment3 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String VEHICLE_MAKER = "vehicle_maker";
@@ -64,11 +87,18 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
     @BindView(R.id.progressbar)
     AVLoadingIndicatorView progressbar;
 
+    UserPreferences userPreferences;
+    PostVehicleData getVehicleQuote;
 
-    private  int currentStep=2;
+    String policyTypeCover;
+
+
+    private int currentStep = 2;
+
     public MotorInsureFragment3() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -91,9 +121,11 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userPreferences = new UserPreferences(getActivity());
+
         if (getArguments() != null) {
             vehicleMaker = getArguments().getString(VEHICLE_MAKER);
-            p_amount = getArguments().getString(PREMIUM_AMOUNT);
+            //p_amount = getArguments().getString(PREMIUM_AMOUNT);
 
 
 
@@ -101,33 +133,147 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
         }
     }
 
+    private void getQuote() {
+        progressbar.setVisibility(View.VISIBLE);
+        btn_layout3.setVisibility(View.GONE);
+
+        //get client and call object for request
+        ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
+        Log.i("TokenP", userPreferences.getUserToken());
+
+        Call<QouteHead> call = client.getVehicleQuote("Token " + userPreferences.getUserToken(), getVehicleQuote);
+
+        call.enqueue(new Callback<QouteHead>() {
+            @Override
+            public void onResponse(Call<QouteHead> call, Response<QouteHead> response) {
+                Log.i("ResponseCode", String.valueOf(response.code()));
+
+                if (response.code() == 400) {
+                    showMessage("Check your internet connection");
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 429) {
+                    showMessage("Too many requests on database");
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 500) {
+                    showMessage("Server Error");
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                } else if (response.code() == 401) {
+                    showMessage("Unauthorized access, please try login again");
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+                    return;
+                }
+                try {
+                    if (!response.isSuccessful()) {
+
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
+
+                            showMessage("Invalid Entry: " + apiError.getErrors());
+                            Log.i("Invalid EntryK", apiError.getErrors().toString());
+                            Log.i("Invalid Entry", response.errorBody().toString());
+
+                        } catch (Exception e) {
+                            Log.i("InvalidEntry", e.getMessage());
+                            Log.i("ResponseError", response.errorBody().string());
+                            showMessage("Failed to Submit, try again\n" + e.getMessage());
+                            btn_layout3.setVisibility(View.VISIBLE);
+                            progressbar.setVisibility(View.GONE);
+
+                        }
+                        btn_layout3.setVisibility(View.VISIBLE);
+                        progressbar.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    userPreferences.setVehicleQuote(response.body().getData().getPrice());
+                    amount.setText(response.body().getData().getPrice());
+                    Toast.makeText(getActivity(), response.body().getData().getPrice(), Toast.LENGTH_LONG).show();
+                    progressbar.setVisibility(View.INVISIBLE);
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    //setQuoteAmount();
+                } catch (Exception e) {
+                    showMessage("Transaction not complete, check your internet and click continue\n" + e.getMessage());
+                    Log.i("policyResponse", e.getMessage());
+                    btn_layout3.setVisibility(View.VISIBLE);
+                    progressbar.setVisibility(View.GONE);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<QouteHead> call, Throwable t) {
+                showMessage("Submission Failed, TRY AGAIN \n" + t.getMessage());
+                Log.i("GEtError", t.getMessage());
+                btn_layout3.setVisibility(View.VISIBLE);
+                progressbar.setVisibility(View.GONE);
+
+            }
+        });
+    }
+
+    /*private void setQuoteAmount() {
+        vehicleMake_txt.setText(vehicleMaker);
+        if (p_amount == null) {
+            p_amount = "000";
+            String format = p_amount + ".00";
+            amount.setText(format);
+        } else {
+            String format = p_amount + ".00";
+            amount.setText(format);
+        }
+    }*/
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_motor_insured3, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_motor_insured3, container, false);
+        ButterKnife.bind(this, view);
         //        stepView next registration step
         stepView.go(currentStep, true);
-
         vehicleMake_txt.setText(vehicleMaker);
         if(p_amount==null){
             p_amount="000";
             String format = p_amount + ".00";
             amount.setText(format);
         }else {
-            String format = p_amount + ".00";
-            amount.setText(format);
+            // String format = p_amount ;
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en", "US"));
+            nf.setMaximumFractionDigits(2);
+            DecimalFormat df = (DecimalFormat) nf;
+            String v_price = "₦" + df.format(Double.valueOf(p_amount));
+            amount.setText(v_price);
         }
-
-
-
 
         setViewActions();
 
-        return  view;
-    }
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i("backPress_KeyCode", "keyCode: " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.i("backPress", "onKey Back listener is working!!!");
+                    userPreferences.setTempQuotePrice(0);
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
 
+        return view;
+    }
 
 
     //seting onclicks listeners
@@ -163,21 +309,17 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
     }
 
     private void mailClientAndSti() {
-        UserPreferences userPreferences = new UserPreferences(getContext());
 
         btn_layout3.setVisibility(View.GONE);
         progressbar.setVisibility(View.VISIBLE);
 
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment4.newInstance(userPreferences.getMotorVehicleMake(),p_amount), MotorInsureFragment4.class.getSimpleName());
+        ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment4.newInstance(userPreferences.getMotorVehicleMake(), p_amount), MotorInsureFragment4.class.getSimpleName());
         ft.commit();
 
 
-
     }
-
-
 
 
     private void showMessage(String s) {

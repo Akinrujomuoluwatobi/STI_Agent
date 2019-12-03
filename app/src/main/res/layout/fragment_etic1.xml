@@ -86,7 +86,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="First Name"
+                            android:hint="First Name* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -107,7 +107,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Last Name"
+                            android:hint="Last Name* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -138,28 +138,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Residentail Address"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutNextKin_e1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-
-                        >
-
-                        <EditText
-                            android:id="@+id/next_kin_editxt_e1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Next of Kin"
+                            android:hint="Residential Address* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -178,15 +157,13 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Phone Number"
+                            android:hint="Phone Number* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="number"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
-
-
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutEmail_e1"
@@ -199,7 +176,49 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Email"
+                            android:hint="Email* (required)"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="text"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <!-- <com.google.android.material.textfield.TextInputLayout
+                         android:id="@+id/inputLayoutNextKin_e1"
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent"
+
+                         >
+
+                         <EditText
+                             android:id="@+id/next_kin_editxt_e1"
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:layout_marginTop="@dimen/size_three"
+                             android:background="@drawable/rounded_bg"
+                             android:hint="Next of Kin* (required)"
+                             android:importantForAutofill="noExcludeDescendants"
+                             android:inputType="text"
+                             android:padding="@dimen/size_ten"
+                             tools:targetApi="o"
+                             />
+                     </com.google.android.material.textfield.TextInputLayout>-->
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutBusiness"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/business_editxt_e1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Business / Profession* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -208,17 +227,36 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutMailingAddr_e1"
+                        android:id="@+id/inputLayoutNationality"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <EditText
-                            android:id="@+id/mail_addr_editxt_e1"
+                            android:id="@+id/nationality_editxt_e1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Mailing Address"
+                            android:hint="Nationality"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="text"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutEmployerName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/employer_name_editxt_e1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Employer Name"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -227,6 +265,83 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutEmployerAddr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/addr_addr_editxt_e1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Employer Address"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="text"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+                    <EditText
+                        android:id="@+id/intend_date_editxt_e1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/rounded_bg"
+                        android:hint="Commencement date of cover*(required)"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:padding="@dimen/size_ten"
+                        tools:targetApi="o"
+                        />
+
+
+                    <EditText
+                        android:id="@+id/end_date_cover_e1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/rounded_bg"
+                        android:focusable="false"
+                        android:hint="End Date of Cover* (required)"
+                        android:inputType="none"
+                        android:padding="@dimen/size_ten"
+                        tools:targetApi="o" />
+
+
+                    <!-- <com.google.android.material.textfield.TextInputLayout
+                         android:id="@+id/inputLayoutMailingAddr_e1"
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent">
+
+                         <EditText
+                             android:id="@+id/mail_addr_editxt_e1"
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:layout_marginTop="@dimen/size_three"
+                             android:background="@drawable/rounded_bg"
+                             android:hint="Mailing Address"
+                             android:importantForAutofill="noExcludeDescendants"
+                             android:inputType="text"
+                             android:padding="@dimen/size_ten"
+                             tools:targetApi="o"
+                             />
+                     </com.google.android.material.textfield.TextInputLayout>-->
+
+
+                    <Spinner
+                        android:id="@+id/state_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/spinner_bg"
+
+                        />
                     <Button
                         android:id="@+id/upload_img_btn_e1"
                         android:layout_width="match_parent"
@@ -234,19 +349,43 @@
                         android:background="@drawable/rounded_bg"
                         android:drawableEnd="@drawable/ic_camera_alt_black_24dp"
                         android:paddingEnd="@dimen/size_ten"
-                        android:text="Upload Passport"
+                        android:text="Means of Identification*"
                         android:layout_marginTop="@dimen/size_ten"
                         android:textColor="@android:color/darker_gray"
                         android:layout_marginBottom="@dimen/size_ten"
                         android:visibility="visible"
                         />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:text="I have review and agreed to the disclosure and the privacy policy"
-                        android:textStyle="italic"
-                        />
+                        android:text="@string/privacy"
+                        android:textAlignment="textStart"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/reviewed_checked"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:clickable="true"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/colorPrimary"
+                            android:text="I have review and agreed to the disclosure and the privacy policy"
+
+                            />
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/next_btn1_e1"
@@ -260,7 +399,7 @@
                         android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="@dimen/size_ten"
                         android:visibility="visible"
-                         />
+                        />
 
                     <com.wang.avi.AVLoadingIndicatorView
                         android:id="@+id/progressbar1_e1"
