@@ -36,6 +36,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.shuhart.stepview.StepView;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,6 +53,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CARGO = "cargo";
     private static final String PREMIUM_AMOUNT = "amount_marine";
+    private static final String SUM_INSURED = "sum_insured";
 
     // TODO: Rename and change types of parameters
     private String cargo;
@@ -71,8 +76,10 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
     Button mVNextBtn3M3;
     @BindView(R.id.progressbar3_m3)
     AVLoadingIndicatorView mProgressbar3M3;
-    @BindView(R.id.fabAddCargo_m3)
-    FloatingActionButton mFabAddCargoM3;
+
+    @BindView(R.id.sum_insured_amount_m3)
+    TextView mSumInsuredAmount;
+
 
     private int currentStep = 2;
 
@@ -82,6 +89,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
 
     MarinePolicy id = new MarinePolicy();
     String primaryKey = id.getId();
+    private String sum_insured;
 
     public MarineFragment3() {
         // Required empty public constructor
@@ -99,7 +107,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
     public static MarineFragment3 newInstance(String param1, String param2) {
         MarineFragment3 fragment = new MarineFragment3();
         Bundle args = new Bundle();
-        args.putString(CARGO, param1);
+        args.putString(SUM_INSURED, param1);
         args.putString(PREMIUM_AMOUNT, param2);
         fragment.setArguments(args);
         return fragment;
@@ -111,7 +119,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
         userPreferences = new UserPreferences(getContext());
 
         if (getArguments() != null) {
-            cargo = getArguments().getString(CARGO);
+            sum_insured = getArguments().getString(SUM_INSURED);
 
 
             double oldquote = Double.parseDouble(userPreferences.getTempMarineQuotePrice());
@@ -138,14 +146,29 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
         //instancial Realm db
         realm = Realm.getDefaultInstance();
 
-        mPremiumTxt.setText(cargo);
+        //mPremiumTxt.setText(cargo);
         if (p_amount == null) {
             p_amount = "000";
             String format = p_amount + ".00";
             mAmountM3.setText(format);
+
+            sum_insured = "000";
+            String format_sum = sum_insured + ".00";
+            mSumInsuredAmount.setText(format_sum);
         } else {
-            String format = p_amount + ".00";
-            mAmountM3.setText(format);
+            NumberFormat nf_sum = NumberFormat.getNumberInstance(new Locale("en", "US"));
+            nf_sum.setMaximumFractionDigits(2);
+            DecimalFormat df_sum = (DecimalFormat) nf_sum;
+            String v_sum = "₦" + df_sum.format(Double.valueOf(sum_insured));
+
+            mSumInsuredAmount.setText(v_sum);
+
+            //String format = p_amount ;
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en", "US"));
+            nf.setMaximumFractionDigits(2);
+            DecimalFormat df = (DecimalFormat) nf;
+            String v_price = "₦" + df.format(Double.valueOf(p_amount));
+            mAmountM3.setText(v_price);
         }
 
 
@@ -176,7 +199,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
 
         mVNextBtn3M3.setOnClickListener(this);
         mVBackBtn3M3.setOnClickListener(this);
-        mFabAddCargoM3.setOnClickListener(this);
+        //mFabAddCargoM3.setOnClickListener(this);
 
     }
 
@@ -190,7 +213,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
                 mailClientAndSt();
                 break;
 
-            case R.id.fabAddCargo_m3:
+            /*case R.id.fabAddCargo_m3:
                 UserPreferences userPreferences = new UserPreferences(getContext());
 
 
@@ -301,7 +324,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
                 FragmentTransaction ftrans = getFragmentManager().beginTransaction();
                 ftrans.replace(R.id.fragment_marine_form_container, marineFragment2);
                 ftrans.commit();
-                break;
+                break;*/
 
 
             case R.id.v_back_btn3_m3:
@@ -310,7 +333,7 @@ public class MarineFragment3 extends Fragment implements View.OnClickListener {
                 }
                 mStepView.done(false);
                 mStepView.go(currentStep, true);
-
+                userPreferences.setTempMarineQuotePrice("0.0");
                 Fragment marineFragment21 = new MarineFragment2();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_marine_form_container, marineFragment21);

@@ -136,7 +136,7 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
     NetworkConnection networkConnection=new NetworkConnection();
 
     Uri personal_info_img_uri;
-    String personal_img_url;
+    String personal_img_url = "";
     private UserPreferences userPreferences;
 
     public AllriskFragment1() {
@@ -790,10 +790,10 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
             mInputLayoutResAddrA1.setErrorEnabled(false);
         }
 
-        if (personal_img_url==null) {
+        /*if (personal_img_url==null) {
             showMessage("Please upload an image: passport,company license..etc");
             isValid = false;
-        }
+        }*/
 
 
         //Tyepe Spinner
@@ -883,10 +883,11 @@ public class AllriskFragment1 extends Fragment implements View.OnClickListener{
 
     public static boolean isValidEmailAddress(String email) {
         boolean result = true;
-        if (null != email) {
+        String Email = email.trim();
+        if (null != Email) {
             String regex = "^([_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6}))?$";
             Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(email);
+            Matcher matcher = pattern.matcher(Email);
             if (!matcher.matches()) {
                 result = false;
             }

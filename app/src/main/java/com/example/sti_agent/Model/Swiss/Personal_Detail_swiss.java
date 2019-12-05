@@ -14,9 +14,16 @@ public class Personal_Detail_swiss extends RealmObject {
     String resident_address;
     String marital_status;
     String date_of_birth;
+    String state;
     String picture;
+
+
+
     String next_of_kin;
     String next_of_kin_phone;
+
+
+    String price;
     String next_of_kin_address;
     String prefix;
     String disability;
@@ -24,17 +31,11 @@ public class Personal_Detail_swiss extends RealmObject {
     RealmList<AdditionInsured> additionInsureds;
 
 
-    public  Personal_Detail_swiss(){
+    public Personal_Detail_swiss(){
 
     }
 
-    public String getPicture() {
-        return picture;
-    }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     public String getFirst_name() {
         return first_name;
@@ -54,6 +55,13 @@ public class Personal_Detail_swiss extends RealmObject {
 
     public String getEmail() {
         return email;
+    }
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public void setEmail(String email) {
@@ -114,6 +122,22 @@ public class Personal_Detail_swiss extends RealmObject {
 
     public void setNext_of_kin_phone(String next_of_kin_phone) {
         this.next_of_kin_phone = next_of_kin_phone;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public String getNext_of_kin_address() {

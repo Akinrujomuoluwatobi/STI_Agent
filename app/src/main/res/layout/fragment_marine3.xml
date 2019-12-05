@@ -63,6 +63,11 @@
                     android:orientation="vertical">
 
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2.5dp"
+                        android:background="@color/colorPrimary"
+                        android:layout_margin="4dp" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -72,9 +77,10 @@
                         >
 
                         <TextView
+                            android:id="@+id/sum_insured_txt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Cargo"
+                            android:text="Sum Insured"
                             android:layout_weight="1"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/size_twenty"
@@ -82,9 +88,10 @@
                             />
 
                         <TextView
+                            android:id="@+id/sum_insured_amount_m3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Premium Payable"
+                            android:text="5,000.00"
                             android:layout_weight="1"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/size_twenty"
@@ -94,14 +101,6 @@
 
 
                     </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2.5dp"
-                        android:background="@color/colorPrimary"
-                        android:layout_margin="4dp"
-                        />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -114,7 +113,7 @@
                             android:id="@+id/premium_txt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Premium price"
+                            android:text="Premium Payable"
                             android:layout_weight="1"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/size_twenty"
@@ -135,6 +134,8 @@
 
 
                     </LinearLayout>
+
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="2.5dp"
@@ -142,52 +143,52 @@
                         android:layout_margin="4dp"
                         />
 
-                   <LinearLayout
-                       android:id="@+id/btn_layout3_m3"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:layout_margin="8dp"
-                       android:weightSum="2"
-                       android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/btn_layout3_m3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:weightSum="2"
+                        android:orientation="horizontal">
 
-                       <Button
-                           android:id="@+id/v_back_btn3_m3"
-                           android:layout_width="0dp"
-                           android:layout_weight="1"
-                           android:layout_height="wrap_content"
-                           android:background="@drawable/rounded_bg_color_btn"
-                           android:drawableStart="@drawable/ic_chevron_left_black_24dp"
-                           android:padding="@dimen/size_ten"
-                           android:text="Back"
-                           android:layout_gravity="start"
-                           android:layout_marginTop="@dimen/size_ten"
-                           android:textColor="@color/colorPrimary"
-                           android:layout_marginBottom="@dimen/size_ten"
-                           android:visibility="visible"
-                           />
-                       <View
-                           android:layout_width="8dp"
-                           android:layout_height="wrap_content"
+                        <Button
+                            android:id="@+id/v_back_btn3_m3"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/rounded_bg_color_btn"
+                            android:drawableStart="@drawable/ic_chevron_left_black_24dp"
+                            android:padding="@dimen/size_ten"
+                            android:text="Back"
+                            android:layout_gravity="start"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginBottom="@dimen/size_ten"
+                            android:visibility="visible"
+                            />
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="wrap_content"
 
 
-                           />
+                            />
 
-                       <Button
-                           android:id="@+id/v_next_btn3_m3"
-                           android:layout_width="0dp"
-                           android:layout_weight="1"
-                           android:layout_height="wrap_content"
-                           android:background="@drawable/rounded_right_bg_color_btn"
-                           android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-                           android:padding="@dimen/size_ten"
-                           android:text="Summary"
-                           android:layout_gravity="end"
-                           android:layout_marginTop="@dimen/size_ten"
-                           android:textColor="@color/colorPrimary"
-                           android:layout_marginBottom="@dimen/size_ten"
-                           android:visibility="visible"
-                           />
-                   </LinearLayout>
+                        <Button
+                            android:id="@+id/v_next_btn3_m3"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/rounded_right_bg_color_btn"
+                            android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
+                            android:padding="@dimen/size_ten"
+                            android:text="Summary"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginBottom="@dimen/size_ten"
+                            android:visibility="visible"
+                            />
+                    </LinearLayout>
 
 
                     <com.wang.avi.AVLoadingIndicatorView
@@ -204,9 +205,8 @@
             </ScrollView>
 
         </LinearLayout>
-
     </RelativeLayout>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddCargo_m3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -214,5 +214,5 @@
         android:layout_margin="@dimen/size_sixteen"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_add_black_24dp"
-        tools:ignore="VectorDrawableCompat"/>
+        tools:ignore="VectorDrawableCompat"/>-->
 </FrameLayout>

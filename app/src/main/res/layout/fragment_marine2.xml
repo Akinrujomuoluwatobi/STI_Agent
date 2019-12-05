@@ -75,9 +75,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Proforma Invoice Number"
+                            android:hint="Proforma Invoice Number* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
+                            android:textSize="15sp"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
@@ -86,68 +87,75 @@
 
 
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutProfInvoiceDate_m2"
+
+
+                    <EditText
+                        android:id="@+id/prof_invoice_date_txt_m2"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_five"
                         android:visibility="visible"
-                        >
+                        android:background="@drawable/rounded_bg"
+                        android:hint="Date of Proforma Invoice* (required)"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:padding="@dimen/size_ten"
+                        tools:targetApi="o"
+                        />
 
-                        <EditText
-                            android:id="@+id/prof_invoice_date_txt_m2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Date of Proforma Invoice"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="date"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutDescGoods_m2"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="visible"
+                        android:layout_marginTop="3dp"
                         >
 
                         <EditText
                             android:id="@+id/desc_goods_m2"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="100dp"
                             android:layout_marginTop="@dimen/size_three"
+                            android:singleLine="false"
+                            android:inputType="text|textMultiLine"
+                            android:maxLines="5"
+                            android:textAlignment="textStart"
+                            android:gravity="start"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Description of Goods"
+                            android:hint="Description of Goods* (required)"
                             android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutInterest_m2"
+                    <Spinner
+                        android:id="@+id/cover_m2"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/spinner_bg"
                         android:visibility="visible"
-                        >
+                        />
 
-                        <EditText
-                            android:id="@+id/interest_txt_m2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Interest"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+                    <EditText
+                        android:id="@+id/start_date_cover_m2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_five"
+                        android:visibility="visible"
+                        android:background="@drawable/rounded_bg"
+                        android:hint="Start Date of Cover* (required)"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:padding="@dimen/size_ten"
+                        tools:targetApi="o"
+                        />
+
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutQuantity_m2"
@@ -162,7 +170,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Quantity"
+                            android:hint="Quantity(e.g 1,2..)* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -193,9 +201,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Total Amount/Value of Proforma Invoice"
+                            android:hint="Total Amount/Value on Proforma Invoice* (required)"
                             android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
+                            android:inputType="number"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
@@ -214,9 +222,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Naira Conversion Rate"
+                            android:hint="Naira Conversion Rate* (required)"
                             android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
+                            android:inputType="numberDecimal"
                             android:padding="@dimen/size_ten"
                             tools:targetApi="o"
                             />
@@ -235,7 +243,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Port of Loading"
+                            android:hint="Port of Loading* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -256,7 +264,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Port of Discharge"
+                            android:hint="Port of Discharge* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -281,59 +289,58 @@
                         android:background="@drawable/rounded_bg"
                         android:drawableEnd="@drawable/ic_camera_alt_black_24dp"
                         android:paddingEnd="@dimen/size_ten"
-                        android:text="Upload Document Image"
-                        android:layout_marginTop="@dimen/size_ten"
+                        android:text="Upload Proforma Invoice Document*"
                         android:textColor="@android:color/darker_gray"
                         android:layout_marginBottom="@dimen/size_ten"
                         android:visibility="visible"
                         />
 
 
-                   <LinearLayout
-                       android:id="@+id/btn_layout2_m2"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:layout_margin="8dp"
-                       android:weightSum="2"
-                       android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/btn_layout2_m2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:weightSum="2"
+                        android:orientation="horizontal">
 
-                       <Button
-                           android:id="@+id/v_back_btn2_m2"
-                           android:layout_width="0dp"
-                           android:layout_weight="1"
-                           android:layout_height="wrap_content"
-                           android:background="@drawable/rounded_bg_color_btn"
-                           android:drawableStart="@drawable/ic_chevron_left_black_24dp"
-                           android:padding="@dimen/size_eight"
-                           android:text="Back"
-                           android:layout_gravity="start"
-                           android:layout_marginTop="@dimen/size_ten"
-                           android:textColor="@color/colorPrimary"
-                           android:layout_marginBottom="@dimen/size_ten"
-                           android:visibility="visible"
-                           />
-                       <View
-                           android:layout_width="8dp"
-                           android:layout_height="wrap_content"
+                        <Button
+                            android:id="@+id/v_back_btn2_m2"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/rounded_bg_color_btn"
+                            android:drawableStart="@drawable/ic_chevron_left_black_24dp"
+                            android:padding="@dimen/size_eight"
+                            android:text="Back"
+                            android:layout_gravity="start"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginBottom="@dimen/size_ten"
+                            android:visibility="visible"
+                            />
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="wrap_content"
 
-                           />
+                            />
 
-                       <Button
-                           android:id="@+id/v_next_btn2_m2"
-                           android:layout_width="0dp"
-                           android:layout_height="wrap_content"
-                           android:layout_weight="1"
-                           android:background="@drawable/rounded_right_bg_color_btn"
-                           android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-                           android:padding="@dimen/size_eight"
-                           android:text="Pricing"
-                           android:layout_gravity="end"
-                           android:layout_marginTop="@dimen/size_ten"
-                           android:textColor="@color/colorPrimary"
-                           android:layout_marginBottom="@dimen/size_ten"
-                           android:visibility="visible"
-                           />
-                   </LinearLayout>
+                        <Button
+                            android:id="@+id/v_next_btn2_m2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_right_bg_color_btn"
+                            android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
+                            android:padding="@dimen/size_eight"
+                            android:text="Pricing"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginBottom="@dimen/size_ten"
+                            android:visibility="visible"
+                            />
+                    </LinearLayout>
 
 
                     <com.wang.avi.AVLoadingIndicatorView

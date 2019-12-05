@@ -125,7 +125,7 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
 
         if (getArguments() != null) {
             vehicleMaker = getArguments().getString(VEHICLE_MAKER);
-            //p_amount = getArguments().getString(PREMIUM_AMOUNT);
+            p_amount = getArguments().getString(PREMIUM_AMOUNT);
 
 
 
@@ -298,7 +298,7 @@ public class MotorInsureFragment3 extends Fragment implements View.OnClickListen
                 }
                 stepView.done(false);
                 stepView.go(currentStep, true);
-
+                userPreferences.setTempQuotePrice(0);
                 Fragment motorInsureFragment2 = new MotorInsureFragment2();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_motor_form_container, motorInsureFragment2);

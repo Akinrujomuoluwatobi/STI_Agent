@@ -682,13 +682,13 @@ public class UserPreferences {
     }
 
 
-    public void setTempSwissQuotePrice(int quotePrice) {
-        editor.putInt(Constant.SWISS_QUOTE_PRICE, quotePrice);
+    public void setTempSwissQuotePrice(String quotePrice) {
+        editor.putString(Constant.SWISS_QUOTE_PRICE, quotePrice);
         editor.apply();
     }
 
-    public int getTempSwissQuotePrice() {
-        return sharedPreferences.getInt(Constant.SWISS_QUOTE_PRICE, 0);
+    public String getTempSwissQuotePrice() {
+        return sharedPreferences.getString(Constant.SWISS_QUOTE_PRICE, "0.0");
     }
 
 
@@ -950,7 +950,7 @@ public class UserPreferences {
     }
 
     public String getTempMarineQuotePrice() {
-        return sharedPreferences.getString(Constant.MARINE_QUOTE_PRICE, "");
+        return sharedPreferences.getString(Constant.MARINE_QUOTE_PRICE, "0.0");
     }
 
     //All Risk Datas
@@ -1639,5 +1639,59 @@ public class UserPreferences {
 
     public String getAllRiskItemReceipt() {
         return sharedPreferences.getString(Constant.ALLRISK_ITEM_RECEIPT, "");
+    }
+
+    public void setSwissIPersonal_Category(String personal_category) {
+        editor.putString("Personal_Category", personal_category);
+        editor.apply();
+    }
+
+    public String getSwissIPersonal_Category() {
+        return sharedPreferences.getString("Personal_Category", "");
+    }
+
+    public void setPersonalInitSwissQuotePrice(String initSwissQuotePrice) {
+        editor.putString("p_init_price", initSwissQuotePrice);
+        editor.apply();
+    }
+
+    public String getPersonalInitSwissQuotePrice() {
+        return sharedPreferences.getString("p_init_price", "0.0");
+    }
+
+    public void setSwissIState(String state) {
+        editor.putString(Constant.SWISS_STATE, state);
+        editor.apply();
+    }
+
+    public String getSwissIState() {
+        return sharedPreferences.getString(Constant.SWISS_STATE, "");
+    }
+
+    public void setSwissIEmail(String email) {
+        editor.putString(Constant.SWISS_INSURED_EMAIL, email);
+        editor.apply();
+    }
+
+    public String getSwissIEmail() {
+        return sharedPreferences.getString(Constant.SWISS_INSURED_EMAIL, "");
+    }
+
+    public void setMarineIStartDateCover(String startDateCover) {
+        editor.putString(Constant.MARINE_START_DATE_COVER, startDateCover);
+        editor.apply();
+    }
+
+    public String getMarineIStartDateCover() {
+        return sharedPreferences.getString(Constant.MARINE_START_DATE_COVER, "");
+    }
+
+    public void setMarineICover(String cover) {
+        editor.putString(Constant.MARINE_COVER, cover);
+        editor.apply();
+    }
+
+    public String getMarineICover() {
+        return sharedPreferences.getString(Constant.MARINE_COVER, "");
     }
 }

@@ -55,6 +55,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener{
     Button mSignInBtn;
     @BindView(R.id.register)
     TextView mRegister;
+    @BindView(R.id.forget_pass)
+    TextView mForgotPass;
     @BindView(R.id.progressbar)
     AVLoadingIndicatorView progressbar;
     UserPreferences userPreferences;
@@ -77,6 +79,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener{
 
         mSignInBtn.setOnClickListener(this);
         mRegister.setOnClickListener(this);
+        mForgotPass.setOnClickListener(this);
     }
 
     private void setUp(){
@@ -95,6 +98,10 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener{
             case R.id.register:
                 startActivity(new Intent(getApplicationContext(),SignUp.class));
                 finish();
+                break;
+
+            case R.id.forget_pass:
+                startActivity(new Intent(SignIn.this,ForgetPassword.class));
                 break;
 
         }

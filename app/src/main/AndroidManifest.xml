@@ -72,6 +72,7 @@
         <activity
             android:name=".operation_activity.RegisterCustomerActivity"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".ForgetPassword" />
         <activity android:name=".SignIn" />
         <activity android:name=".Forms.MotorInsuredForm" />
         <activity android:name=".Forms.EticForm" />

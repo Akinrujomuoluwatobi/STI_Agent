@@ -47,7 +47,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MotorInsureFragment2 extends Fragment implements View.OnClickListener{
+public class MotorInsureFragment2 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -114,22 +114,22 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     private int currentStep = 1;
 
-    String private_commString,polySelectTypeString,prEnhanceString;
-    String motorCycleTypeString,vehicleMakeString,vehicleTypeString,vehincleBodyString,startDateStrg;
+    String private_commString, polySelectTypeString, prEnhanceString;
+    String motorCycleTypeString, vehicleMakeString, vehicleTypeString, vehincleBodyString, startDateStrg;
     //The variables for VehincleData
     List<VehicleData> vehicleDataList;
-    ArrayList<String> vehiclesMakerSpinnerList=new ArrayList<>();
+    ArrayList<String> vehiclesMakerSpinnerList = new ArrayList<>();
     //The Variables for VehicleBrandType
     List<VehicleTypeData> vehicleBrandTypeList;
-    ArrayList<String> vehiclesBrandSpinnerList=new ArrayList<>();
-    String value="";
+    ArrayList<String> vehiclesBrandSpinnerList = new ArrayList<>();
+    String value = "";
 
     int vehicleId;
     String quote_price;
 
-    ArrayList<String> covers=new ArrayList<>();
+    ArrayList<String> covers = new ArrayList<>();
 
-  //Button
+    //Button
     @BindView(R.id.v_next_btn1)
     Button v_next_btn;
 
@@ -144,10 +144,11 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     @BindView(R.id.progressbar)
     AVLoadingIndicatorView progressbar;
 
-    String polyTypeString,privateTypeString,commerTypeString;
+    String polyTypeString, privateTypeString, commerTypeString;
     ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
     DatePickerDialog datePickerDialog1;
+
     public MotorInsureFragment2() {
         // Required empty public constructor
     }
@@ -183,8 +184,8 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_motor_insured2, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_motor_insured2, container, false);
+        ButterKnife.bind(this, view);
         //        stepView next registration step
         userPreferences = new UserPreferences(getContext());
 
@@ -206,11 +207,11 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
         showDatePicker();
 
 
-        return  view;
+        return view;
     }
 
 
-    private  void init(){
+    private void init() {
         UserPreferences userPreferences = new UserPreferences(getContext());
 
         //Temporal save and go to next Operation
@@ -252,7 +253,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String stringText = (String) parent.getItemAtPosition(position);
-                if(stringText.equals("Private")){
+                if (stringText.equals("Private")) {
 
                     private_comm_spinner.setVisibility(View.VISIBLE);
                     private_comm_spinner.setClickable(true);
@@ -299,7 +300,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                     inputLayoutVehicleValue.setClickable(true);
 
 
-                }else if(stringText.equals("Commercial")){
+                } else if (stringText.equals("Commercial")) {
 
                     private_comm_spinner.setVisibility(View.VISIBLE);
                     private_comm_spinner.setClickable(true);
@@ -344,11 +345,11 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                     inputLayoutVehicleValue.setVisibility(View.VISIBLE);
                     inputLayoutVehicleValue.setClickable(true);
 
-                }else if(stringText.equals("Motor Cycle")){
+                } else if (stringText.equals("Motor Cycle")) {
                     private_comm_spinner.setVisibility(View.VISIBLE);
                     private_comm_spinner.setClickable(true);
                     //private_commString="motor_cycle";
-                    vehicleTypeString="motor_cycle";
+                    vehicleTypeString = "motor_cycle";
 
                     poly_select_type_spinner.setVisibility(View.VISIBLE);
                     poly_select_type_spinner.setClickable(true);
@@ -374,7 +375,6 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
                     inputLayoutVehicleValue.setVisibility(View.GONE);
                     inputLayoutVehicleValue.setClickable(false);
-
 
 
                     //Visualizing the individual form
@@ -447,10 +447,10 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String privateTypeString = (String) parent.getItemAtPosition(position);
-                if(privateTypeString.equals("Enhanced 3rd Party")){
+                if (privateTypeString.equals("Enhanced 3rd Party")) {
                     prEnhance_type_spinner.setVisibility(View.VISIBLE);
                     prEnhance_type_spinner.setClickable(true);
-                }else{
+                } else {
                     prEnhance_type_spinner.setVisibility(View.GONE);
                     prEnhance_type_spinner.setClickable(false);
 
@@ -487,7 +487,6 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                 String pEnhanceTypeString = (String) parent.getItemAtPosition(position);
 
 
-
             }
 
             @Override
@@ -518,7 +517,6 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                 String vehicleBodyString = (String) parent.getItemAtPosition(position);
 
 
-
             }
 
             @Override
@@ -528,11 +526,6 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
         });
 
     }
-
-
-
-
-
 
 
     //seting onclicks listeners
@@ -579,31 +572,31 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
         boolean isValid = true;
 
-        if (start_date.getText().toString().isEmpty()&&start_date.isClickable()) {
+        if (start_date.getText().toString().isEmpty() && start_date.isClickable()) {
             showMessage("Your Start Date is required!");
 
             isValid = false;
-        } else if (vehicle_year.getText().toString().isEmpty()&&inputLayoutYear.isClickable()) {
+        } else if (vehicle_year.getText().toString().isEmpty() && inputLayoutYear.isClickable()) {
             inputLayoutYear.setError("Vehicle Year is required!");
 
             isValid = false;
-        } else if (vehicle_reg_num.getText().toString().isEmpty()&&inputLayoutRegNum.isClickable()) {
+        } else if (vehicle_reg_num.getText().toString().isEmpty() && inputLayoutRegNum.isClickable()) {
             inputLayoutRegNum.setError("Vehicle Registration Number is required!");
 
             isValid = false;
-        } else if (vehicle_chasis_num.getText().toString().isEmpty()&&inputLayoutChasisNum.isClickable()) {
+        } else if (vehicle_chasis_num.getText().toString().isEmpty() && inputLayoutChasisNum.isClickable()) {
             inputLayoutChasisNum.setError("Chasis Number is required!");
 
             isValid = false;
-        } else if (vehicle_engine_num.getText().toString().isEmpty()&&inputLayoutEngNum.isClickable()) {
+        } else if (vehicle_engine_num.getText().toString().isEmpty() && inputLayoutEngNum.isClickable()) {
             inputLayoutEngNum.setError("Your Engine Number is required!");
 
             isValid = false;
-        }else if (vehicle_value.getText().toString().isEmpty()&&inputLayoutVehicleValue.isClickable()) {
+        } else if (vehicle_value.getText().toString().isEmpty() && inputLayoutVehicleValue.isClickable()) {
             inputLayoutVehicleValue.setError("Vehicle value Number is required!");
 
             isValid = false;
-        }else {
+        } else {
 
             inputLayoutYear.setErrorEnabled(false);
             inputLayoutRegNum.setErrorEnabled(false);
@@ -612,12 +605,12 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             inputLayoutVehicleValue.setErrorEnabled(false);
         }
 
-        if (motor_cycle_value.getText().toString().isEmpty()&&inputLayoutMotorCyValue.isClickable()) {
+        if (motor_cycle_value.getText().toString().isEmpty() && inputLayoutMotorCyValue.isClickable()) {
             inputLayoutMotorCyValue.setError("Motor Cycle Value Number is required!");
-            String b= String.valueOf(motor_cycle_value.isClickable());
+            String b = String.valueOf(motor_cycle_value.isClickable());
 
             isValid = false;
-        }else {
+        } else {
             inputLayoutMotorCyValue.setErrorEnabled(false);
         }
 
@@ -625,7 +618,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
         // Spinner Validations
         //policyType validation
         private_commString = private_comm_spinner.getSelectedItem().toString();
-        if (private_commString.equals("Select Policy Type")&&private_comm_spinner.isClickable()) {
+        if (private_commString.equals("Select Policy Type") && private_comm_spinner.isClickable()) {
             showMessage("Select Policy Type*");
             isValid = false;
         }
@@ -680,36 +673,36 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
     }
 
-    private void sendVehicleData(PostVehicleData postVehicleData){
+    private void sendVehicleData(PostVehicleData postVehicleData) {
 
 
         //get client and call object for request
         ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
 
-        Call<QouteHead> call=client.getVehicleQuote("Token "+userPreferences.getUserToken(),postVehicleData);
+        Call<QouteHead> call = client.getVehicleQuote("Token " + userPreferences.getUserToken(), postVehicleData);
 
         call.enqueue(new Callback<QouteHead>() {
             @Override
             public void onResponse(Call<QouteHead> call, Response<QouteHead> response) {
                 Log.i("ResponseCode", String.valueOf(response.code()));
 
-                if(response.code()==400){
+                if (response.code() == 400) {
                     showMessage("Check your internet connection");
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==429){
+                } else if (response.code() == 429) {
                     showMessage("Too many requests on database");
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==500){
+                } else if (response.code() == 500) {
                     showMessage("Server Error");
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==401){
+                } else if (response.code() == 401) {
                     showMessage("Unauthorized access, please try login again");
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
@@ -718,17 +711,17 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                 try {
                     if (!response.isSuccessful()) {
 
-                        try{
-                            APIError apiError= ErrorUtils.parseError(response);
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
 
-                            showMessage("Invalid Entry: "+apiError.getErrors());
-                            Log.i("Invalid EntryK",apiError.getErrors().toString());
-                            Log.i("Invalid Entry",response.errorBody().toString());
+                            showMessage("Invalid Entry: " + apiError.getErrors());
+                            Log.i("Invalid EntryK", apiError.getErrors().toString());
+                            Log.i("Invalid Entry", response.errorBody().toString());
 
-                        }catch (Exception e){
-                            Log.i("InvalidEntry",e.getMessage());
-                            Log.i("ResponseError",response.errorBody().string());
-                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                        } catch (Exception e) {
+                            Log.i("InvalidEntry", e.getMessage());
+                            Log.i("ResponseError", response.errorBody().string());
+                            showMessage("Failed to Fetch Quote" + e.getMessage());
                             btn_layout2.setVisibility(View.VISIBLE);
                             progressbar.setVisibility(View.GONE);
 
@@ -738,12 +731,12 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                         return;
                     }
 
-                    quote_price=response.body().getData().getPrice();
+                    quote_price = response.body().getData().getPrice();
 
-                    double roundOff = Math.round(Double.valueOf(quote_price)*100)/100.00;
+                    double roundOff = Math.round(Double.valueOf(quote_price) * 100) / 100.00;
 
 
-                    Log.i("quote_price",quote_price);
+                    Log.i("quote_price", quote_price);
                     showMessage("Successfully Fetched Quote");
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
@@ -759,17 +752,18 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                         ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment3.newInstance("Motor Cycle ", String.valueOf(roundOff)), MotorInsureFragment3.class.getSimpleName());
                         ft.commit();
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.i("policyResponse", e.getMessage());
                     btn_layout2.setVisibility(View.VISIBLE);
                     progressbar.setVisibility(View.GONE);
                 }
 
             }
+
             @Override
             public void onFailure(Call<QouteHead> call, Throwable t) {
-                showMessage("Submission Failed "+t.getMessage());
-                Log.i("GEtError",t.getMessage());
+                showMessage("Submission Failed " + t.getMessage());
+                Log.i("GEtError", t.getMessage());
                 btn_layout2.setVisibility(View.VISIBLE);
                 progressbar.setVisibility(View.GONE);
             }
@@ -786,26 +780,25 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             switch (private_commString) {
                 case "Private":
                     private_commString = "private";
-                    value=vehicle_value.getText().toString();
+                    value = vehicle_value.getText().toString();
                     break;
                 case "Commercial":
                     private_commString = "commercial";
-                    value=vehicle_value.getText().toString();
+                    value = vehicle_value.getText().toString();
                     break;
                 case "Motor Cycle":
                     private_commString = "motor_cycle";
-                    vehicleTypeString="motor_cycle";
+                    vehicleTypeString = "motor_cycle";
                     userPreferences.setMotorVehicleMake("Motor Cycle");
                     userPreferences.setMotorVehicleBody(" ");
-                    value=motor_cycle_value.getText().toString();
+                    value = motor_cycle_value.getText().toString();
 
                     break;
 
             }
 
 
-
-            if(poly_select_type_spinner.isClickable()) {
+            if (poly_select_type_spinner.isClickable()) {
                 switch (polySelectTypeString) {
                     case "3rd Party Only":
                         polySelectTypeString = "third_party_only";
@@ -825,24 +818,24 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                         break;
                 }
 
-                if(prEnhance_type_spinner.isClickable()){
+                if (prEnhance_type_spinner.isClickable()) {
                     switch (prEnhanceString) {
                         case "Unique":
                             polySelectTypeString = "third_party_unique";
-                            prEnhanceString="Third_Party";
+                            prEnhanceString = "Third_Party";
                             break;
                         case "Luxury":
                             polySelectTypeString = "third_party_luxury";
-                            prEnhanceString="Third_Party";
+                            prEnhanceString = "Third_Party";
                             break;
                         case "Prestige":
                             polySelectTypeString = "third_party_prestige";
-                            prEnhanceString="Third_Party";
+                            prEnhanceString = "Third_Party";
                             break;
                     }
                 }
 
-                Log.i("Testing",private_commString+":"+polySelectTypeString+":"+prEnhanceString+":"+vehicleTypeString);
+                Log.i("Testing", private_commString + ":" + polySelectTypeString + ":" + prEnhanceString + ":" + vehicleTypeString);
 
                 PostVehicleData postVehicleData = new PostVehicleData(value, private_commString,
                         polySelectTypeString, prEnhanceString, vehicleTypeString);
@@ -869,15 +862,10 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             userPreferences.setMotorCycleValue(motor_cycle_value.getText().toString());
 
 
+            // Fragment quoteBuyFragment3 = new MotorInsureFragment3();
 
-
-           // Fragment quoteBuyFragment3 = new MotorInsureFragment3();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_motor_form_container, MotorInsureFragment3.newInstance(userPreferences.getMotorVehicleMake(),"8000"), MotorInsureFragment3.class.getSimpleName());
-            ft.commit();
-
-        }catch (Exception e){
-            Log.i("Form Error",e.getMessage());
+        } catch (Exception e) {
+            Log.i("Form Error", e.getMessage());
             progressbar.setVisibility(View.GONE);
             v_next_btn.setVisibility(View.VISIBLE);
             showMessage("Error: " + e.getMessage());
@@ -890,53 +878,53 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
     }
 
 
-
     private void showDatePicker() {
         //Get current date
         Calendar calendar = Calendar.getInstance();
-
         //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
         datePickerDialog1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
                 //Change birthdayEdittext's text and dismiss dialog.
-                if(year<calendar.get(Calendar.YEAR)){
+                if (year < calendar.get(Calendar.YEAR)) {
 
                     showMessage("Invalid Start Date");
-                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    Log.i("Calendar", year + " " + calendar.get(Calendar.YEAR));
                     return;
                 }
-                int monthofYear=monthOfYear+1;
+                int monthofYear = monthOfYear + 1;
                 startDateStrg = dayOfMonth + "-" + monthofYear + "-" + year;
                 start_date.setText(startDateStrg);
                 datePickerDialog1.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog1.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+
     }
 
-    private void fetchVehicleMaker(){
+    private void fetchVehicleMaker() {
         //get client and call object for request
 
         showMessage("Initializing page, please wait...");
         btn_layout2.setVisibility(View.GONE);
         progressbar.setVisibility(View.VISIBLE);
-        Call<Vehicles_Brand> call=client.vehicle_brand();
+        Call<Vehicles_Brand> call = client.vehicle_brand();
         call.enqueue(new Callback<Vehicles_Brand>() {
             @Override
             public void onResponse(Call<Vehicles_Brand> call, Response<Vehicles_Brand> response) {
                 try {
                     if (!response.isSuccessful()) {
 
-                        try{
-                            APIError apiError= ErrorUtils.parseError(response);
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
 
-                            showMessage("Fetch Failed: "+apiError.getErrors());
-                            Log.i("Fetch Failed",apiError.getErrors().toString());
-                            Log.i("Fetch Failed",response.errorBody().toString());
+                            showMessage("Fetch Failed: " + apiError.getErrors());
+                            Log.i("Fetch Failed", apiError.getErrors().toString());
+                            Log.i("Fetch Failed", response.errorBody().toString());
 
-                        }catch (Exception e){
-                            Log.i("Fetch Failed",e.getMessage());
+                        } catch (Exception e) {
+                            Log.i("Fetch Failed", e.getMessage());
                             showMessage("Fetch Failed");
 
                         }
@@ -948,7 +936,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                     vehicleDataList = response.body().getVehicleData();
 
                     vehiclesMakerSpinnerList.add("Select Vehicle Maker");
-                    for(int i=0; i<vehicleDataList.size();i++){
+                    for (int i = 0; i < vehicleDataList.size(); i++) {
                         vehiclesMakerSpinnerList.add(vehicleDataList.get(i).getName());
                     }
                     vehicleMakerSpinner();
@@ -957,18 +945,17 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                     progressbar.setVisibility(View.GONE);
                     showMessage("You can now select you policy..");
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     showMessage("Fetch Error: " + e.getMessage());
                 }
-
 
 
             }
 
             @Override
             public void onFailure(Call<Vehicles_Brand> call, Throwable t) {
-                showMessage("Fetch Failed "+t.getMessage());
-                Log.i("GEtError",t.getMessage());
+                showMessage("Fetch Failed " + t.getMessage());
+                Log.i("GEtError", t.getMessage());
                 btn_layout2.setVisibility(View.VISIBLE);
                 progressbar.setVisibility(View.GONE);
             }
@@ -976,6 +963,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
 
 
     }
+
     private void vehicleMakerSpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
         vehicle_make_spinner
@@ -988,13 +976,13 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String VehicleMakerString = (String) parent.getItemAtPosition(position);
-                vehicleId=position+1;
+                vehicleId = position + 1;
                 //get client and call object for request
 
                 showMessage("Please wait...");
                 btn_layout2.setVisibility(View.GONE);
                 progressbar.setVisibility(View.VISIBLE);
-                Call<VehicleBrandType> call=client.brand_type(vehicleId);
+                Call<VehicleBrandType> call = client.brand_type(vehicleId);
 
                 call.enqueue(new Callback<VehicleBrandType>() {
                     @Override
@@ -1002,15 +990,15 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                         try {
                             if (!response.isSuccessful()) {
 
-                                try{
-                                    APIError apiError= ErrorUtils.parseError(response);
+                                try {
+                                    APIError apiError = ErrorUtils.parseError(response);
 
-                                    showMessage("Fetch Failed: "+apiError.getErrors());
-                                    Log.i("Fetch Failed",apiError.getErrors().toString());
-                                    Log.i("Fetch Failed",response.errorBody().toString());
+                                    showMessage("Fetch Failed: " + apiError.getErrors());
+                                    Log.i("Fetch Failed", apiError.getErrors().toString());
+                                    Log.i("Fetch Failed", response.errorBody().toString());
 
-                                }catch (Exception e){
-                                    Log.i("Fetch Failed",e.getMessage());
+                                } catch (Exception e) {
+                                    Log.i("Fetch Failed", e.getMessage());
                                     showMessage("Fetch Failed");
 
                                 }
@@ -1022,7 +1010,7 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                             vehicleBrandTypeList = response.body().getData();
                             vehiclesBrandSpinnerList.clear();
                             vehiclesBrandSpinnerList.add("Select Brand");
-                            for(int i=0; i<vehicleBrandTypeList.size();i++){
+                            for (int i = 0; i < vehicleBrandTypeList.size(); i++) {
 
 
                                 vehiclesBrandSpinnerList.add(vehicleBrandTypeList.get(i).getName());
@@ -1034,15 +1022,15 @@ public class MotorInsureFragment2 extends Fragment implements View.OnClickListen
                             progressbar.setVisibility(View.GONE);
                             showMessage("Pick your Brand Type...");
 
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             showMessage("Fetch Error: " + e.getMessage());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<VehicleBrandType> call, Throwable t) {
-                        showMessage("Fetch Failed "+t.getMessage());
-                        Log.i("GEtError",t.getMessage());
+                        showMessage("Fetch Failed " + t.getMessage());
+                        Log.i("GEtError", t.getMessage());
                         btn_layout2.setVisibility(View.VISIBLE);
                         progressbar.setVisibility(View.GONE);
                     }

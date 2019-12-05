@@ -86,18 +86,17 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
     TextInputLayout mInputLayoutProfInvoiceM2;
     @BindView(R.id.prof_invoice_txt_m2)
     EditText mProfInvoiceTxtM2;
-    @BindView(R.id.inputLayoutProfInvoiceDate_m2)
-    TextInputLayout mInputLayoutProfInvoiceDateM2;
     @BindView(R.id.prof_invoice_date_txt_m2)
     EditText mProfInvoiceDateTxtM2;
     @BindView(R.id.inputLayoutDescGoods_m2)
     TextInputLayout mInputLayoutDescGoodsM2;
     @BindView(R.id.desc_goods_m2)
     EditText mDescGoodsM2;
-    @BindView(R.id.inputLayoutInterest_m2)
-    TextInputLayout mInputLayoutInterestM2;
-    @BindView(R.id.interest_txt_m2)
-    EditText mInterestTxtM2;
+    @BindView(R.id.cover_m2)
+    Spinner cover_spinner;
+
+    @BindView(R.id.start_date_cover_m2)
+    EditText start_date_cover_m2;
     @BindView(R.id.inputLayoutQuantity_m2)
     TextInputLayout mInputLayoutQuantityM2;
     @BindView(R.id.quantity_txt_m2)
@@ -146,6 +145,9 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
     String doc_img_url;
 
     UserPreferences userPreferences;
+    private String coverString;
+    private DatePickerDialog datePickerDialog2;
+    private String startCoverDateStrg;
 
 
     public MarineFragment2() {
@@ -195,8 +197,10 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
 
         currencySpinner();
         conveySpinner();
+        converSpinner();
         setViewActions();
-        showDatePicker();
+        showDatePicker1();
+        showDatePicker2();
 
         return view;
     }
@@ -214,7 +218,6 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
 
         mDescGoodsM2.setText(userPreferences.getMarineIDescOfGoods());
 
-        mInterestTxtM2.setText(userPreferences.getMarineIIntetrest());
 
         mQuantityTxtM2.setText(userPreferences.getMarineIQuantity());
 
@@ -257,6 +260,36 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
 
     }
 
+    private void converSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(getContext(), R.array.cover_array,
+                        android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to  the spinner
+        cover_spinner.setAdapter(staticAdapter);
+
+        cover_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String coverText = (String) parent.getItemAtPosition(position);
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                cover_spinner.getItemAtPosition(0);
+
+
+            }
+        });
+
+    }
 
     private void conveySpinner() {
         // Create an ArrayAdapter using the string array and a default spinner
@@ -290,7 +323,9 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
 
         mVNextBtn2M2.setOnClickListener(this);
         mVBackBtn2M2.setOnClickListener(this);
+        mProfInvoiceDateTxtM2.setOnClickListener(this);
         mUploadProfDocBtnM2.setOnClickListener(this);
+        start_date_cover_m2.setOnClickListener(this);
 
     }
 
@@ -304,6 +339,10 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
 
             case R.id.prof_invoice_date_txt_m2:
                 datePickerDialog1.show();
+                break;
+
+            case R.id.start_date_cover_m2:
+                datePickerDialog2.show();
                 break;
 
             case R.id.v_back_btn2_m2:
@@ -561,36 +600,36 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
             mInputLayoutProfInvoiceM2.setError("Your Proforma Invoice Number is required!");
             isValid = false;
         } else if (mProfInvoiceDateTxtM2.getText().toString().isEmpty()) {
-            mProfInvoiceDateTxtM2.setError("Your Proforma Invoice date is required!");
+            showMessage("Your Proforma Invoice date is required!");
             isValid = false;
         } else if (mDescGoodsM2.getText().toString().isEmpty()) {
             mInputLayoutDescGoodsM2.setError("Your Goods description is required!");
 
             isValid = false;
-        } else if (mInterestTxtM2.getText().toString().isEmpty()) {
-            mInputLayoutInterestM2.setError("Interest is required!");
+        }else if (start_date_cover_m2.getText().toString().isEmpty()) {
+            showMessage("Start Date Cover is required!");
+
             isValid = false;
-        } else if (mQuantityTxtM2.getText().toString().isEmpty()) {
+        }  else if (mQuantityTxtM2.getText().toString().isEmpty()) {
             mInputLayoutQuantityM2.setError("Quantity is required!");
 
             isValid = false;
-        } else if (mTotalAmtTxtM2.getText().toString().isEmpty()) {
+        }else if (mTotalAmtTxtM2.getText().toString().isEmpty()) {
             mInputLayoutTotalAmt.setError("Total Amount or Value on Proforma invoice is required!");
             isValid = false;
-        } else {
+        }else {
             mInputLayoutProfInvoiceM2.setErrorEnabled(false);
             mInputLayoutTotalAmt.setErrorEnabled(false);
             mInputLayoutDescGoodsM2.setErrorEnabled(false);
-            mInputLayoutDescGoodsM2.setErrorEnabled(false);
-            mInputLayoutInterestM2.setErrorEnabled(false);
             mInputLayoutQuantityM2.setErrorEnabled(false);
+
         }
 
         if (mCoversionRateTxtM2.getText().toString().isEmpty()) {
             mInputLayoutConversionRate.setError("Conversion rate is required!");
 
             isValid = false;
-        } else {
+        }else {
             mInputLayoutConversionRate.setErrorEnabled(false);
         }
 
@@ -598,7 +637,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
             mInputLayoutProfInvoiceM2.setError("Port of Loading is required!");
 
             isValid = false;
-        } else {
+        }else {
             mInputLayoutProfInvoiceM2.setErrorEnabled(false);
         }
 
@@ -606,7 +645,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
             mInputLayoutPortDischargeM2.setError("Port of Discharge is required!");
 
             isValid = false;
-        } else {
+        }else {
             mInputLayoutPortDischargeM2.setErrorEnabled(false);
         }
 
@@ -615,15 +654,27 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
         //currency spinner
         currencyString = mCurrencySpinnerM2.getSelectedItem().toString();
         if (currencyString.equals("Select Currency")) {
-            showMessage("Select Currency Type");
-            isValid = false;
+            currencyString = "--";
+            //  isValid = false;
         }
         //mode of convey Spinner
         conveyString = mModeOfConveySpinnerM2.getSelectedItem().toString();
         if (conveyString.equals("Mode of Conveyance")) {
-            showMessage("Select your Mode of Conveyance");
+            conveyString = "--";
+            //isValid = false;
+        }
+
+        coverString = cover_spinner.getSelectedItem().toString();
+        if (coverString.equals("Select Cover")) {
+            coverString = "--";
+            //isValid = false;
+        }
+
+        if (doc_img_url == null) {
+            showMessage("Please upload the proforma invoice image");
             isValid = false;
         }
+
 
 
         if (isValid) {
@@ -633,13 +684,18 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
         }
 
 
+
+
     }
+
 
     private void initFragment() {
         mBtnLayout2M2.setVisibility(View.GONE);
         mProgressbar2M2.setVisibility(View.VISIBLE);
 
         try {
+
+
             //Temporal save and go to next Operation
 
             userPreferences.setMarineIProfInvNO(mProfInvoiceTxtM2.getText().toString());
@@ -647,7 +703,8 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
             userPreferences.setMarineIModeOfConvey(conveyString);
             userPreferences.setMarineIDateProfInv(mProfInvoiceDateTxtM2.getText().toString());
             userPreferences.setMarineIDescOfGoods(mDescGoodsM2.getText().toString());
-            userPreferences.setMarineIIntetrest(mInterestTxtM2.getText().toString());
+            userPreferences.setMarineIStartDateCover(start_date_cover_m2.getText().toString());
+            userPreferences.setMarineICover(coverString);
             userPreferences.setMarineIQuantity(mQuantityTxtM2.getText().toString());
             userPreferences.setMarineITotalAmount(mTotalAmtTxtM2.getText().toString());
             userPreferences.setMarineINairaConvert(mCoversionRateTxtM2.getText().toString());
@@ -656,11 +713,10 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
             userPreferences.setMarineIProfImage(doc_img_url);
             sendMarineData();
 
-
-        } catch (Exception e) {
-            Log.i("Form Error", e.getMessage());
+        }catch (Exception e){
+            Log.i("Form Error",e.getMessage());
             mProgressbar2M2.setVisibility(View.GONE);
-            mVNextBtn2M2.setVisibility(View.VISIBLE);
+            mBtnLayout2M2.setVisibility(View.VISIBLE);
             showMessage("Error: " + e.getMessage());
         }
     }
@@ -771,7 +827,7 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
     }
 
 
-    private void showDatePicker() {
+    private void showDatePicker1() {
         //Get current date
         Calendar calendar = Calendar.getInstance();
 
@@ -779,12 +835,29 @@ public class MarineFragment2 extends Fragment implements View.OnClickListener {
         datePickerDialog1 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                int monthofYear = monthOfYear + 1;
-                profInvDateStrg = dayOfMonth + "-" + monthofYear + "-" + year;
+                int monthofYear=monthOfYear+1;
+                profInvDateStrg = year + "-" + monthofYear + "-" +dayOfMonth ;
                 mProfInvoiceDateTxtM2.setText(profInvDateStrg);
                 datePickerDialog1.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private void showDatePicker2() {
+        //Get current date
+        Calendar calendar = Calendar.getInstance();
+
+        //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
+        datePickerDialog2 = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                int monthofYear=monthOfYear+1;
+                startCoverDateStrg = year + "-" + monthofYear + "-" +dayOfMonth ;
+                start_date_cover_m2.setText(startCoverDateStrg);
+                datePickerDialog2.dismiss();
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
     }
 
 

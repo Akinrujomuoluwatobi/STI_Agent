@@ -185,7 +185,7 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     Log.i("backPress", "onKey Back listener is working!!!");
                     asyncSwissInsured(primaryKey);
-                    userPreferences.setTempSwissQuotePrice(0);
+                    userPreferences.setTempSwissQuotePrice(String.valueOf(0));
                     userPreferences.setSwissIPersonal_QuotePrice(0);
                     startActivity(new Intent(getActivity(), MainActivity.class));
                     return true;
@@ -228,8 +228,6 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
 
     private void init() {
 
-        UserPreferences userPreferences = new UserPreferences(getContext());
-
         //retrieve data for personal detail first
 
         swissInsured = realm.where(SwissInsured.class).equalTo("id", primaryKey).findFirst();
@@ -271,7 +269,7 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
 
                 mStepView.go(1, true);
                 asyncSwissInsured(primaryKey);
-                userPreferences.setTempSwissQuotePrice(0);
+                userPreferences.setTempSwissQuotePrice(String.valueOf(0));
                 userPreferences.setSwissIPersonal_QuotePrice(0);
                 Fragment swissFragment2 = new SwissFragment2();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -478,7 +476,7 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
                     if (total_price != null) {
                         mBtnLayout4S4.setVisibility(View.VISIBLE);
                         mProgressbar4S4.setVisibility(View.GONE);
-                        userPreferences.setTempSwissQuotePrice(0);
+                        userPreferences.setTempSwissQuotePrice(String.valueOf(0));
                         userPreferences.setSwissIPersonal_QuotePrice(0);
                         asyncSwissInsured(primaryKey);
                         Intent intent = new Intent(getContext(), PolicyPaymentActivity.class);
@@ -545,7 +543,7 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
                     public void onClick(DialogInterface dialog, int i) {
                         dialog.dismiss();
                         asyncSwissInsured(primaryKey);
-                        userPreferences.setTempSwissQuotePrice(0);
+                        userPreferences.setTempSwissQuotePrice(String.valueOf(0));
                         userPreferences.setSwissIPersonal_QuotePrice(0);
                         Fragment transactionHistoryFragment = new TransactionHistoryFragment();
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -558,7 +556,7 @@ public class SwissFragment4 extends Fragment implements View.OnClickListener {
                     public void onClick(DialogInterface dialog, int i) {
                         dialog.dismiss();
                         asyncSwissInsured(primaryKey);
-                        userPreferences.setTempSwissQuotePrice(0);
+                        userPreferences.setTempSwissQuotePrice(String.valueOf(0));
                         userPreferences.setSwissIPersonal_QuotePrice(0);
                         startActivity(new Intent(getActivity(), MainActivity.class));
                     }

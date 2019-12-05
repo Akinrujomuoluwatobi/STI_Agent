@@ -869,10 +869,11 @@ public class OtherInsureFragment1 extends Fragment implements View.OnClickListen
 
     public static boolean isValidEmailAddress(String email) {
         boolean result = true;
-        if (null != email) {
+        String Email = email.trim();
+        if (null != Email) {
             String regex = "^([_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6}))?$";
             Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(email);
+            Matcher matcher = pattern.matcher(Email);
             if (!matcher.matches()) {
                 result = false;
             }

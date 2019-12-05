@@ -66,7 +66,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class SwissFragment2 extends Fragment implements View.OnClickListener{
+public class SwissFragment2 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -122,26 +122,25 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
     AVLoadingIndicatorView mProgressbar2S2;
 
 
-  
-
     private int currentStep = 1;
 
     String cameraFilePath;
     int PICK_IMAGE_PASSPORT = 1;
     int CAM_IMAGE_PASSPORT = 2;
-    NetworkConnection networkConnection=new NetworkConnection();
+    NetworkConnection networkConnection = new NetworkConnection();
 
     Uri addaddinsure_person_img_uri;
-    String addpersonal_img_url,DobString;
+    String addpersonal_img_url, DobString;
 
     DatePickerDialog datePickerDialog2;
 
-    String maritalString,genderString,benefitString;
-    String quote_price,category;
+    String maritalString, genderString, benefitString;
+    String quote_price, category;
 
     int benefit_count = 0;
 
     UserPreferences userPreferences;
+
     public SwissFragment2() {
         // Required empty public constructor
     }
@@ -177,10 +176,10 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_swiss2, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_swiss2, container, false);
+        ButterKnife.bind(this, view);
         //        mStepView next registration step
-        
+
 
         mStepView.go(currentStep, true);
         userPreferences = new UserPreferences(getContext());
@@ -196,12 +195,11 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         showDatePicker();
 
 
-
-        return  view;
+        return view;
     }
 
 
-    private  void init(){
+    private void init() {
         //Temporal save and go to next Operation
 
 
@@ -209,7 +207,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
         mLastnameEditxtS2.setText(userPreferences.getSwissIAddLastName());
 
-        mDobEditxtS2.setText(userPreferences.getSwissIAddDOB());
+        //mDobEditxtS2.setText(userPreferences.getSwissIAddDOB());
 
         mPhoneNoEditxtS2.setText(userPreferences.getSwissIAddPhoneNum());
 
@@ -267,7 +265,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String martalTypeString = (String) parent.getItemAtPosition(position);
-
 
 
             }
@@ -358,7 +355,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                 ft.commit();
 
                 break;
-                
+
             case R.id.upload_passport_btn_s2:
                 // setup the alert builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -416,7 +413,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
     }
 
 
-
     private void chooseIdImage_camera() {
 
         try {
@@ -426,7 +422,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         } catch (IOException ex) {
             ex.printStackTrace();
             showMessage("Invalid Entry");
-            Log.i("Invalid_Cam_Entry",ex.getMessage());
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
         }
     }
 
@@ -441,14 +437,14 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
         showMessage("Uploading...");
         if (networkConnection.isNetworkConnected(getContext())) {
-            Random random=new Random();
-            String rand= String.valueOf(random.nextInt());
+            Random random = new Random();
+            String rand = String.valueOf(random.nextInt());
             if (requestCode == 1) {
                 addaddinsure_person_img_uri = data.getData();
 
                 try {
                     if (addaddinsure_person_img_uri != null) {
-                        String name = mFirstnameEditxt.getText().toString()+rand;
+                        String name = mFirstnameEditxt.getText().toString() + rand;
                         if (name.equals("")) {
                             showMessage("Enter your the first name first");
 
@@ -515,12 +511,12 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
                 }
 
-            }else  if (requestCode == 2) {
+            } else if (requestCode == 2) {
                 addaddinsure_person_img_uri = Uri.parse(cameraFilePath);
 
                 try {
                     if (addaddinsure_person_img_uri != null) {
-                        String name = mFirstnameEditxt.getText().toString()+rand;
+                        String name = mFirstnameEditxt.getText().toString() + rand;
                         if (name.equals("")) {
                             showMessage("Enter your the first name first");
 
@@ -605,7 +601,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         } else if (mLastnameEditxtS2.getText().toString().isEmpty()) {
             mInputLayoutLastNameS2.setError("Your LastName is required!");
             isValid = false;
-        } else{
+        } else {
             mInputLayoutFirstNameS2.setErrorEnabled(false);
             mInputLayoutLastNameS2.setErrorEnabled(false);
 
@@ -615,7 +611,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutDateofBirthS2.setError("Swiss Cycle Value Number is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutDateofBirthS2.setErrorEnabled(false);
         }
 
@@ -623,7 +619,7 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutPhoneS2.setError("Phone Number is required!");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutPhoneS2.setErrorEnabled(false);
         }
 
@@ -640,11 +636,11 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             mInputLayoutDisableS2.setError("If No, please enter No");
 
             isValid = false;
-        }else {
+        } else {
             mInputLayoutDisableS2.setErrorEnabled(false);
         }
 
-        if (addpersonal_img_url==null) {
+        if (addpersonal_img_url == null) {
             showMessage("Please upload an image: passport,company license..etc");
             isValid = false;
         }
@@ -676,8 +672,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
         }
 
 
-
-
     }
 
     private void initFragment() {
@@ -702,43 +696,43 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             sendSwissData();
 
 
-        }catch (Exception e){
-            Log.i("Form Error",e.getMessage());
+        } catch (Exception e) {
+            Log.i("Form Error", e.getMessage());
             mProgressbar2S2.setVisibility(View.GONE);
             mVNextBtn2S2.setVisibility(View.VISIBLE);
             showMessage("Error: " + e.getMessage());
         }
     }
 
-    private void sendSwissData(){
+    private void sendSwissData() {
 
         //get client and call object for request
         ApiInterface client = ServiceGenerator.createService(ApiInterface.class);
 
 
-        Call<QouteHeadSwiss> call=client.swiss_quote("Token "+userPreferences.getUserToken(),mDobEditxtS2.getText().toString());
+        Call<QouteHeadSwiss> call = client.swiss_quote("Token " + userPreferences.getUserToken(), mDobEditxtS2.getText().toString());
 
         call.enqueue(new Callback<QouteHeadSwiss>() {
             @Override
             public void onResponse(Call<QouteHeadSwiss> call, Response<QouteHeadSwiss> response) {
                 Log.i("ResponseCode", String.valueOf(response.code()));
 
-                if(response.code()==400){
+                if (response.code() == 400) {
                     showMessage("Check your internet connection");
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==429){
+                } else if (response.code() == 429) {
                     showMessage("Too many requests on database");
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==500){
+                } else if (response.code() == 500) {
                     showMessage("Server Error");
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
                     return;
-                }else if(response.code()==401){
+                } else if (response.code() == 401) {
                     showMessage("Unauthorized access, please try login again");
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
@@ -747,17 +741,17 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                 try {
                     if (!response.isSuccessful()) {
 
-                        try{
-                            APIError apiError= ErrorUtils.parseError(response);
+                        try {
+                            APIError apiError = ErrorUtils.parseError(response);
 
-                            showMessage("Invalid Entry: "+apiError.getErrors());
-                            Log.i("Invalid EntryK",apiError.getErrors().toString());
-                            Log.i("Invalid Entry",response.errorBody().toString());
+                            showMessage("Invalid Entry: " + apiError.getErrors());
+                            Log.i("Invalid EntryK", apiError.getErrors().toString());
+                            Log.i("Invalid Entry", response.errorBody().toString());
 
-                        }catch (Exception e){
-                            Log.i("InvalidEntry",e.getMessage());
-                            Log.i("ResponseError",response.errorBody().string());
-                            showMessage("Failed to Fetch Quote"+e.getMessage());
+                        } catch (Exception e) {
+                            Log.i("InvalidEntry", e.getMessage());
+                            Log.i("ResponseError", response.errorBody().string());
+                            showMessage("Failed to Fetch Quote" + e.getMessage());
                             mBtnLayout2S2.setVisibility(View.VISIBLE);
                             mProgressbar2S2.setVisibility(View.GONE);
 
@@ -767,8 +761,8 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                         return;
                     }
 
-                    quote_price=response.body().getData().getPrice();
-                    category=response.body().getData().getCategory();
+                    quote_price = response.body().getData().getPrice();
+                    category = response.body().getData().getCategory();
                     switch (category) {
                         case "Adult":
                             int mul_price_adult = 1500 * benefit_count;
@@ -785,9 +779,9 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
                     }
 
-                    double roundOff = Math.round(Double.valueOf(quote_price)*100)/100.00;
+                    double roundOff = Math.round(Double.valueOf(quote_price) * 100) / 100.00;
 
-                    Log.i("quote_price",quote_price);
+                    Log.i("quote_price", quote_price);
                     showMessage("Successfully Fetched Quote");
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
@@ -797,17 +791,18 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
                     ft.replace(R.id.fragment_swiss_form_container, SwissFragment3.newInstance(category, String.valueOf(roundOff)), SwissFragment3.class.getSimpleName());
                     ft.commit();
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.i("policyResponse", e.getMessage());
                     mBtnLayout2S2.setVisibility(View.VISIBLE);
                     mProgressbar2S2.setVisibility(View.GONE);
                 }
 
             }
+
             @Override
             public void onFailure(Call<QouteHeadSwiss> call, Throwable t) {
-                showMessage("Submission Failed "+t.getMessage());
-                Log.i("GEtError",t.getMessage());
+                showMessage("Submission Failed " + t.getMessage());
+                Log.i("GEtError", t.getMessage());
                 mBtnLayout2S2.setVisibility(View.VISIBLE);
                 mProgressbar2S2.setVisibility(View.GONE);
             }
@@ -821,10 +816,11 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
     public static boolean isValidEmailAddress(String email) {
         boolean result = true;
-        if (null != email) {
+        String Email = email.trim();
+        if (null != Email) {
             String regex = "^([_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6}))?$";
             Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(email);
+            Matcher matcher = pattern.matcher(Email);
             if (!matcher.matches()) {
                 result = false;
             }
@@ -832,7 +828,6 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
 
         return result;
     }
-
 
 
     private void showDatePicker() {
@@ -845,20 +840,19 @@ public class SwissFragment2 extends Fragment implements View.OnClickListener{
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //When a date is selected, it comes here.
                 //Change birthdayEdittext's text and dismiss dialog.
-                if(year>calendar.get(Calendar.YEAR)){
+                if (year > calendar.get(Calendar.YEAR)) {
 
                     showMessage("Invalid Born Date");
-                    Log.i("Calendar",year+" "+calendar.get(Calendar.YEAR));
+                    Log.i("Calendar", year + " " + calendar.get(Calendar.YEAR));
                     return;
                 }
-                int monthofYear=monthOfYear+1;
+                int monthofYear = monthOfYear + 1;
                 DobString = year + "-" + monthofYear + "-" + dayOfMonth;
                 mDobEditxtS2.setText(DobString);
                 datePickerDialog2.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
     }
-
 
 
 }

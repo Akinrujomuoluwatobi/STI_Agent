@@ -12,6 +12,9 @@ import com.example.sti_agent.Model.CustomerModel.CustomerModel;
 import com.example.sti_agent.Model.Etic.EticPost.EticPostHead;
 import com.example.sti_agent.Model.Etic.FormSuccessDetail.BuyQuoteFormGetHead_Etic;
 import com.example.sti_agent.Model.Etic.QouteHeadEtic;
+import com.example.sti_agent.Model.ForgetPass.UserHName;
+import com.example.sti_agent.Model.ForgetPass.UserHNew;
+import com.example.sti_agent.Model.ForgetPass.UserHead;
 import com.example.sti_agent.Model.Marine.FormSuccessDetail.BuyQuoteFormGetHead_Marine;
 import com.example.sti_agent.Model.Marine.MarinePost.MarinePostHead;
 import com.example.sti_agent.Model.Marine.MarineQuote;
@@ -122,4 +125,10 @@ public interface ApiInterface {
     //Buy AllRisk Policy
     @POST("agents/buy-all-risk-policy")
     Call<BuyQuoteFormGetHead_AllRisk> allrisk_policy(@Header("Authorization") String token, @Body AllRiskPostHead allRiskPostHead);
+
+    @POST("users/initiate-password")
+    Call<UserHName> initiate_forget_pass(@Body UserHead userHead);
+
+    @POST("users/update-password")
+    Call<ResponseBody> reset_pass(@Body UserHNew userHNew);
 }

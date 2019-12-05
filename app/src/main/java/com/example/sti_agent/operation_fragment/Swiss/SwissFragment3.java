@@ -35,7 +35,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 
 
-public class SwissFragment3 extends Fragment implements View.OnClickListener{
+public class SwissFragment3 extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ELIGIBILITY = "eligibility";
@@ -67,11 +67,11 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
     Realm realm;
 
 
+    private int currentStep = 2;
 
-    private  int currentStep=2;
-
-    SwissInsured id=new SwissInsured();
-    String primaryKey=id.getId();
+    SwissInsured id = new SwissInsured();
+    String primaryKey = id.getId();
+    private UserPreferences userPreferences;
 
 
     public SwissFragment3() {
@@ -100,16 +100,16 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UserPreferences userPreferences=new UserPreferences(getContext());
+        userPreferences = new UserPreferences(getContext());
         if (getArguments() != null) {
             eligibity = getArguments().getString(ELIGIBILITY);
 
-            int oldquote=userPreferences.getTempSwissQuotePrice();
-            p_amount=getArguments().getString(PREMIUM_AMOUNT);
+            double oldquote = Double.parseDouble(userPreferences.getTempSwissQuotePrice());
+            p_amount = getArguments().getString(PREMIUM_AMOUNT);
 
-            int newquote=Integer.parseInt(getArguments().getString(PREMIUM_AMOUNT));
-            int total_quote=oldquote+newquote;
-            userPreferences.setTempSwissQuotePrice(total_quote);
+            double newquote = Double.parseDouble(getArguments().getString(PREMIUM_AMOUNT));
+            double total_quote = oldquote + newquote;
+            userPreferences.setTempSwissQuotePrice(String.valueOf(total_quote));
 
 
         }
@@ -119,33 +119,30 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_swiss3, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_swiss3, container, false);
+        ButterKnife.bind(this, view);
         //        mStepView next registration step
         mStepView.go(currentStep, true);
 
 
         //instancial Realm db
-        realm=Realm.getDefaultInstance();
+        realm = Realm.getDefaultInstance();
 
         mEligibilityTxtS3.setText(eligibity);
-        if(p_amount==null){
-            p_amount="000";
+        if (p_amount == null) {
+            p_amount = "000";
             String format = p_amount + ".00";
             mAmountS3.setText(format);
-        }else {
+        } else {
             String format = p_amount + ".00";
             mAmountS3.setText(format);
         }
 
 
-
-
         setViewActions();
 
-        return  view;
+        return view;
     }
-
 
 
     //seting onclicks listeners
@@ -166,16 +163,14 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.fabAddInsure_s3:
-                UserPreferences userPreferences=new UserPreferences(getContext());
-
 
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
 
-                        Personal_Detail_swiss personal_detail_swiss=new Personal_Detail_swiss();
+                        Personal_Detail_swiss personal_detail_swiss = new Personal_Detail_swiss();
 
-                        if(realm.isEmpty()){
+                        if (realm.isEmpty()) {
 
 
                             personal_detail_swiss.setPrefix(userPreferences.getSwissIPrefix());
@@ -195,7 +190,7 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             personal_detail_swiss.setPicture(userPreferences.getSwissIPersonal_image());
 
                             //Additional Insured List
-                            AdditionInsured additionInsured=new AdditionInsured();
+                            AdditionInsured additionInsured = new AdditionInsured();
                             additionInsured.setFirst_name(userPreferences.getSwissIAddFirstName());
                             additionInsured.setLast_name(userPreferences.getSwissIAddLastName());
                             additionInsured.setDate_of_birth(userPreferences.getSwissIAddDOB());
@@ -207,32 +202,30 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             additionInsured.setMarital_status(userPreferences.getSwissIAddMaritalStatus());
                             additionInsured.setPicture("");
                             additionInsured.setPrice(userPreferences.getInitSwissQuotePrice());
-                            RealmList<AdditionInsured> additionInsuredList=new RealmList<>();
+                            RealmList<AdditionInsured> additionInsuredList = new RealmList<>();
                             additionInsuredList.add(additionInsured);
 
                             personal_detail_swiss.setAdditionInsureds(additionInsuredList);
-                            
 
-                            final Personal_Detail_swiss personal_detail_swiss1=realm.copyToRealm(personal_detail_swiss);
 
-                            SwissInsured swissInsured=realm.createObject(SwissInsured.class,primaryKey);
+                            final Personal_Detail_swiss personal_detail_swiss1 = realm.copyToRealm(personal_detail_swiss);
+
+                            SwissInsured swissInsured = realm.createObject(SwissInsured.class, primaryKey);
                             swissInsured.setAgent_id("1");
-                            swissInsured.setQuote_price(String.valueOf(userPreferences.getTempSwissQuotePrice()));
+                            swissInsured.setQuote_price(userPreferences.getTempSwissQuotePrice());
                             swissInsured.setPayment_source("paystack");
                             swissInsured.setPin("11234");
 
-                            Log.i("Primary1",primaryKey);
+                            Log.i("Primary1", primaryKey);
 
                             swissInsured.getPersonal_detail_swisses().add(personal_detail_swiss1);
 
 
-
-                        }else if(!realm.isEmpty()){
-
+                        } else if (!realm.isEmpty()) {
 
 
                             //Vehicle List
-                            AdditionInsured additionInsured=new AdditionInsured();
+                            AdditionInsured additionInsured = new AdditionInsured();
                             additionInsured.setFirst_name(userPreferences.getSwissIAddFirstName());
                             additionInsured.setLast_name(userPreferences.getSwissIAddLastName());
                             additionInsured.setDate_of_birth(userPreferences.getSwissIAddDOB());
@@ -245,25 +238,22 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                             additionInsured.setPicture(userPreferences.getSwissIAddPicture());
                             additionInsured.setPrice(userPreferences.getInitSwissQuotePrice());
 
-                            RealmList<AdditionInsured>additionInsuredList=new RealmList<>();
+                            RealmList<AdditionInsured> additionInsuredList = new RealmList<>();
                             additionInsuredList.add(additionInsured);
                             personal_detail_swiss.setAdditionInsureds(additionInsuredList);
 
 
-
-                            final Personal_Detail_swiss personal_detail_swiss2=realm.copyToRealm(personal_detail_swiss);
-                            SwissInsured swissInsured=realm.createObject(SwissInsured.class,primaryKey);
-                            swissInsured.setQuote_price(String.valueOf(userPreferences.getTempSwissQuotePrice()));
+                            final Personal_Detail_swiss personal_detail_swiss2 = realm.copyToRealm(personal_detail_swiss);
+                            SwissInsured swissInsured = realm.createObject(SwissInsured.class, primaryKey);
+                            swissInsured.setQuote_price(userPreferences.getTempSwissQuotePrice());
 
                             swissInsured.getPersonal_detail_swisses().add(personal_detail_swiss2);
                             showMessage(primaryKey);
 
 
-
-                        }else {
+                        } else {
                             showMessage("Invalid transaction");
                         }
-
 
 
                     }
@@ -285,7 +275,8 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
                 }
                 mStepView.done(false);
                 mStepView.go(currentStep, true);
-
+                userPreferences.setTempSwissQuotePrice(String.valueOf(0));
+                userPreferences.setSwissIPersonal_QuotePrice(0);
                 Fragment swissFragment22 = new SwissFragment2();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_swiss_form_container, swissFragment22);
@@ -304,71 +295,69 @@ public class SwissFragment3 extends Fragment implements View.OnClickListener{
             @Override
             public void execute(Realm realm) {
 
-                Personal_Detail_swiss personal_detail_swiss=new Personal_Detail_swiss();
+                Personal_Detail_swiss personal_detail_swiss = new Personal_Detail_swiss();
 
 
+                personal_detail_swiss.setPrefix(userPreferences.getSwissIPrefix());
+                personal_detail_swiss.setFirst_name(userPreferences.getSwissIFirstName());
+                personal_detail_swiss.setLast_name(userPreferences.getSwissILastName());
+                personal_detail_swiss.setGender(userPreferences.getSwissIGender());
+                personal_detail_swiss.setMarital_status(userPreferences.getSwissIMaritalStatus());
+                personal_detail_swiss.setPhone(userPreferences.getSwissIPhoneNum());
+                personal_detail_swiss.setEmail(userPreferences.getSwissIAddEmailPersona());
+                personal_detail_swiss.setResident_address(userPreferences.getSwissIResAdrr());
+                personal_detail_swiss.setNext_of_kin(userPreferences.getSwissINextKin());
+                personal_detail_swiss.setNext_of_kin_address(userPreferences.getSwissINextKinAddr());
+                personal_detail_swiss.setNext_of_kin_phone(userPreferences.getSwissINextKinPhoneNum());
+                personal_detail_swiss.setDate_of_birth(userPreferences.getSwissIDob());
+                personal_detail_swiss.setDisability(userPreferences.getSwissIDisable());
+                personal_detail_swiss.setBenefit_category(userPreferences.getSwissIBenefit());
+                personal_detail_swiss.setPicture(userPreferences.getSwissIPersonal_image());
+                personal_detail_swiss.setPrice(userPreferences.getPersonalInitSwissQuotePrice());
 
-                    personal_detail_swiss.setPrefix(userPreferences.getSwissIPrefix());
-                    personal_detail_swiss.setFirst_name(userPreferences.getSwissIFirstName());
-                    personal_detail_swiss.setLast_name(userPreferences.getSwissILastName());
-                    personal_detail_swiss.setGender(userPreferences.getSwissIGender());
-                    personal_detail_swiss.setMarital_status(userPreferences.getSwissIMaritalStatus());
-                    personal_detail_swiss.setPhone(userPreferences.getSwissIPhoneNum());
-                    personal_detail_swiss.setEmail(userPreferences.getSwissIAddEmailPersona());
-                    personal_detail_swiss.setResident_address(userPreferences.getSwissIResAdrr());
-                    personal_detail_swiss.setNext_of_kin(userPreferences.getSwissINextKin());
-                    personal_detail_swiss.setNext_of_kin_address(userPreferences.getSwissINextKinAddr());
-                    personal_detail_swiss.setNext_of_kin_phone(userPreferences.getSwissINextKinPhoneNum());
-                    personal_detail_swiss.setDate_of_birth(userPreferences.getSwissIDob());
-                    personal_detail_swiss.setDisability(userPreferences.getSwissIDisable());
-                    personal_detail_swiss.setBenefit_category(userPreferences.getSwissIBenefit());
-                    personal_detail_swiss.setPicture(userPreferences.getSwissIPersonal_image());
+                //Additional Insured List
+                AdditionInsured additionInsured = new AdditionInsured();
+                additionInsured.setFirst_name(userPreferences.getSwissIAddFirstName());
+                additionInsured.setLast_name(userPreferences.getSwissIAddLastName());
+                additionInsured.setDate_of_birth(userPreferences.getSwissIAddDOB());
+                additionInsured.setGender(userPreferences.getSwissIAddGender());
+                additionInsured.setPhone(userPreferences.getSwissIAddPhoneNum());
+                additionInsured.setEmail(userPreferences.getSwissIAddEmail());
+                additionInsured.setDisability(userPreferences.getSwissIAddDisability());
+                additionInsured.setBenefit_category(userPreferences.getSwissIAddBenefitCat());
+                additionInsured.setMarital_status(userPreferences.getSwissIAddMaritalStatus());
+                additionInsured.setPicture("");
+                additionInsured.setPrice(userPreferences.getInitSwissQuotePrice());
+                RealmList<AdditionInsured> additionInsuredList = new RealmList<>();
+                additionInsuredList.add(additionInsured);
 
-                    //Additional Insured List
-                    AdditionInsured additionInsured=new AdditionInsured();
-                    additionInsured.setFirst_name(userPreferences.getSwissIAddFirstName());
-                    additionInsured.setLast_name(userPreferences.getSwissIAddLastName());
-                    additionInsured.setDate_of_birth(userPreferences.getSwissIAddDOB());
-                    additionInsured.setGender(userPreferences.getSwissIAddGender());
-                    additionInsured.setPhone(userPreferences.getSwissIAddPhoneNum());
-                    additionInsured.setEmail(userPreferences.getSwissIAddEmail());
-                    additionInsured.setDisability(userPreferences.getSwissIAddDisability());
-                    additionInsured.setBenefit_category(userPreferences.getSwissIAddBenefitCat());
-                    additionInsured.setMarital_status(userPreferences.getSwissIAddMaritalStatus());
-                    additionInsured.setPicture("");
-                    RealmList<AdditionInsured> additionInsuredList=new RealmList<>();
-                    additionInsuredList.add(additionInsured);
-
-                    personal_detail_swiss.setAdditionInsureds(additionInsuredList);
+                personal_detail_swiss.setAdditionInsureds(additionInsuredList);
 
 
-                    final Personal_Detail_swiss personal_detail_swiss1=realm.copyToRealm(personal_detail_swiss);
+                final Personal_Detail_swiss personal_detail_swiss1 = realm.copyToRealm(personal_detail_swiss);
 
-                    SwissInsured swissInsured=realm.createObject(SwissInsured.class,primaryKey);
-                    swissInsured.setAgent_id("1");
-                    swissInsured.setQuote_price(String.valueOf(userPreferences.getTempSwissQuotePrice()));
-                    swissInsured.setPayment_source("paystack");
-                    swissInsured.setPin("11234");
+                SwissInsured swissInsured = realm.createObject(SwissInsured.class, primaryKey);
+                swissInsured.setAgent_id("1");
+                swissInsured.setQuote_price(userPreferences.getTempSwissQuotePrice());
+                swissInsured.setPayment_source("paystack");
+                swissInsured.setPin("11234");
 
-                    Log.i("Primary1",primaryKey);
+                Log.i("Primary1", primaryKey);
 
-                    swissInsured.getPersonal_detail_swisses().add(personal_detail_swiss1);
-
+                swissInsured.getPersonal_detail_swisses().add(personal_detail_swiss1);
 
 
             }
         });
 
 
+        userPreferences.setSwissIPersonal_QuotePrice(0);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_swiss_form_container, SwissFragment4.newInstance(primaryKey));
         ft.commit();
 
 
-
     }
-
-
 
 
     private void showMessage(String s) {

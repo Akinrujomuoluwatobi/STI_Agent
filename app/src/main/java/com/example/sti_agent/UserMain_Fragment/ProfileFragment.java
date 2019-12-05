@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -30,6 +33,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
+import com.example.sti_agent.BuildConfig;
 import com.example.sti_agent.NetworkConnection;
 import com.example.sti_agent.R;
 import com.example.sti_agent.UserPreferences;
@@ -38,6 +42,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.wang.avi.AVLoadingIndicatorView;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
@@ -46,7 +54,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public  class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
 
     @BindView(R.id.profile_lay)
@@ -107,14 +115,16 @@ public  class ProfileFragment extends Fragment {
     AVLoadingIndicatorView mAvi1;
 
     private Uri imageUri;
-    String address,firstname,phone_num,lastname;
+    String address, firstname, phone_num, lastname;
 
     int PICK_IMAGE_PASSPORT = 1;
-    NetworkConnection networkConnection=new NetworkConnection();
+    NetworkConnection networkConnection = new NetworkConnection();
 
     Uri profile_photo_img_uri;
     String personal_img_url;
     UserPreferences userPreferences;
+    int CAM_IMAGE_PASSPORT = 2;
+    private String cameraFilePath;
 
 
     public ProfileFragment() {
@@ -122,24 +132,21 @@ public  class ProfileFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, fragmentView);
-        userPreferences=new UserPreferences(getContext());
+        userPreferences = new UserPreferences(getContext());
 
         getUserProfile();
         return fragmentView;
     }
 
 
-
     @OnClick(R.id.edit_prof)
     public void showEditProfile() {
 
         editProfile();
-
 
 
     }
@@ -161,19 +168,16 @@ public  class ProfileFragment extends Fragment {
             return;
         }
 
-
-
-
         showMessage(String.valueOf(requestCode));
         if (networkConnection.isNetworkConnected(getContext())) {
-            Random random=new Random();
-            String rand= String.valueOf(random.nextInt());
+            Random random = new Random();
+            String rand = String.valueOf(random.nextInt());
             if (requestCode == 1) {
                 profile_photo_img_uri = data.getData();
 
                 try {
                     if (profile_photo_img_uri != null) {
-                        String name = "profile_photo"+rand;
+                        String name = "profile_photo" + rand;
                         if (name.equals("")) {
                             showMessage("Try again");
 
@@ -242,6 +246,79 @@ public  class ProfileFragment extends Fragment {
 
                 }
 
+            } else if (requestCode == 2) {
+                profile_photo_img_uri = Uri.parse(cameraFilePath);
+
+                try {
+                    if (profile_photo_img_uri != null) {
+                        String name = "profile_photo" + rand;
+                        if (name.equals("")) {
+                            showMessage("Try again");
+
+                        } else {
+                            mProfilePhoto.setImageBitmap(MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), profile_photo_img_uri));
+
+
+                            String imageId = MediaManager.get().upload(Uri.parse(profile_photo_img_uri.toString()))
+                                    .option("public_id", "user_registration/profile_photos/user_passport" + name)
+                                    .unsigned("xbiscrhh").callback(new UploadCallback() {
+                                        @Override
+                                        public void onStart(String requestId) {
+                                            // your code here
+                                            mUpdateBtn.setVisibility(View.GONE);
+                                            mAvi1.setVisibility(View.VISIBLE);
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                                            // example code starts here
+                                            Double progress = (double) bytes / totalBytes;
+                                            // post progress to app UI (e.g. progress bar, notification)
+                                            // example code ends here
+                                            mAvi1.setVisibility(View.VISIBLE);
+                                        }
+
+                                        @Override
+                                        public void onSuccess(String requestId, Map resultData) {
+                                            // your code here
+
+                                            showMessage("Image Uploaded Successfully");
+                                            Log.i("ImageRequestId ", requestId);
+                                            Log.i("ImageUrl ", String.valueOf(resultData.get("url")));
+                                            mAvi1.setVisibility(View.GONE);
+                                            mUpdateBtn.setVisibility(View.VISIBLE);
+                                            personal_img_url = String.valueOf(resultData.get("url"));
+
+
+                                        }
+
+                                        @Override
+                                        public void onError(String requestId, ErrorInfo error) {
+                                            // your code here
+                                            showMessage("Error: " + error.toString());
+                                            Log.i("Error: ", error.toString());
+
+                                            mUpdateBtn.setVisibility(View.VISIBLE);
+                                            mAvi1.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onReschedule(String requestId, ErrorInfo error) {
+                                            // your code here
+                                        }
+                                    })
+                                    .dispatch();
+
+                        }
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showMessage("Please Check your Image");
+
+                }
             }
             return;
         }
@@ -255,20 +332,41 @@ public  class ProfileFragment extends Fragment {
         mEditLayout.setVisibility(View.VISIBLE);
 
 
-            mPhoneNumEditxt.setText(userPreferences.getAgentEmail());
-            mUsernameEditxt.setText(userPreferences.getAgentUsername());
-            mFirstnameEditxt.setText(userPreferences.getAgentFirstName());
-            mLastnameEditxt.setText(userPreferences.getAgentLastName());
+        mPhoneNumEditxt.setText(userPreferences.getAgentEmail());
+        mUsernameEditxt.setText(userPreferences.getAgentUsername());
+        mFirstnameEditxt.setText(userPreferences.getAgentFirstName());
+        mLastnameEditxt.setText(userPreferences.getAgentLastName());
 
 
         mProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chooseImageFile();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Choose Mode of Entry");
+// add a list
+                String[] entry = {"Camera", "Gallery"};
+                builder.setItems(entry, (dialog, option) -> {
+                    switch (option) {
+                        case 0:
+                            // direct entry
+                            chooseIdImage_camera();
+                            dialog.dismiss();
+                            break;
+
+                        case 1: // export
+
+                            chooseImageFile();
+                            dialog.dismiss();
+
+                            break;
+
+                    }
+                });
+// create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
-
-
 
 
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +388,19 @@ public  class ProfileFragment extends Fragment {
         });
     }
 
+    private void chooseIdImage_camera() {
+
+        try {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".fileprovider", createImageFile()));
+            startActivityForResult(intent, CAM_IMAGE_PASSPORT);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showMessage("Invalid Entry");
+            Log.i("Invalid_Cam_Entry", ex.getMessage());
+        }
+    }
+
 
     private void showMessage(String s) {
         Snackbar.make(mProfileLay, s, Snackbar.LENGTH_SHORT).show();
@@ -297,29 +408,44 @@ public  class ProfileFragment extends Fragment {
 
     private void getUserProfile() {
         //Getting profile from Pref
-        mFirstname.setText("FirstName: "+userPreferences.getAgentFirstName());
-        mLastname.setText("LastName: "+userPreferences.getAgentLastName());
+        mFirstname.setText("FirstName: " + userPreferences.getAgentFirstName());
+        mLastname.setText("LastName: " + userPreferences.getAgentLastName());
         mUsernameTxt.setText(userPreferences.getAgentUsername());
-        mEmail.setText("Email: "+userPreferences.getAgentEmail());
-        mPhoneNum.setText("Phone No: "+userPreferences.getAgentPhoneNUM());
-        mPinProfileTxt.setText("Pin: "+userPreferences.getAgentPin());
-        mBank.setText("Bank Name: "+userPreferences.getBank());
-        mAccountName.setText("Acct Name: "+userPreferences.getAccountName());
-        mAccountNumber.setText("Acct No: "+userPreferences.getAccountNumber());
+        mEmail.setText("Email: " + userPreferences.getAgentEmail());
+        mPhoneNum.setText("Phone No: " + userPreferences.getAgentPhoneNUM());
+        mPinProfileTxt.setText("Pin: " + userPreferences.getAgentPin());
+        mBank.setText("Bank Name: " + userPreferences.getBank());
+        mAccountName.setText("Acct Name: " + userPreferences.getAccountName());
+        mAccountNumber.setText("Acct No: " + userPreferences.getAccountNumber());
 
         mProgressBarProfile.setVisibility(View.VISIBLE);
-        if(personal_img_url==null) {
+        if (personal_img_url == null) {
             Glide.with(getContext()).load(userPreferences.getAgentProfileImg()).apply(new RequestOptions().fitCenter().circleCrop()).into(mProfilePhoto);
-        }else{
+        } else {
             Glide.with(getContext()).load(personal_img_url).apply(new RequestOptions().fitCenter().circleCrop()).into(mProfilePhoto);
 
         }
         mProgressBarProfile.setVisibility(View.GONE);
 
 
-
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        //This is the directory in which the file will be created. This is the default location of Camera photos
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        // Save a file: path for using again
+        cameraFilePath = "file://" + image.getAbsolutePath();
+        return image;
+    }
 
 
 }

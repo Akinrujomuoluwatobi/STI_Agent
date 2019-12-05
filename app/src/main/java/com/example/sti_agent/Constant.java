@@ -62,7 +62,10 @@ public static final String USER_TYPE = "user_type";
     public static final String ALLRISK_INSURED_STATE = "allrisk_insured_state";
     public static final String ALLRISK_ITEM_IMEI = "allrisk_item_imei";
     public static final String ALLRISK_ITEM_RECEIPT = "allrisk_item_receipt";
-
+    public static final String USER_EMAIL = "user_email";
+    public static final String SWISS_STATE = "swiss_state";
+    public static final String MARINE_START_DATE_COVER = "marine_start_date_cover";
+    public static final String MARINE_COVER = "marine_cover";
 
     public static String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 

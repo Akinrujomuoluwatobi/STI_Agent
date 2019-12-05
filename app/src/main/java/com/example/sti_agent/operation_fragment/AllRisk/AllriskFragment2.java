@@ -960,6 +960,7 @@ public class AllriskFragment2 extends Fragment implements View.OnClickListener{
                 datePickerDialog1.dismiss();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog1.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
     }
 
 }

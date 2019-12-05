@@ -93,7 +93,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Company Name"
+                            android:hint="Company Name* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -114,7 +114,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Tin Number"
+                            android:hint="Tin Number* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -136,7 +136,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Office Address"
+                            android:hint="Office Address* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -159,7 +159,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Trade/Occupation"
+                            android:hint="Trade/Occupation* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -181,7 +181,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Contact Person"
+                            android:hint="Contact Person* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -203,7 +203,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="First Name"
+                            android:hint="First Name* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -225,7 +225,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Last Name"
+                            android:hint="Last Name* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -252,6 +252,47 @@
                         android:background="@drawable/spinner_bg"
                         android:clickable="false"
                         />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutEmail_m1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        >
+
+                        <EditText
+                            android:id="@+id/email_editxt_m1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Email* (required)"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="text"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputLayoutPhone_m1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        >
+
+                        <EditText
+                            android:id="@+id/phone_no_editxt_m1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_three"
+                            android:background="@drawable/rounded_bg"
+                            android:hint="Phone Number* (required)"
+                            android:importantForAutofill="noExcludeDescendants"
+                            android:inputType="number"
+                            android:padding="@dimen/size_ten"
+                            tools:targetApi="o"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutResAddr_m1"
@@ -267,7 +308,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_three"
                             android:background="@drawable/rounded_bg"
-                            android:hint="Residential Address"
+                            android:hint="Residential Address* (required)"
                             android:importantForAutofill="noExcludeDescendants"
                             android:inputType="text"
                             android:padding="@dimen/size_ten"
@@ -276,55 +317,21 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
 
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutPhone_m1"
+                    <Spinner
+                        android:id="@+id/state_spinner"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="visible"
-                        >
+                        android:layout_height="50dp"
+                        android:layout_marginTop="@dimen/size_three"
+                        android:background="@drawable/spinner_bg"
 
-                        <EditText
-                            android:id="@+id/phone_no_editxt_m1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Phone Number"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="number"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        />
 
-
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/inputLayoutEmail_m1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="visible"
-                        >
-
-                        <EditText
-                            android:id="@+id/email_editxt_m1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_three"
-                            android:background="@drawable/rounded_bg"
-                            android:hint="Email"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
-                            android:padding="@dimen/size_ten"
-                            tools:targetApi="o"
-                            />
-                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutMailingAddr_m1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginBottom="2dp"
                         android:visibility="visible"
                         >
 
@@ -342,15 +349,36 @@
                             />
                     </com.google.android.material.textfield.TextInputLayout>
 
-
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:text="I have review and agreed to the disclosure and the privacy policy"
-                        android:textStyle="italic"
-                        />
+                        android:text="@string/privacy"
+                        android:textAlignment="textStart"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/reviewed_checked"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:clickable="true"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/colorPrimary"
+                            android:text="I have review and agreed to the disclosure and the privacy policy"
+
+                            />
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/next_btn1_m1"
@@ -364,7 +392,7 @@
                         android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="@dimen/size_ten"
                         android:visibility="visible"
-                         />
+                        />
 
                     <com.wang.avi.AVLoadingIndicatorView
                         android:id="@+id/progressbar1_m1"

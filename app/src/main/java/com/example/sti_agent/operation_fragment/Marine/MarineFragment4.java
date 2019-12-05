@@ -283,7 +283,8 @@ public class MarineFragment4 extends Fragment implements View.OnClickListener {
             case R.id.v_back_btn4_m4:
 
                 mStepView.go(1, true);
-
+                asyncMarinePolicy(primaryKey);
+                userPreferences.setTempMarineQuotePrice("0.0");
                 Fragment marineFragment2 = new MarineFragment2();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_marine_form_container, marineFragment2);
@@ -380,7 +381,7 @@ public class MarineFragment4 extends Fragment implements View.OnClickListener {
                     personal_detail_marines.get(0).getLast_name(), personal_detail_marines.get(0).getEmail(), personal_detail_marines.get(0).getGender()
                     , personal_detail_marines.get(0).getPhone(), personal_detail_marines.get(0).getResident_address(),
                     "null", personal_detail_marines.get(0).getMarital_status(), "null", "null",
-                    "null", "null", "null", "null", "null",
+                    "", "null", "null", "null", "null",
                     "2", personal_detail_marines.get(0).getCompany_name(), personal_detail_marines.get(0).getMailing_address(),
                     personal_detail_marines.get(0).getTin_number(), personal_detail_marines.get(0).getOffice_address(), personal_detail_marines.get(0).getContact_person());
             Log.i("company_name", personal_detail_marines.get(0).getCompany_name());

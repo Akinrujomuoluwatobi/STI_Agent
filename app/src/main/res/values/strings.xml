@@ -145,9 +145,14 @@
         <item> Select Benefit Category </item>
         <item> Single</item>
         <item> Double</item>
-        <item> Tripled </item>
+        <item> Triple </item>
     </string-array>
 
+    <string-array name="cover_array">
+        <item> Select Cover* </item>
+        <item> Clause C </item>
+
+    </string-array>
     <string-array name="prefix_array">
         <item> Select Prefix </item>
         <item> Mr.</item>
